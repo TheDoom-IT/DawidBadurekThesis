@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import './App.css';
 import { Canvas } from 'three-js-react-component';
+import Static from './components/static';
 
 function App() {
   const divRef = useRef<HTMLDivElement>(null);
@@ -16,12 +17,13 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <Static/>
         Canvas is on the left!
         <button onClick={() => setIsLeft(!isLeft)}>Change position</button>
-        <div ref={isLeft ? divRef : null} style={divStyle}>
-          <Canvas ref={rendererRef} divRef={divRef}></Canvas>
+        <div ref={divRef} style={divStyle}>
+          <Canvas key={isLeft ? 1 : 0} ref={rendererRef} divRef={divRef}></Canvas>
         </div>
-        <div ref={isLeft ? null : divRef} style={divStyle}></div>
+        <div  style={divStyle}></div>
       </header>
     </div>
   );

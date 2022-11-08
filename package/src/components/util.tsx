@@ -14,11 +14,11 @@ export const initializeThree = (currRenderer: THREE.WebGLRenderer) => {
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
 
-
     const animate = () => {
         cube.rotation.x += 0.01;
         cube.rotation.y += 0.01;
         requestAnimationFrame(animate);
+        // cancelAnimationFrame();
         currRenderer.render(scene, camera);
     }
 
@@ -26,6 +26,5 @@ export const initializeThree = (currRenderer: THREE.WebGLRenderer) => {
     return () => {
         geometry.dispose();
         material.dispose();
-        currRenderer.dispose();
     }
 }

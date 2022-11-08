@@ -9,10 +9,34 @@ export interface CanvasProps {
 
 export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: CanvasProps, forwardRef: ForwardedRef<THREE.WebGLRenderer>) => {
     const [renderer] = useState<THREE.WebGLRenderer>(() => new THREE.WebGLRenderer());
-    const ready = useRef(false);
+    const isInitialized = useRef(false);
 
     const appendCanvas = () => {
         props.divRef.current?.appendChild(renderer.domElement);
+    }
+
+    const removeCanvas = () => {
+        props.divRef.current?.removeChild(renderer.domElement);
+    }
+
+    const resizeCanvasIfNeeded = () => {
+        if(props.divRef.current === null) return;
+
+        const {height, width} = props.divRef.current?.getBoundingClientRect();
+        const {height: canvasHeight, width: canvasWidth} = renderer.domElement;
+
+        if(height !== canvasHeight || width !== canvasWidth) {
+            renderer.setSize(width, height, false);
+            renderer.domElement.width = width;
+            renderer.domElement.height = height;
+            // TODO: update camera here
+        }
+    }
+
+    const animate = () => {
+        resizeCanvasIfNeeded();
+
+        requestAnimationFrame(animate);
     }
 
     useEffect(() => {
@@ -21,30 +45,36 @@ export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: Canva
 
     useEffect(() => {
         appendCanvas();
-        if (ready.current) {
+        animate();
+        if (isInitialized.current) {
             return;
         }
         const dispose = initializeThree(renderer);
-
-        ready.current = true;
+        
+        isInitialized.current = true;
         return () => {
             console.log('finishing code');
             dispose();
-            renderer.dispose();//???
-            // renderer.forceContextLoss();
         }
     }, [props.divRef.current]);
 
     useEffect(() => {
-        console.log('Canvas rerendered');
+        renderer.info.reset();
+        console.log(renderer.info.memory.geometries)
     });
 
-    useEffect(() => {
-        console.log('Initial render');
-    }, []);
+
+    // TODO: removeCanvas and renderer when removed
+    // useEffect(() => {
+    //     return () => {
+    //         console.log('remove everything');
+    //         removeCanvas();
+    //         renderer.dispose();
+    //         renderer.forceContextLoss();
+    //     }
+    // }, []);
 
     return (
-        // <div ref={ref => ref?.appendChild(renderer.domElement)}></div>
         <></>
     )
 });
