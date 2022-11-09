@@ -24,6 +24,7 @@ export const initializeThree = (currRenderer: THREE.WebGLRenderer) => {
 
     animate();
     return () => {
+        scene.remove(cube);
         geometry.dispose();
         material.dispose();
     }
