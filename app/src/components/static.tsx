@@ -9,7 +9,7 @@ const Static = () => {
     <>
       <button onClick={() => setId(id + 1)}>Update ID!</button>
       {id}
-      <div id={divId} style={{ width: '100%', height: '100%' }}>
+      <div id={divId} style={{ width: '100%', height: '100%', minHeight: 100, backgroundColor: 'blue' }}>
         <Canvas divId={divId}></Canvas>
       </div>
     </>
