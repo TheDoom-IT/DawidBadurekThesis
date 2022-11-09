@@ -46,17 +46,12 @@ export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: Canva
     useEffect(() => {
         console.log('Div: new');
         appendCanvas();
-        // if (isInitialized.current) {
-        // return;
-        // }
-        animate();
-        const dispose = initializeThree(renderer);
 
         isInitialized.current = true;
         return () => {
             console.log('Div: removing');
             removeCanvas();
-            dispose();
+            isInitialized.current = false;
 
         }
     }, [props.divRef.current]);
@@ -64,14 +59,20 @@ export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: Canva
     // TODO: removeCanvas and renderer when removed
     useEffect(() => {
         console.log('Canvas: new');
+        animate();
+        // const frameId = requestAnimationFrame(animate);
+        const dispose = initializeThree(renderer);
+
         if (renderer.getContext().isContextLost()) {
             renderer.forceContextRestore();
         }
         return () => {
             console.log('Canvas: removing');
+            // cancelAnimationFrame(frameId);
+            dispose();
             // removeCanvas();
             renderer.dispose();
-            // renderer.forceContextLoss();
+            renderer.forceContextLoss();
         }
     }, []);
 

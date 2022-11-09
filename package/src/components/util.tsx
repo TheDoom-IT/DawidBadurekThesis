@@ -17,12 +17,14 @@ export const initializeThree = (currRenderer: THREE.WebGLRenderer) => {
     const animate = () => {
         cube.rotation.x += 0.01;
         cube.rotation.y += 0.01;
+        if (currRenderer.getContext().isContextLost()) return;
         requestAnimationFrame(animate);
         // cancelAnimationFrame();
         currRenderer.render(scene, camera);
     }
 
-    animate();
+    requestAnimationFrame(animate);
+
     return () => {
         scene.remove(cube);
         geometry.dispose();
