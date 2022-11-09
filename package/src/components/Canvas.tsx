@@ -4,36 +4,46 @@ import { handleForwardRef } from '../utils/handle-forward-ref';
 import { initializeThree } from './util';
 
 export interface CanvasProps {
-    divRef: React.RefObject<HTMLDivElement>;
+    divId: string;
 }
 
 export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: CanvasProps, forwardRef: ForwardedRef<THREE.WebGLRenderer>) => {
     const [renderer] = useState<THREE.WebGLRenderer>(() => { console.log('State created'); return new THREE.WebGLRenderer() });
-    const isInitialized = useRef(false);
+    // const [renderer] = useState<THREE.WebGLRenderer>(new THREE.WebGLRenderer());
 
-    const appendCanvas = () => {
-        props.divRef.current?.appendChild(renderer.domElement);
-    }
+    useEffect(() => {
+        console.log('Div: new');
+        const div = document.getElementById(props.divId);
+        if (!div) {
+            console.error('Failed to find a div!');
+            return;
+        }
+        div.appendChild(renderer.domElement);
 
-    const removeCanvas = () => {
-        props.divRef.current?.removeChild(renderer.domElement);
-    }
+        return () => {
+            console.log('Div: removing');
+            div.removeChild(renderer.domElement);
+        }
+    }, [props.divId]);
 
     const resizeCanvasIfNeeded = () => {
-        if (props.divRef.current === null) return;
+        const div = document.getElementById(props.divId);
+        if (!div) {
+            console.error('Failed to find a div!');
+            return;
+        }
 
-        const { height, width } = props.divRef.current?.getBoundingClientRect();
+        const { height, width } = div.getBoundingClientRect();
         const { height: canvasHeight, width: canvasWidth } = renderer.domElement;
 
         if (height !== canvasHeight || width !== canvasWidth) {
             renderer.setSize(width, height, false);
-            renderer.domElement.width = width;
-            renderer.domElement.height = height;
             // TODO: update camera here
         }
     }
 
     const animate = () => {
+        if (renderer.getContext().isContextLost()) return;
         resizeCanvasIfNeeded();
 
         requestAnimationFrame(animate);
@@ -44,35 +54,20 @@ export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: Canva
     }, [forwardRef]);
 
     useEffect(() => {
-        console.log('Div: new');
-        appendCanvas();
-
-        isInitialized.current = true;
-        return () => {
-            console.log('Div: removing');
-            removeCanvas();
-            isInitialized.current = false;
-
-        }
-    }, [props.divRef.current]);
-
-    // TODO: removeCanvas and renderer when removed
-    useEffect(() => {
         console.log('Canvas: new');
-        animate();
-        // const frameId = requestAnimationFrame(animate);
+        // requestAnimationFrame(animate);
         const dispose = initializeThree(renderer);
 
         if (renderer.getContext().isContextLost()) {
+            console.log(renderer.getContext().getExtension('WEBGL_lose_context'));
+            renderer.getContext().getExtension('WEBGL_lose_context')?.restoreContext();
             renderer.forceContextRestore();
         }
         return () => {
             console.log('Canvas: removing');
-            // cancelAnimationFrame(frameId);
             dispose();
-            // removeCanvas();
             renderer.dispose();
-            renderer.forceContextLoss();
+            // renderer.forceContextLoss();
         }
     }, []);
 

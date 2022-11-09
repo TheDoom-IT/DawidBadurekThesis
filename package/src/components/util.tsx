@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
 export const initializeThree = (currRenderer: THREE.WebGLRenderer) => {
-    console.log('initializeThree');
     const currCanvas = currRenderer.domElement;
 
     const scene = new THREE.Scene();

@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Canvas } from "three-js-react-component";
 
 const Recreate = () => {
-    const divRef = useRef<HTMLDivElement>(null);
+    const [divId] = useState(new Date().getTime().toString());
     const [key, setKey] = useState(1);
 
     const divStyle: React.CSSProperties = {
@@ -14,8 +14,8 @@ const Recreate = () => {
     return (
         <>
             <button onClick={() => setKey(key + 1)}> Recreate Canvas</button >
-            <div ref={divRef} style={divStyle}>
-                <Canvas key={key} divRef={divRef}></Canvas>
+            <div id={divId} style={divStyle}>
+                <Canvas divId={divId} key={key}></Canvas>
             </div>
         </>
     );

@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import StaticRoute from './routes/static-route';
 import { ROUTES } from './routes/routes';
 import HomeRoute from './routes/home-route';
-import RefChangeRoute from './routes/ref-change-route';
+import DivChangeRoute from './routes/div-change-route';
 import RecreateRoute from './routes/recreate-route';
 
 const router = createBrowserRouter([
@@ -19,8 +19,8 @@ const router = createBrowserRouter([
     element: <StaticRoute />
   },
   {
-    path: ROUTES.REF_CHANGE,
-    element: <RefChangeRoute />
+    path: ROUTES.DIV_CHANGE,
+    element: <DivChangeRoute />
   },
   {
     path: ROUTES.RECREATE,

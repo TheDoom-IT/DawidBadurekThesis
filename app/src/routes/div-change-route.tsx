@@ -1,16 +1,16 @@
 import React from 'react';
 import Container from "../components/container/container"
 import HomeLink from '../components/home-link';
-import RefChange from '../components/ref-change';
+import DivChange from '../components/div-change';
 import StrictNoStrict from '../components/strict-no-strict/strict-no-strict';
 
-const RefChangeRoute = () => {
+const DivChangeRoute = () => {
     return <Container>
         <HomeLink />
         <StrictNoStrict>
-            <RefChange />
+            <DivChange />
         </StrictNoStrict>
     </Container>
 }
 
-export default RefChangeRoute;
+export default DivChangeRoute;

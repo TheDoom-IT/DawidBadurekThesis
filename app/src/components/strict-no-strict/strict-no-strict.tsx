@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import './strict-no-strict.css';
 
 interface StrictNoStrictInterface {
@@ -6,19 +6,22 @@ interface StrictNoStrictInterface {
 }
 
 const StrictNoStrict = (props: StrictNoStrictInterface) => {
+    const [strictVis, setStrictVis] = useState(false);
+    const [noStrictVis, setNoStrictVis] = useState(false);
+
     return <div className="strict-no-strict">
         <React.StrictMode>
             <div className="w-50">
                 <p>Strict</p>
                 <div className="canvas-container">
-                    {props.children}
+                    {strictVis ? props.children : <button onClick={() => setStrictVis(true)}>Show</button>}
                 </div>
             </div>
         </React.StrictMode>
         <div className="w-50">
             <p>No strict</p>
             <div className="canvas-container">
-                {props.children}
+                {noStrictVis ? props.children : <button onClick={() => setNoStrictVis(true)}>Show</button>}
             </div>
         </div>
     </div>

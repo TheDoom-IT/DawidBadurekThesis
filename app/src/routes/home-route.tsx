@@ -7,7 +7,7 @@ function HomeRoute() {
     return (
         <Container>
             <Link to={ROUTES.STATIC}>Static</Link>
-            <Link to={ROUTES.REF_CHANGE}>Ref change</Link>
+            <Link to={ROUTES.DIV_CHANGE}>Div change</Link>
             <Link to={ROUTES.RECREATE}>Recreate</Link>
         </Container>
     );
