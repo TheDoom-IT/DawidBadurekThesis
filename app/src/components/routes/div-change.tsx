@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Canvas } from "three-js-react-component";
-import './div-change.css'
+import '../../styles/div-change.css'
 
-const DivChange = () => {
+export const DivChange = () => {
     const [divId1] = useState(new Date().getTime().toString());
     const [divId2] = useState((new Date().getTime() + 1).toString());
     const [isLeft, setIsLeft] = useState(true);
@@ -20,5 +20,3 @@ const DivChange = () => {
         </>
     );
 }
-
-export default DivChange;

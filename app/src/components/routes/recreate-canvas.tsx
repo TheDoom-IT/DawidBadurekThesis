@@ -1,7 +1,7 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Canvas } from "three-js-react-component";
 
-const Recreate = () => {
+export const RecreateCanvas = () => {
     const [divId] = useState(new Date().getTime().toString());
     const [key, setKey] = useState(1);
 
@@ -20,6 +20,3 @@ const Recreate = () => {
         </>
     );
 }
-
-
-export default Recreate;

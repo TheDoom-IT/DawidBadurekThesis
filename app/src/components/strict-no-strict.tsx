@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import './strict-no-strict.css';
+import '../styles/strict-no-strict.css';
 
 interface StrictNoStrictInterface {
     children: JSX.Element;
 }
 
-const StrictNoStrict = (props: StrictNoStrictInterface) => {
+export const StrictNoStrict = (props: StrictNoStrictInterface) => {
     const [strictVis, setStrictVis] = useState(false);
     const [noStrictVis, setNoStrictVis] = useState(false);
 
@@ -26,5 +26,3 @@ const StrictNoStrict = (props: StrictNoStrictInterface) => {
         </div>
     </div>
 }
-
-export default StrictNoStrict;

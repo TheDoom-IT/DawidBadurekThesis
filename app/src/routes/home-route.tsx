@@ -1,16 +1,13 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import Container from '../components/container/container';
+import { Container } from '../components';
 import { ROUTES } from './routes';
 
-function HomeRoute() {
+export const HomeRoute = () => {
     return (
         <Container>
             <Link to={ROUTES.STATIC}>Static</Link>
             <Link to={ROUTES.DIV_CHANGE}>Div change</Link>
-            <Link to={ROUTES.RECREATE}>Recreate</Link>
+            <Link to={ROUTES.RECREATE_CANVAS}>Recreate</Link>
         </Container>
     );
 }
-
-export default HomeRoute;

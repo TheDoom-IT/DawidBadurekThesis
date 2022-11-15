@@ -1,10 +1,6 @@
-import React from 'react';
-import Container from "../components/container/container"
-import HomeLink from '../components/home-link';
-import DivChange from '../components/div-change/div-change';
-import StrictNoStrict from '../components/strict-no-strict/strict-no-strict';
+import { Container, HomeLink, StrictNoStrict, DivChange } from '../components';
 
-const DivChangeRoute = () => {
+export const DivChangeRoute = () => {
     return <Container>
         <HomeLink />
         <StrictNoStrict>
@@ -12,5 +8,3 @@ const DivChangeRoute = () => {
         </StrictNoStrict>
     </Container>
 }
-
-export default DivChangeRoute;

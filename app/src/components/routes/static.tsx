@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
+import { useState } from "react";
 import { Canvas } from "three-js-react-component";
 
-const Static = () => {
+export const Static = () => {
   const [divId] = useState(new Date().getTime().toString());
   const [id, setId] = useState(0);
 
@@ -15,5 +15,3 @@ const Static = () => {
     </>
   );
 }
-
-export default Static;

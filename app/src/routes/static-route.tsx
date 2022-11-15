@@ -1,10 +1,6 @@
-import React from 'react';
-import Container from "../components/container/container"
-import HomeLink from '../components/home-link';
-import Static from '../components/static';
-import StrictNoStrict from '../components/strict-no-strict/strict-no-strict';
+import { Container, HomeLink, Static, StrictNoStrict } from '../components';
 
-const StaticRoute = () => {
+export const StaticRoute = () => {
     return <Container>
         <HomeLink />
         <StrictNoStrict>
@@ -12,5 +8,3 @@ const StaticRoute = () => {
         </StrictNoStrict>
     </Container>
 }
-
-export default StaticRoute;
