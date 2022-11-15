@@ -1,71 +1,58 @@
-import React, { ForwardedRef, forwardRef, useEffect, useRef, useState } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useRef, useLayoutEffect } from 'react';
 import * as THREE from 'three';
-import { handleForwardRef } from '../utils/handle-forward-ref';
-import { initializeThree } from './util';
+import { handleForwardRef, addTestScene } from '../utils';
 
-export interface CanvasProps {
+interface CanvasProps {
     divId: string;
 }
 
-function sleep(milliseconds: number) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
-
 export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: CanvasProps, forwardRef: ForwardedRef<THREE.WebGLRenderer>) => {
-    // const [renderer] = useState<THREE.WebGLRenderer>(() => { console.log('State created'); return new THREE.WebGLRenderer() });
-    // const [renderer] = useState<THREE.WebGLRenderer>(new THREE.WebGLRenderer());
     const rendererRef = useRef<THREE.WebGLRenderer>();
+    const animationFrameId = useRef<number>(0);
 
-    useEffect(() => {
-        console.log('Canvas: new');
+    const findDiv = () => {
+        const div = document.getElementById(props.divId);
+        if (!div) {
+            throw new Error(`Failed to find a div with id ${props.divId}!`);
+        }
+        return div;
+    }
+
+    // create renderer, remove it on unmount
+    useLayoutEffect(() => {
         rendererRef.current = new THREE.WebGLRenderer();
-        // requestAnimationFrame(animate);
-        const dispose = initializeThree(rendererRef.current);
+        animate();
 
-        // if (rendererRef.current.getContext().isContextLost()) {
-        // console.log(rendererRef.current.getContext().getExtension('WEBGL_lose_context'));
-        // rendererRef.current.getContext().getExtension('WEBGL_lose_context')?.restoreContext();
-        // rendererRef.current.forceContextRestore();
-        // }
+        // TODO: remove it
+        //add an animated cube for testing purposes
+        const dispose = addTestScene(rendererRef.current);
+
         return () => {
-            console.log('Canvas: removing');
+            // TODO: remove it
+            // dispose an animated cube created for test
             dispose();
-            rendererRef.current?.dispose();
-            rendererRef.current?.forceContextLoss();
-            sleep(5000);
-            // rendererRef.current.dispose();
-            // rendererRef.current.forceContextLoss();
+
+            // stop animations
+            cancelAnimationFrame(animationFrameId.current);
+
+            rendererRef.current!.dispose();
+            rendererRef.current!.forceContextLoss();
         }
     }, []);
 
-    useEffect(() => {
-        console.log('Div: new');
-
-        const div = document.getElementById(props.divId);
-        if (!div) {
-            console.error('Failed to find a div!');
-            return;
-        }
-        new Promise((res) => { setTimeout(res, 5000) }).then(() =>
-            div.appendChild(rendererRef.current!.domElement));
+    // append canvas to the DOM, remove it on unmount/div change
+    useLayoutEffect(() => {
+        const div = findDiv();
+        div.appendChild(rendererRef.current!.domElement);
 
         return () => {
-            console.log('Div: removing');
             div.removeChild(rendererRef.current!.domElement);
-            sleep(5000);
         }
     }, [props.divId]);
 
+    // make canvas addaptive to the div size
     const resizeCanvasIfNeeded = () => {
-        const div = document.getElementById(props.divId);
-        if (!div) {
-            console.error('Failed to find a div!');
-            return;
-        }
+        const div = findDiv();
 
         const { height, width } = div.getBoundingClientRect();
         const { height: canvasHeight, width: canvasWidth } = rendererRef.current!.domElement;
@@ -77,17 +64,16 @@ export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: Canva
     }
 
     const animate = () => {
-        if (rendererRef.current!.getContext().isContextLost()) return;
         resizeCanvasIfNeeded();
 
-        requestAnimationFrame(animate);
+        // TODO: run other animations here
+
+        animationFrameId.current = requestAnimationFrame(animate);
     }
 
     useEffect(() => {
         handleForwardRef(forwardRef, rendererRef.current!);
     }, [forwardRef]);
 
-    return (
-        <></>
-    )
+    return <></>
 });
