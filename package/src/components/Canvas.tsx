@@ -1,9 +1,10 @@
-import React, { ForwardedRef, forwardRef, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useRef, useLayoutEffect, ReactNode } from 'react';
 import * as THREE from 'three';
 import { handleForwardRef, addTestScene } from '../utils';
 
 interface CanvasProps {
     divId: string;
+    children?: ReactNode | ReactNode[];
 }
 
 export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: CanvasProps, forwardRef: ForwardedRef<THREE.WebGLRenderer>) => {
@@ -74,6 +75,5 @@ export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: Canva
     useEffect(() => {
         handleForwardRef(forwardRef, rendererRef.current!);
     }, [forwardRef]);
-
     return <></>
 });

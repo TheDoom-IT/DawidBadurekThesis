@@ -8,6 +8,7 @@ export const HomeRoute = () => {
             <Link to={ROUTES.STATIC}>Static</Link>
             <Link to={ROUTES.DIV_CHANGE}>Div change</Link>
             <Link to={ROUTES.RECREATE_CANVAS}>Recreate</Link>
+            <Link to={ROUTES.CHILDREN_TEST}>Children test</Link>
         </Container>
     );
 }

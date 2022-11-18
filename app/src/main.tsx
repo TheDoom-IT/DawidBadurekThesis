@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomeRoute, ROUTES, StaticRoute, DivChangeRoute, RecreateCanvasRoute } from './routes';
+import { HomeRoute, ROUTES, StaticRoute, DivChangeRoute, RecreateCanvasRoute, ChildrenTestRoute } from './routes';
 import './styles/index.css';
 
 export const browserRouter = createBrowserRouter([
@@ -19,6 +19,10 @@ export const browserRouter = createBrowserRouter([
   {
     path: ROUTES.RECREATE_CANVAS,
     element: <RecreateCanvasRoute />
+  },
+  {
+    path: ROUTES.CHILDREN_TEST,
+    element: <ChildrenTestRoute />
   }
 ]);
 
