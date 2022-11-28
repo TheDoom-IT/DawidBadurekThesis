@@ -1,10 +1,15 @@
-import React, { ForwardedRef, forwardRef, useEffect, useRef, useLayoutEffect, ReactNode } from 'react';
+import React, { ForwardedRef, forwardRef, useEffect, useRef, useLayoutEffect, ReactElement, ReactFragment, ReactNode, ReactPortal } from 'react';
 import * as THREE from 'three';
+import { useEffectWithArray } from '../hooks/useEffectWithArray';
 import { handleForwardRef, addTestScene } from '../utils';
+import { simplifyChildren } from '../utils/simplify-children';
 
-interface CanvasProps {
+export type SupportedChild = ReactElement | ReactFragment | ReactPortal | null | undefined;
+export type SupportedChildren = SupportedChild | SupportedChild[]
+
+export interface CanvasProps {
     divId: string;
-    children?: ReactNode | ReactNode[];
+    children?: SupportedChildren
 }
 
 export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: CanvasProps, forwardRef: ForwardedRef<THREE.WebGLRenderer>) => {
@@ -17,6 +22,27 @@ export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: Canva
             throw new Error(`Failed to find a div with id ${props.divId}!`);
         }
         return div;
+    }
+
+    // make canvas addaptive to the div size
+    const resizeCanvasIfNeeded = () => {
+        const div = findDiv();
+
+        const { height, width } = div.getBoundingClientRect();
+        const { height: canvasHeight, width: canvasWidth } = rendererRef.current!.domElement;
+
+        if (height !== canvasHeight || width !== canvasWidth) {
+            rendererRef.current!.setSize(width, height, false);
+            // TODO: update camera here
+        }
+    }
+
+    const animate = () => {
+        resizeCanvasIfNeeded();
+
+        // TODO: run other animations here
+
+        animationFrameId.current = requestAnimationFrame(animate);
     }
 
     // create renderer, remove it on unmount
@@ -51,26 +77,21 @@ export const Canvas = forwardRef<THREE.WebGLRenderer, CanvasProps>((props: Canva
         }
     }, [props.divId]);
 
-    // make canvas addaptive to the div size
-    const resizeCanvasIfNeeded = () => {
-        const div = findDiv();
+    // add children to the scene
+    useLayoutEffect(() => {
+        // console.log('children changed');
+        // console.log(props.children);
 
-        const { height, width } = div.getBoundingClientRect();
-        const { height: canvasHeight, width: canvasWidth } = rendererRef.current!.domElement;
-
-        if (height !== canvasHeight || width !== canvasWidth) {
-            rendererRef.current!.setSize(width, height, false);
-            // TODO: update camera here
+        return () => {
+            // console.log('children removed');
         }
-    }
+    }, [props.children])
 
-    const animate = () => {
-        resizeCanvasIfNeeded();
-
-        // TODO: run other animations here
-
-        animationFrameId.current = requestAnimationFrame(animate);
-    }
+    console.log(React.Children.toArray(props.children));
+    console.log(simplifyChildren(props.children));
+    // useEffectWithArray(() => {
+    // console.log('useEffectWithArray');
+    // }, props.children);
 
     useEffect(() => {
         handleForwardRef(forwardRef, rendererRef.current!);

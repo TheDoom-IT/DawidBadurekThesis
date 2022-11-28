@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Canvas } from "three-js-react-component";
-import '../../styles/div-change.css'
+import '../../styles/shared.css'
 
 export const DivChange = () => {
     const [divId1] = useState(new Date().getTime().toString());
