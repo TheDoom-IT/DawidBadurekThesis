@@ -10,9 +10,12 @@ export const addTestScene = (currRenderer: THREE.WebGLRenderer) => {
 
     camera.position.z = 3;
 
+    const cube = new THREE.Mesh();
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
+    cube.geometry = geometry;
+    cube.material = material;
+    // const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
 
     let animationFrameId = 0;

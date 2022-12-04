@@ -17,16 +17,18 @@
     "link": "cd ../app/node_modules/react && npm link && cd ../react-dom && npm link && cd ../../../package && npm link react && npm link react-dom"
   },
   "license": "MIT",
+  "dependencies": {
+    "react-is": "^18.2.0"
+  },
   "devDependencies": {
+    "@types/react-is": "^17.0.3",
     "@types/node": "^18.11.7",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
-    "@types/three": "^0.144.0",
     "typescript": "^4.8.4"
   },
-  "dependencies": {
-    "@types/react-is": "^17.0.3",
-    "react-is": "^18.2.0",
-    "three": "^0.146.0"
+  "peerDependencies": {
+    "three": "^0.146.0",
+    "@types/three": "^0.144.0"
   }
 }

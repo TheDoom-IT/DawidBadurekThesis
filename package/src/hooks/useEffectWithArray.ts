@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode, useRef } from 'react';
 import { useEffect } from "react"
 import { isFragment } from 'react-is';
-import { SupportedChild, SupportedChildren } from '../components';
+import { SupportedChild, SupportedChildren } from '../types/object-props';
 
 export const useEffectWithArray = (callback: () => void, children: ReactNode | ReactNode[]) => {
     const prevValue = useRef<ReturnType<typeof React.Children.toArray>>();
@@ -50,10 +50,10 @@ export const useEffectWithArray = (callback: () => void, children: ReactNode | R
     }
 
 
-    const areIdentical = checkEqualityOfChildren(prevValue.current, children);
+    const areIdentical = true; //checkEqualityOfChildren(prevValue.current, children);
 
     if (!areIdentical) {
-        prevValue.current = children;
+        // prevValue.current = children;
         changeRef.current = !changeRef.current;
     }
 

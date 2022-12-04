@@ -1,11 +1,8 @@
 import React from 'react';
 import * as THREE from 'three';
+import { ObjectProps } from '../../types/object-props';
 
-type PerspectiveCameraParams = ConstructorParameters<typeof THREE.PerspectiveCamera>;
-
-export interface PerspectiveCameraProps {
-    params: PerspectiveCameraParams;
-}
+export type PerspectiveCameraProps = ObjectProps<{}, typeof THREE.PerspectiveCamera, THREE.PerspectiveCamera>;
 
 export const PerspectiveCamera = (props: PerspectiveCameraProps) => {
     return <></>

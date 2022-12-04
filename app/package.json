@@ -12,9 +12,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
+    "three": "^0.147.0",
     "three-js-react-component": "file:../package"
   },
   "devDependencies": {
+    "@types/three": "^0.146.0",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@vitejs/plugin-react": "^2.2.0",
