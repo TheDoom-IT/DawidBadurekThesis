@@ -1,4 +1,12 @@
-import { OrtographicCamera, PerspectiveCamera, BoxGeometry, MeshStandardMaterial, MeshBasicMaterial } from "../components";
+import {
+    OrtographicCamera,
+    PerspectiveCamera,
+    BoxGeometry,
+    MeshStandardMaterial,
+    MeshBasicMaterial,
+    CapsuleGeometry,
+    DirectionalLight, AmbientLight
+} from "../components";
 import { Mesh } from "../components/Mesh";
 import { Scene } from "../components/Scene";
 import { MAIN_PARENT } from "../main-parent";
@@ -10,11 +18,16 @@ export const cameraChildren = [
 ]
 export const geometryChildren = [
     BoxGeometry.name,
+    CapsuleGeometry.name,
 ];
 export const materialChildren = [
     MeshStandardMaterial.name,
     MeshBasicMaterial.name,
 ];
+export const lightChildren = [
+    AmbientLight.name,
+    DirectionalLight.name,
+]
 
 export const meshChild = Mesh.name;
 export const sceneChild = Scene.name;
@@ -28,6 +41,7 @@ export const supportedChildren: { [key: string]: string[] } = {
     [OrtographicCamera.name]: [],
     [sceneChild]: [
         meshChild,
+        ...lightChildren
     ],
     [meshChild]: [
         ...geometryChildren,
@@ -41,6 +55,9 @@ export const childContructor = {
     [sceneChild]: THREE.Scene,
     [meshChild]: THREE.Mesh,
     [BoxGeometry.name]: THREE.BoxGeometry,
+    [CapsuleGeometry.name]: THREE.CapsuleGeometry,
     [MeshStandardMaterial.name]: THREE.MeshStandardMaterial,
     [MeshBasicMaterial.name]: THREE.MeshBasicMaterial,
+    [DirectionalLight.name]: THREE.DirectionalLight,
+    [AmbientLight.name]: THREE.AmbientLight,
 }

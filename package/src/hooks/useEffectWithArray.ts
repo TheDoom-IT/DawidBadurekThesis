@@ -1,7 +1,7 @@
 import React, { ReactElement, ReactNode, useRef } from 'react';
 import { useEffect } from "react"
 import { isFragment } from 'react-is';
-import { SupportedChild, SupportedChildren } from '../types/object-props';
+import { SupportedChild, SupportedChildren } from '../types/supported-child';
 
 export const useEffectWithArray = (callback: () => void, children: ReactNode | ReactNode[]) => {
     const prevValue = useRef<ReturnType<typeof React.Children.toArray>>();

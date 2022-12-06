@@ -28,7 +28,7 @@
     "typescript": "^4.8.4"
   },
   "peerDependencies": {
-    "three": "^0.146.0",
+    "three": "^0.144.0",
     "@types/three": "^0.144.0"
   }
 }

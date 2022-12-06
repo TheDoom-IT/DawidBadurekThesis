@@ -1,12 +1,18 @@
 import React, { ForwardedRef, forwardRef, useEffect, useRef, useLayoutEffect, ReactElement, ReactFragment, ReactNode, ReactPortal } from 'react';
 import * as THREE from 'three';
-import * as ReactIs from "react-is";
-import { useEffectWithArray } from '../hooks/useEffectWithArray';
 import { handleForwardRef, addTestScene } from '../utils';
 import { getElementType } from '../utils/get-element-type';
 import { MAIN_PARENT } from '../main-parent';
-import { cameraChildren, childContructor, geometryChildren, materialChildren, meshChild, sceneChild } from '../utils/supported-children';
-import { ObjectProps } from '../types/object-props';
+import {
+    cameraChildren,
+    childContructor,
+    geometryChildren,
+    lightChildren,
+    materialChildren,
+    meshChild,
+    sceneChild
+} from '../utils/supported-children';
+import { ObjectProps } from '../types/props';
 import { validateChildType } from '../utils/validate-child-type';
 import { isElementSupported } from '../utils/is-element-supported';
 
@@ -60,11 +66,12 @@ export const Canvas = (props: CanvasProps) => {
     const animate = (timestamp: number) => {
         resizeCanvasIfNeeded();
 
+        // TODO: run other animations here
+        animations.current?.forEach(animation => animation(timestamp));
+
         if (sceneRef.current !== undefined && cameraRef.current !== undefined) {
             rendererRef.current!.render(sceneRef.current, cameraRef.current);
         }
-        // TODO: run other animations here
-        animations.current?.forEach(animation => animation(timestamp));
 
         animationFrameId.current = requestAnimationFrame(animate);
     }
@@ -72,7 +79,7 @@ export const Canvas = (props: CanvasProps) => {
     // create renderer, remove it on unmount
     useLayoutEffect(() => {
         rendererRef.current = new THREE.WebGLRenderer();
-        animate(0);
+        animationFrameId.current = requestAnimationFrame(animate);
 
         // TODO: remove it
         //add an animated cube for testing purposes
@@ -102,21 +109,20 @@ export const Canvas = (props: CanvasProps) => {
     }, [props.divId]);
 
     const handleMainChild = (child: ReturnType<typeof React.Children.toArray>[number]) => {
-        validateChildType(child);
+        const validatedChild = validateChildType(child);
 
-        const reactElementChild = child as ReactElement;
-        const type = getElementType(reactElementChild);
+        const type = getElementType(validatedChild);
         isElementSupported(type, MAIN_PARENT);
 
         if (cameraChildren.includes(type)) {
             if (cameraRef.current !== undefined) {
                 throw new Error('Canvas should contain only single camera object.');
             }
-            cameraRef.current = new childContructor[type](...reactElementChild.props.params) as THREE.PerspectiveCamera;
+            cameraRef.current = new childContructor[type](...(validatedChild.props.params ?? [])) as THREE.PerspectiveCamera;
             // TODO: update camera aspect here
             updateCameraAspect();
 
-            handleForwardRef(reactElementChild.props.innerRef, cameraRef.current);
+            handleForwardRef(validatedChild.props.innerRef, cameraRef.current);
             return;
         }
 
@@ -126,32 +132,34 @@ export const Canvas = (props: CanvasProps) => {
             }
             sceneRef.current = new THREE.Scene();
 
-            const childrenArray = React.Children.toArray(reactElementChild.props.children);
+            const childrenArray = React.Children.toArray(validatedChild.props.children);
             childrenArray.forEach((child) => {
                 handleChild(child, sceneRef.current);
             })
 
-            handleForwardRef(reactElementChild.props.innerRef, sceneRef.current);
+            handleForwardRef(validatedChild.props.innerRef, sceneRef.current);
             return;
         }
     }
 
     const handleChild = (child: ReturnType<typeof React.Children.toArray>[number], parent: any) => {
-        validateChildType(child);
+        const validatedChild = validateChildType(child);
 
-        const childType = getElementType(child as ReactElement);
+        const childType = getElementType(validatedChild);
         isElementSupported(childType, parent.type);
-
-        console.log(childType);
 
         if (childType === meshChild) {
             const mesh = new THREE.Mesh();
+            if(validatedChild.props.position) {
+                const [x,y,z] = validatedChild.props.position;
+                mesh.position.set(x,y,z);
+            }
             sceneRef.current?.add(mesh);
 
-            if ((child as ReactElement).props.animate) {
-                animations.current?.push((timestamp) => (child as ReactElement).props.animate(timestamp, mesh));
+            if (validatedChild.props.animate) {
+                animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, mesh));
             }
-            const childrenArray = React.Children.toArray((child as ReactElement).props.children);
+            const childrenArray = React.Children.toArray(validatedChild.props.children);
             childrenArray.forEach((child) => {
                 handleChild(child, mesh);
             });
@@ -160,29 +168,38 @@ export const Canvas = (props: CanvasProps) => {
         }
 
         if (materialChildren.includes(childType)) {
-            const material = new childContructor[childType](...(child as ReactElement).props.params);
+            const material = new childContructor[childType](...(validatedChild.props.params ?? []));
             parent.material = material;
 
-            console.log(material);
-            if ((child as ReactElement).props.animate) {
-                animations.current?.push((timestamp) => (child as ReactElement).props.animate(timestamp, material));
+            if (validatedChild.props.animate) {
+                animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, material));
             }
 
-            handleForwardRef((child as ReactElement).props.innerRef, material);
+            handleForwardRef(validatedChild.props.innerRef, material);
             return;
         }
 
         if (geometryChildren.includes(childType)) {
-            const geometry = new childContructor[childType](...(child as ReactElement).props.params);
+            const geometry = new childContructor[childType](...(validatedChild.props.params === undefined ? [] : validatedChild.props.params));
             parent.geometry = geometry;
 
-            if ((child as ReactElement).props.animate) {
-                animations.current?.push((timestamp) => (child as ReactElement).props.animate(timestamp, geometry));
+            if (validatedChild.props.animate) {
+                animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, geometry));
             }
 
-            handleForwardRef((child as ReactElement).props.innerRef, geometry);
+            handleForwardRef(validatedChild.props.innerRef, geometry);
             return;
         }
+
+        const object = new childContructor[childType](...(validatedChild.props.params === undefined ? [] : validatedChild.props.params));
+        parent.add(object);
+
+        if (validatedChild.props.animate) {
+            animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, object));
+        }
+
+        handleForwardRef(validatedChild.props.innerRef, object);
+        return;
     }
 
     // add children to the renderer
@@ -206,8 +223,6 @@ export const Canvas = (props: CanvasProps) => {
     // useEffectWithArray(() => {
     // console.log('useEffectWithArray');
     // }, props.children);
-
-
 
     useEffect(() => {
         handleForwardRef(props.innerRef, rendererRef.current!);

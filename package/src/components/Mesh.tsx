@@ -1,9 +1,11 @@
 import React from 'react';
 import * as THREE from 'three';
-import { ObjectProps } from '../types/object-props';
+import { ObjectProps } from '../types/props';
 
-export type MeshProps = ObjectProps<{}, typeof THREE.Mesh, THREE.Mesh>;
+export type MeshProps = ObjectProps<{
+    position?: [x: number, y: number, z: number]
+}, typeof THREE.Mesh, THREE.Mesh>;
 
-export const Mesh = (props: MeshProps) => {
-    return <></>;
-}
+
+
+export const Mesh = (props: MeshProps) => <></>
