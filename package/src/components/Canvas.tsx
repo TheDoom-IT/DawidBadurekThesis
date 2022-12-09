@@ -9,14 +9,14 @@ import {
     geometryChildren,
     lightChildren,
     materialChildren,
-    meshChild,
+    objectChildren,
     sceneChild
 } from '../utils/supported-children';
-import { ObjectProps } from '../types/props';
+import { GeneralProps } from '../types/props';
 import { validateChildType } from '../utils/validate-child-type';
 import { isElementSupported } from '../utils/is-element-supported';
 
-export type CanvasProps = ObjectProps<{ divId: string }, typeof THREE.WebGLRenderer, THREE.WebGLRenderer>
+export type CanvasProps = GeneralProps<{ divId: string }, typeof THREE.WebGLRenderer, THREE.WebGLRenderer>
 
 export const Canvas = (props: CanvasProps) => {
     const rendererRef = useRef<THREE.WebGLRenderer>();
@@ -148,23 +148,24 @@ export const Canvas = (props: CanvasProps) => {
         const childType = getElementType(validatedChild);
         isElementSupported(childType, parent.type);
 
-        if (childType === meshChild) {
-            const mesh = new THREE.Mesh();
-            if(validatedChild.props.position) {
-                const [x,y,z] = validatedChild.props.position;
-                mesh.position.set(x,y,z);
+        if (objectChildren.includes(childType)) {
+            const object = new childContructor[childType](...(validatedChild.props.params ?? [])) as THREE.Mesh | THREE.Points;
+
+            if (validatedChild.props.position) {
+                const [x, y, z] = validatedChild.props.position;
+                object.position.set(x, y, z);
             }
-            sceneRef.current?.add(mesh);
+            sceneRef.current?.add(object);
 
             if (validatedChild.props.animate) {
-                animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, mesh));
+                animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, object));
             }
             const childrenArray = React.Children.toArray(validatedChild.props.children);
             childrenArray.forEach((child) => {
-                handleChild(child, mesh);
+                handleChild(child, object);
             });
 
-            handleForwardRef((child as ReactElement).props.innerRef, mesh);
+            handleForwardRef((child as ReactElement).props.innerRef, object);
         }
 
         if (materialChildren.includes(childType)) {

@@ -14,7 +14,7 @@
     "build:esm": "tsc",
     "build:cjs": "tsc --module CommonJS --outDir dist/cjs",
     "watch": "tsc --watch",
-    "link": "cd ../app/node_modules/react && npm link && cd ../react-dom && npm link && cd ../../../package && npm link react && npm link react-dom"
+    "link": "npm link && cd ../app && npm link three-js-react-component"
   },
   "license": "MIT",
   "dependencies": {

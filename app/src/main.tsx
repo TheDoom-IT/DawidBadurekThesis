@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HomeRoute, ROUTES, StaticRoute, DivChangeRoute, RecreateCanvasRoute, ChildrenTestRoute } from './routes';
+import { AppTestRoute } from './routes/app-test-route';
 import './styles/index.css';
 
 export const browserRouter = createBrowserRouter([
@@ -23,6 +24,10 @@ export const browserRouter = createBrowserRouter([
   {
     path: ROUTES.CHILDREN_TEST,
     element: <ChildrenTestRoute />
+  },
+  {
+    path: ROUTES.APP_TEST,
+    element: <AppTestRoute />
   }
 ]);
 

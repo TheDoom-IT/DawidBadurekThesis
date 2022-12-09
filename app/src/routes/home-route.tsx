@@ -9,6 +9,7 @@ export const HomeRoute = () => {
             <Link to={ROUTES.DIV_CHANGE}>Div change</Link>
             <Link to={ROUTES.RECREATE_CANVAS}>Recreate</Link>
             <Link to={ROUTES.CHILDREN_TEST}>Children test</Link>
+            <Link to={ROUTES.APP_TEST}>App test</Link>
         </Container>
     );
 }

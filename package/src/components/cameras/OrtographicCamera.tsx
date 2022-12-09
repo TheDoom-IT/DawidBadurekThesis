@@ -1,7 +1,7 @@
 import React from 'react';
 import * as THREE from 'three';
-import { ObjectProps } from '../../types/props';
+import { GeneralProps } from '../../types/props';
 
-export type OrtographicCameraProps = ObjectProps<{}, typeof THREE.OrthographicCamera, THREE.PerspectiveCamera>;
+export type OrtographicCameraProps = GeneralProps<{}, typeof THREE.OrthographicCamera, THREE.PerspectiveCamera>;
 
 export const OrtographicCamera = (props: OrtographicCameraProps) => <></>

@@ -7,3 +7,8 @@ export type MeshStandardMaterialProps = MaterialProps<typeof THREE.MeshStandardM
 
 export const MeshBasicMaterial = (props: MeshBasicMaterialProps) => <></>
 export const MeshStandardMaterial = (props: MeshStandardMaterialProps) => <></>
+
+
+export type PointsMaterialProps = MaterialProps<typeof THREE.PointsMaterial, THREE.PointsMaterial>
+
+export const PointsMaterial = (props: PointsMaterialProps) => <></>
