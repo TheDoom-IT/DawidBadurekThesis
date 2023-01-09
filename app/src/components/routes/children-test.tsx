@@ -11,7 +11,7 @@ export const ChildrenTest = () => {
     const [index, setIndex] = useState(0);
 
     const portal = createPortal(<div></div>, document.createElement('div'));
-    const rotateMeshAnimation = (timestamp: number, mesh: THREE.Mesh) => {
+    const rotateMeshAnimation = (timestamp: number, e: number, mesh: THREE.Mesh) => {
         mesh.rotation.x = timestamp / 1000;
         mesh.rotation.y = timestamp / 1000;
     };
@@ -35,7 +35,7 @@ export const ChildrenTest = () => {
                     <DirectionalLight params={[0xffffff, 0.5]}></DirectionalLight>
                     <Mesh position={[-1, 0, 0]} animate={rotateMeshAnimation}>
                         <BoxGeometry params={[1, 1, 1]}></BoxGeometry>
-                        <MeshBasicMaterial animate={(t: number, material: THREE.MeshBasicMaterial) => {
+                        <MeshBasicMaterial animate={(t: number, e: number, material: THREE.MeshBasicMaterial) => {
                             material.color.r = t * 0.1 % 255 / 255;
                         }} params={[{ color: new THREE.Color(0x111111) }]}></MeshBasicMaterial>
                     </Mesh>

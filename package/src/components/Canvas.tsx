@@ -7,7 +7,6 @@ import {
     cameraChildren,
     childContructor,
     geometryChildren,
-    lightChildren,
     materialChildren,
     objectChildren,
     sceneChild
@@ -22,8 +21,9 @@ export const Canvas = (props: CanvasProps) => {
     const rendererRef = useRef<THREE.WebGLRenderer>();
     const sceneRef = useRef<THREE.Scene>();
     const cameraRef = useRef<THREE.PerspectiveCamera>();
-    const animations = useRef<{ (timestamp: number): void }[]>([]);
+    const animations = useRef<{ (timestamp: number, elapsed: number): void }[]>([]);
     const animationFrameId = useRef<number>(0);
+    const previousTimestamp = useRef<number>();
 
     const findDiv = () => {
         const div = document.getElementById(props.divId);
@@ -64,10 +64,15 @@ export const Canvas = (props: CanvasProps) => {
     }
 
     const animate = (timestamp: number) => {
+        if (previousTimestamp.current == undefined) {
+            previousTimestamp.current = timestamp;
+        }
+
+        const elapsed = timestamp - previousTimestamp.current;
+        previousTimestamp.current = timestamp;
         resizeCanvasIfNeeded();
 
-        // TODO: run other animations here
-        animations.current?.forEach(animation => animation(timestamp));
+        animations.current?.forEach(animation => animation(timestamp, elapsed));
 
         if (sceneRef.current !== undefined && cameraRef.current !== undefined) {
             rendererRef.current!.render(sceneRef.current, cameraRef.current);
@@ -158,7 +163,7 @@ export const Canvas = (props: CanvasProps) => {
             sceneRef.current?.add(object);
 
             if (validatedChild.props.animate) {
-                animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, object));
+                animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, object));
             }
             const childrenArray = React.Children.toArray(validatedChild.props.children);
             childrenArray.forEach((child) => {
@@ -173,7 +178,7 @@ export const Canvas = (props: CanvasProps) => {
             parent.material = material;
 
             if (validatedChild.props.animate) {
-                animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, material));
+                animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, material));
             }
 
             handleForwardRef(validatedChild.props.innerRef, material);
@@ -185,7 +190,7 @@ export const Canvas = (props: CanvasProps) => {
             parent.geometry = geometry;
 
             if (validatedChild.props.animate) {
-                animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, geometry));
+                animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, geometry));
             }
 
             handleForwardRef(validatedChild.props.innerRef, geometry);
@@ -196,7 +201,7 @@ export const Canvas = (props: CanvasProps) => {
         parent.add(object);
 
         if (validatedChild.props.animate) {
-            animations.current?.push((timestamp) => validatedChild.props.animate(timestamp, object));
+            animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, object));
         }
 
         handleForwardRef(validatedChild.props.innerRef, object);

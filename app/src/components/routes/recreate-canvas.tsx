@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Canvas } from "three-js-react-component";
+import { AmbientLight, BoxGeometry, Canvas, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Scene } from "three-js-react-component";
 
 export const RecreateCanvas = () => {
     const [divId] = useState(new Date().getTime().toString());
@@ -15,7 +15,16 @@ export const RecreateCanvas = () => {
         <>
             <button onClick={() => setKey(key + 1)}> Recreate Canvas</button >
             <div id={divId} style={divStyle}>
-                <Canvas divId={divId} key={key}></Canvas>
+                <Canvas divId={divId} key={key}>
+                    <PerspectiveCamera innerRef={(r) => { if (r != null) r.position.z = 5; }} />
+                    <Scene>
+                        <AmbientLight />
+                        <Mesh>
+                            <BoxGeometry></BoxGeometry>
+                            <MeshBasicMaterial params={[{ color: 0xffffff }]}></MeshBasicMaterial>
+                        </Mesh>
+                    </Scene>
+                </Canvas>
             </div>
         </>
     );
