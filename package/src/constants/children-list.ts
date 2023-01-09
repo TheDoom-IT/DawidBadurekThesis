@@ -7,8 +7,8 @@ import {
     CapsuleGeometry,
     DirectionalLight, AmbientLight, Mesh, Points, PointsMaterial, BufferGeometry
 } from "../components";
-import { Scene } from "../components/Scene";
-import { MAIN_PARENT } from "../main-parent";
+import { Scene } from "../components/scenes";
+import { MAIN_PARENT } from "./main-parent";
 import * as THREE from 'three';
 
 export const cameraChildren = [

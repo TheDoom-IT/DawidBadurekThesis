@@ -1,6 +1,6 @@
-import { supportedChildren } from "./supported-children";
+import { supportedChildren } from "../constants/children-list";
 
-export const isElementSupported = (elementType: string, parent: string) => {
+export const checkIsElementSupported = (elementType: string, parent: string) => {
     if (!supportedChildren[parent]?.includes(elementType) === true) {
         throw new Error(`Unsupported child type: parent: ${parent}, child: ${elementType}.`);
     }

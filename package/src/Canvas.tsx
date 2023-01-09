@@ -1,8 +1,8 @@
 import React, { ForwardedRef, forwardRef, useEffect, useRef, useLayoutEffect, ReactElement, ReactFragment, ReactNode, ReactPortal } from 'react';
 import * as THREE from 'three';
-import { handleForwardRef, addTestScene } from '../utils';
-import { getElementType } from '../utils/get-element-type';
-import { MAIN_PARENT } from '../main-parent';
+import { handleForwardRef } from './utils';
+import { getElementType } from './utils/get-element-type';
+import { MAIN_PARENT } from './constants/main-parent';
 import {
     cameraChildren,
     childContructor,
@@ -10,10 +10,10 @@ import {
     materialChildren,
     objectChildren,
     sceneChild
-} from '../utils/supported-children';
-import { GeneralProps } from '../types/props';
-import { validateChildType } from '../utils/validate-child-type';
-import { isElementSupported } from '../utils/is-element-supported';
+} from './constants/children-list';
+import { GeneralProps } from './types/props';
+import { validateChildType } from './utils/validate-child-type';
+import { checkIsElementSupported } from './utils/check-is-element-supported';
 
 export type CanvasProps = GeneralProps<{ divId: string }, typeof THREE.WebGLRenderer, THREE.WebGLRenderer>
 
@@ -117,7 +117,7 @@ export const Canvas = (props: CanvasProps) => {
         const validatedChild = validateChildType(child);
 
         const type = getElementType(validatedChild);
-        isElementSupported(type, MAIN_PARENT);
+        checkIsElementSupported(type, MAIN_PARENT);
 
         if (cameraChildren.includes(type)) {
             if (cameraRef.current !== undefined) {
@@ -151,7 +151,7 @@ export const Canvas = (props: CanvasProps) => {
         const validatedChild = validateChildType(child);
 
         const childType = getElementType(validatedChild);
-        isElementSupported(childType, parent.type);
+        checkIsElementSupported(childType, parent.type);
 
         if (objectChildren.includes(childType)) {
             const object = new childContructor[childType](...(validatedChild.props.params ?? [])) as THREE.Mesh | THREE.Points;
