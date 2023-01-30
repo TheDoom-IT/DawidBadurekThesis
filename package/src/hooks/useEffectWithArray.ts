@@ -3,6 +3,7 @@ import { useEffect } from "react"
 import { isFragment } from 'react-is';
 import { SupportedChild, SupportedChildren } from '../types/supported-child';
 
+// TODO: refactor and fix this part
 export const useEffectWithArray = (callback: () => void, children: ReactNode | ReactNode[]) => {
     const prevValue = useRef<ReturnType<typeof React.Children.toArray>>();
     const changeRef = useRef(false);

@@ -5,19 +5,24 @@ import {
     MeshStandardMaterial,
     MeshBasicMaterial,
     CapsuleGeometry,
-    DirectionalLight, AmbientLight, Mesh, Points, PointsMaterial, BufferGeometry
+    Scene,
+    DirectionalLight,
+    AmbientLight,
+    Mesh,
+    Points,
+    PointsMaterial,
+    BufferGeometry
 } from "../components";
-import { Scene } from "../components/scenes";
-import { MAIN_PARENT } from "./main-parent";
-import * as THREE from 'three';
+
+export const mainParent = 'Canvas';
 
 export const cameraChildren = [
     OrtographicCamera.name,
     PerspectiveCamera.name,
 ]
 
-export const bufferGeometryChild = BufferGeometry.name;
-export const meshGeometryChildren = [
+const bufferGeometryChild = BufferGeometry.name;
+const meshGeometryChildren = [
     BoxGeometry.name,
     CapsuleGeometry.name,
 ]
@@ -28,10 +33,10 @@ export const geometryChildren = [
 
 
 
-export const pointsMaterialChildren = [
+const pointsMaterialChildren = [
     PointsMaterial.name,
 ]
-export const meshMaterialChildren = [
+const meshMaterialChildren = [
     MeshStandardMaterial.name,
     MeshBasicMaterial.name,
 ]
@@ -53,7 +58,7 @@ export const objectChildren = [
 export const sceneChild = Scene.name;
 
 export const supportedChildren: { [key: string]: string[] } = {
-    [MAIN_PARENT]: [
+    [mainParent]: [
         ...cameraChildren,
         sceneChild,
     ],
@@ -72,19 +77,3 @@ export const supportedChildren: { [key: string]: string[] } = {
         bufferGeometryChild,
     ]
 };
-
-export const childContructor = {
-    [OrtographicCamera.name]: THREE.OrthographicCamera,
-    [PerspectiveCamera.name]: THREE.PerspectiveCamera,
-    [Scene.name]: THREE.Scene,
-    [Mesh.name]: THREE.Mesh,
-    [Points.name]: THREE.Points,
-    [BoxGeometry.name]: THREE.BoxGeometry,
-    [CapsuleGeometry.name]: THREE.CapsuleGeometry,
-    [BufferGeometry.name]: THREE.BufferGeometry,
-    [MeshStandardMaterial.name]: THREE.MeshStandardMaterial,
-    [MeshBasicMaterial.name]: THREE.MeshBasicMaterial,
-    [PointsMaterial.name]: THREE.PointsMaterial,
-    [DirectionalLight.name]: THREE.DirectionalLight,
-    [AmbientLight.name]: THREE.AmbientLight,
-}

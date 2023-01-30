@@ -8,6 +8,7 @@ export type CapsuleGeometryProps = GeometryProps<typeof THREE.CapsuleGeometry, T
 export const BoxGeometry = (props: BoxGeometryProps) => <></>
 export const CapsuleGeometry = (props: CapsuleGeometryProps) => <></>
 
+
 export type BufferGeometryProps = GeometryProps<typeof THREE.BufferGeometry, THREE.BufferGeometry>
 
 export const BufferGeometry = (props: BufferGeometryProps) => <></>

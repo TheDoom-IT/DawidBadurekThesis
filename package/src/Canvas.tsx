@@ -1,19 +1,16 @@
-import React, { ForwardedRef, forwardRef, useEffect, useRef, useLayoutEffect, ReactElement, ReactFragment, ReactNode, ReactPortal } from 'react';
+import React, { forwardRef, useEffect, useRef, useLayoutEffect, ReactElement } from 'react';
 import * as THREE from 'three';
-import { handleForwardRef } from './utils';
-import { getElementType } from './utils/get-element-type';
-import { MAIN_PARENT } from './constants/main-parent';
+import { checkIsElementSupported, getElementType, handleForwardRef, validateChildType } from './utils';
 import {
     cameraChildren,
-    childContructor,
     geometryChildren,
+    mainParent,
     materialChildren,
     objectChildren,
     sceneChild
 } from './constants/children-list';
-import { GeneralProps } from './types/props';
-import { validateChildType } from './utils/validate-child-type';
-import { checkIsElementSupported } from './utils/check-is-element-supported';
+import { constructors } from './constants';
+import { GeneralProps } from './types';
 
 export type CanvasProps = GeneralProps<{ divId: string }, typeof THREE.WebGLRenderer, THREE.WebGLRenderer>
 
@@ -22,13 +19,14 @@ export const Canvas = (props: CanvasProps) => {
     const sceneRef = useRef<THREE.Scene>();
     const cameraRef = useRef<THREE.PerspectiveCamera>();
     const animations = useRef<{ (timestamp: number, elapsed: number): void }[]>([]);
+    const objects = useRef<any[]>([]);
     const animationFrameId = useRef<number>(0);
     const previousTimestamp = useRef<number>();
 
     const findDiv = () => {
         const div = document.getElementById(props.divId);
         if (!div) {
-            throw new Error(`Failed to find a div with id ${props.divId}!`);
+            throw new Error(`Failed to find a div with id "${props.divId}"!`);
         }
         return div;
     }
@@ -38,7 +36,7 @@ export const Canvas = (props: CanvasProps) => {
             return;
         }
 
-        if (aspect) {
+        if (aspect !== undefined) {
             cameraRef.current.aspect = aspect;
         } else {
             const div = findDiv();
@@ -58,7 +56,6 @@ export const Canvas = (props: CanvasProps) => {
 
         if (height !== canvasHeight || width !== canvasWidth) {
             rendererRef.current!.setSize(width, height, false);
-            // TODO: update camera here
             updateCameraAspect(width / height);
         }
     }
@@ -81,21 +78,91 @@ export const Canvas = (props: CanvasProps) => {
         animationFrameId.current = requestAnimationFrame(animate);
     }
 
-    // create renderer, remove it on unmount
+    const handleMainChild = (child: ReturnType<typeof React.Children.toArray>[number]) => {
+        const validatedChild = validateChildType(child);
+
+        const type = getElementType(validatedChild);
+        checkIsElementSupported(type, mainParent);
+
+        if (cameraChildren.includes(type)) {
+            childHandler(type, validatedChild, (object) => {
+                if (cameraRef.current !== undefined) {
+                    throw new Error('Canvas should contain only single camera object.');
+                }
+                cameraRef.current = object;
+                updateCameraAspect();
+            });
+        }
+
+        if (type === sceneChild) {
+            childHandler(type, validatedChild, (object) => {
+                if (sceneRef.current !== undefined) {
+                    throw new Error('Canvas should contain only single scene object.')
+                }
+                sceneRef.current = object;
+            });
+        }
+    }
+
+    const childHandler = (childType: string, validatedChild: ReactElement, callback: (object: any) => void) => {
+        const object = new constructors[childType](...(validatedChild.props.params ?? []));
+        objects.current.push(object);
+        callback(object);
+
+        if (validatedChild.props.animate) {
+            animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, object));
+        }
+
+        const childrenArray = React.Children.toArray(validatedChild.props.children);
+        childrenArray.forEach((child) => {
+            handleChild(child, object);
+        });
+
+        handleForwardRef(validatedChild.props.innerRef, object);
+
+    }
+
+    const handleChild = (child: ReturnType<typeof React.Children.toArray>[number], parent: any) => {
+        const validatedChild = validateChildType(child);
+        const childType = getElementType(validatedChild);
+        checkIsElementSupported(childType, parent.type);
+
+        if (objectChildren.includes(childType)) {
+            childHandler(childType, validatedChild, (object) => {
+                if (validatedChild.props.position) {
+                    const [x, y, z] = validatedChild.props.position;
+                    object.position.set(x, y, z);
+                }
+                sceneRef.current?.add(object);
+            })
+            return;
+        }
+
+        if (materialChildren.includes(childType)) {
+            childHandler(childType, validatedChild, (object) => {
+                parent.material = object;
+            })
+            return;
+        }
+
+        if (geometryChildren.includes(childType)) {
+            childHandler(childType, validatedChild, (object) => {
+                parent.geometry = object;
+            })
+            return;
+        }
+
+        childHandler(childType, validatedChild, (object) => {
+            parent.add(object);
+        })
+    }
+
+    // create WebGLRenderer
     useLayoutEffect(() => {
         rendererRef.current = new THREE.WebGLRenderer();
         animationFrameId.current = requestAnimationFrame(animate);
 
-        // TODO: remove it
-        //add an animated cube for testing purposes
-        // const dispose = addTestScene(rendererRef.current);
-
         return () => {
-            // TODO: remove it
-            // dispose an animated cube created for test
-            // dispose();
-
-            // stop animations
             cancelAnimationFrame(animationFrameId.current);
 
             rendererRef.current!.dispose();
@@ -103,7 +170,7 @@ export const Canvas = (props: CanvasProps) => {
         }
     }, []);
 
-    // append canvas to the DOM, remove it on unmount/div change
+    // append canvas to the DOM
     useLayoutEffect(() => {
         const div = findDiv();
         div.appendChild(rendererRef.current!.domElement);
@@ -113,102 +180,9 @@ export const Canvas = (props: CanvasProps) => {
         }
     }, [props.divId]);
 
-    const handleMainChild = (child: ReturnType<typeof React.Children.toArray>[number]) => {
-        const validatedChild = validateChildType(child);
-
-        const type = getElementType(validatedChild);
-        checkIsElementSupported(type, MAIN_PARENT);
-
-        if (cameraChildren.includes(type)) {
-            if (cameraRef.current !== undefined) {
-                throw new Error('Canvas should contain only single camera object.');
-            }
-            cameraRef.current = new childContructor[type](...(validatedChild.props.params ?? [])) as THREE.PerspectiveCamera;
-            // TODO: update camera aspect here
-            updateCameraAspect();
-
-            handleForwardRef(validatedChild.props.innerRef, cameraRef.current);
-            return;
-        }
-
-        if (type === sceneChild) {
-            if (sceneRef.current !== undefined) {
-                throw new Error('Canvas should contain only single scene object.')
-            }
-            sceneRef.current = new THREE.Scene();
-
-            const childrenArray = React.Children.toArray(validatedChild.props.children);
-            childrenArray.forEach((child) => {
-                handleChild(child, sceneRef.current);
-            })
-
-            handleForwardRef(validatedChild.props.innerRef, sceneRef.current);
-            return;
-        }
-    }
-
-    const handleChild = (child: ReturnType<typeof React.Children.toArray>[number], parent: any) => {
-        const validatedChild = validateChildType(child);
-
-        const childType = getElementType(validatedChild);
-        checkIsElementSupported(childType, parent.type);
-
-        if (objectChildren.includes(childType)) {
-            const object = new childContructor[childType](...(validatedChild.props.params ?? [])) as THREE.Mesh | THREE.Points;
-
-            if (validatedChild.props.position) {
-                const [x, y, z] = validatedChild.props.position;
-                object.position.set(x, y, z);
-            }
-            sceneRef.current?.add(object);
-
-            if (validatedChild.props.animate) {
-                animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, object));
-            }
-            const childrenArray = React.Children.toArray(validatedChild.props.children);
-            childrenArray.forEach((child) => {
-                handleChild(child, object);
-            });
-
-            handleForwardRef((child as ReactElement).props.innerRef, object);
-        }
-
-        if (materialChildren.includes(childType)) {
-            const material = new childContructor[childType](...(validatedChild.props.params ?? []));
-            parent.material = material;
-
-            if (validatedChild.props.animate) {
-                animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, material));
-            }
-
-            handleForwardRef(validatedChild.props.innerRef, material);
-            return;
-        }
-
-        if (geometryChildren.includes(childType)) {
-            const geometry = new childContructor[childType](...(validatedChild.props.params === undefined ? [] : validatedChild.props.params));
-            parent.geometry = geometry;
-
-            if (validatedChild.props.animate) {
-                animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, geometry));
-            }
-
-            handleForwardRef(validatedChild.props.innerRef, geometry);
-            return;
-        }
-
-        const object = new childContructor[childType](...(validatedChild.props.params === undefined ? [] : validatedChild.props.params));
-        parent.add(object);
-
-        if (validatedChild.props.animate) {
-            animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, object));
-        }
-
-        handleForwardRef(validatedChild.props.innerRef, object);
-        return;
-    }
-
     // add children to the renderer
+    // TODO: use useEffectWithArray to compare props.children
+    // now props.children cause useLayoutEffect to run every render
     useLayoutEffect(() => {
         const childrenArray = React.Children.toArray(props.children);
 
@@ -217,23 +191,27 @@ export const Canvas = (props: CanvasProps) => {
         });
 
         return () => {
-            // TODO: remove previous children
+            objects.current.forEach(object => {
+                // TODO: check if children array should be cleared
+                // maybe dispose() is enough
+                // if (object.children) {
+                // object.children = [];
+                // }
+
+                if (typeof object.dispose === 'function') {
+                    object.dispose();
+                }
+            });
             cameraRef.current = undefined;
             sceneRef.current = undefined;
+            objects.current = [];
             animations.current = [];
         }
     }, [props.children])
 
-    // console.log(React.Children.toArray(props.children));
-    // console.log(simplifyChildren(props.children));
-    // useEffectWithArray(() => {
-    // console.log('useEffectWithArray');
-    // }, props.children);
-
     useEffect(() => {
         handleForwardRef(props.innerRef, rendererRef.current!);
     }, [forwardRef]);
-    return <>
-        {props.children}
-    </>
+
+    return <></>
 };
