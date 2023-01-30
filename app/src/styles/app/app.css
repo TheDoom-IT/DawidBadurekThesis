@@ -1,0 +1,59 @@
+.App {
+    height: 100vh;
+
+    min-width: 400px;
+    min-height: 300px;
+}
+
+.App .margin-box {
+    position: absolute;
+    box-sizing: content-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+.App .center {
+    display: flex;
+    justify-content: center;
+}
+
+.App .home-link {
+    text-decoration: none;
+    color: black;
+
+    font-size: 1.2rem;
+}
+
+.App .relative-box {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.App .box {
+    padding: 10px;
+    width: 200px;
+    height: 500px;
+    background-color: rgb(32, 27, 27);
+
+    border-radius: 10px;
+    border-style: solid;
+    border-color: rgb(204, 202, 202);
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    text-align: center;
+    color: white;
+
+    transition: width 1s, height 1s;
+}
+
+.App .box.hidden {
+    width: 20px;
+    height: 20px;
+
+}

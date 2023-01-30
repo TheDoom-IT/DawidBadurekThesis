@@ -1,10 +1,11 @@
+import { animation } from "./animation";
 import { SupportedChildren } from "./supported-child";
 
 export type GeneralProps<P, C extends new (...params: any) => any, R> = P & {
     params?: ConstructorParameters<C>;
     innerRef?: React.ForwardedRef<R>;
     children?: SupportedChildren;
-    animate?: (timestamp: number, elapsed: number, ref: R) => void
+    animate?: animation<R>;
 }
 
 export type MaterialProps<C extends new (...params: any) => any, R> = GeneralProps<{}, C, R>;
