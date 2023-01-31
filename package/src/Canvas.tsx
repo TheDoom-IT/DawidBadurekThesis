@@ -1,5 +1,6 @@
 import React, { forwardRef, useEffect, useRef, useLayoutEffect, ReactElement } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { checkIsElementSupported, getElementType, handleForwardRef, validateChildType } from './utils';
 import {
     cameraChildren,
@@ -189,6 +190,13 @@ export const Canvas = (props: CanvasProps) => {
         childrenArray.forEach((child) => {
             handleMainChild(child);
         });
+
+        // TODO: remove it
+        const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 3);
+        const planeHelper = new THREE.PlaneHelper(plane, 100, 0xffff00);
+        sceneRef.current?.add(planeHelper);
+
+        const controls = new OrbitControls(cameraRef.current!, rendererRef.current!.domElement);
 
         return () => {
             objects.current.forEach(object => {

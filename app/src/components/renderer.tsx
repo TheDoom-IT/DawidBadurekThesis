@@ -1,9 +1,11 @@
-import { AmbientLight, BoxGeometry, Canvas, DirectionalLight, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Scene } from "three-js-react-component"
+import { AmbientLight, BoxGeometry, BufferGeometry, Canvas, DirectionalLight, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Points, PointsMaterial, Scene } from "three-js-react-component"
 import * as THREE from 'three';
 import { animation } from "three-js-react-component/dist/types/types/animation";
+import { Tracks } from "../schemas/tracks-schema";
 
 interface RendererProps {
     divId: string;
+    tracks: Tracks;
 }
 
 export const Renderer = (props: RendererProps) => {
@@ -12,7 +14,8 @@ export const Renderer = (props: RendererProps) => {
             return;
         }
 
-        camera.position.z = 5;
+        camera.position.z = 110;
+        camera.position.y = 30;
     }
 
     const setScene = (scene: THREE.Scene | null) => {
@@ -32,11 +35,40 @@ export const Renderer = (props: RendererProps) => {
         light.position.x = 3;
         light.position.y = 3;
     }
+
     const meshAnimation: animation<THREE.Mesh> = ((timestamp: number, elapsed: number, ref: THREE.Mesh) => {
         const rotation = elapsed * 0.0005;
         ref.rotation.x += rotation;
         ref.rotation.y += rotation;
     });
+
+    const setPoints = (buffer: THREE.BufferGeometry | null) => {
+        if (!buffer) {
+            return;
+        }
+
+        const track = props.tracks.mTracks[0];
+        const vertices = [];
+        for (let x = 0; x < track.count; x++) {
+            vertices.push(track.mPolyX[x], track.mPolyY[x], track.mPolyZ[x]);
+        }
+
+        buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
+    }
+
+    const setCluter = (buffer: THREE.BufferGeometry | null) => {
+        if (!buffer) {
+            return;
+        }
+
+        const track = props.tracks.mTracks[0];
+        const vertices = [];
+
+        for (let x = 0; x < track.mClusters.length; x++) {
+            vertices.push(track.mClusters[x].X, track.mClusters[x].Y, track.mClusters[x].Z);
+        }
+        buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
+    }
 
     return <Canvas divId={props.divId}>
         <PerspectiveCamera innerRef={setCamera} />
@@ -45,8 +77,16 @@ export const Renderer = (props: RendererProps) => {
             <DirectionalLight innerRef={setLight} params={[0xffffff, 0.5]} />
             <Mesh animate={meshAnimation}>
                 <MeshStandardMaterial params={[{ color: 0x43aa45 }]} />
-                <BoxGeometry />
+                {/* <BoxGeometry /> */}
             </Mesh>
+            <Points>
+                <BufferGeometry innerRef={setPoints} />
+                <PointsMaterial params={[{ color: 0xffffff }]} />
+            </Points>
+            <Points>
+                <BufferGeometry innerRef={setCluter} />
+                <PointsMaterial params={[{ color: 0x000000, size: 2 }]} />
+            </Points>
         </Scene>
     </Canvas>
 }

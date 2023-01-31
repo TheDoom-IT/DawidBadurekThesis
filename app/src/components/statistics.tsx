@@ -1,7 +1,12 @@
 import { useState } from "react"
+import { Tracks } from "../schemas/tracks-schema";
 
-export const Statistics = () => {
-    const [visible, setVisible] = useState(false);
+interface Props {
+    tracks: Tracks;
+}
+
+export const Statistics = (props: Props) => {
+    const [visible, setVisible] = useState(true);
 
     const getClassName = () => {
         let result = 'box';
@@ -14,10 +19,10 @@ export const Statistics = () => {
 
     return <div className={getClassName()} onClick={() => { setVisible(!visible) }}>
         {visible && (<>
-            Statistics
-            <div>data 1</div>
-            <div>data 2</div>
-            <div>data 3</div>
+            <h3 className="text-center">Statistics</h3>
+            <br />
+            File version: {props.tracks.fileVersion}<br />
+            Number of tracks: {props.tracks.trackCount}
         </>)}
     </div>
 }
