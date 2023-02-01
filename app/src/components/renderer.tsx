@@ -1,4 +1,15 @@
-import { AmbientLight, BoxGeometry, BufferGeometry, Canvas, DirectionalLight, Mesh, MeshBasicMaterial, MeshStandardMaterial, PerspectiveCamera, Points, PointsMaterial, Scene } from "three-js-react-component"
+import {
+    AmbientLight,
+    BufferGeometry,
+    Canvas,
+    DirectionalLight,
+    Mesh,
+    MeshStandardMaterial,
+    PerspectiveCamera,
+    Points,
+    PointsMaterial,
+    Scene
+} from "three-js-react-component"
 import * as THREE from 'three';
 import { animation } from "three-js-react-component/dist/types/types/animation";
 import { Tracks } from "../schemas/tracks-schema";
@@ -6,6 +17,7 @@ import { Tracks } from "../schemas/tracks-schema";
 interface RendererProps {
     divId: string;
     tracks: Tracks;
+    trackId: number;
 }
 
 export const Renderer = (props: RendererProps) => {
@@ -47,7 +59,11 @@ export const Renderer = (props: RendererProps) => {
             return;
         }
 
-        const track = props.tracks.mTracks[0];
+        if (props.trackId >= props.tracks.mTracks.length) {
+            return;
+        }
+
+        const track = props.tracks.mTracks[props.trackId];
         const vertices = [];
         for (let x = 0; x < track.count; x++) {
             vertices.push(track.mPolyX[x], track.mPolyY[x], track.mPolyZ[x]);
@@ -61,7 +77,10 @@ export const Renderer = (props: RendererProps) => {
             return;
         }
 
-        const track = props.tracks.mTracks[0];
+        if (props.trackId >= props.tracks.mTracks.length) {
+            return;
+        }
+        const track = props.tracks.mTracks[props.trackId];
         const vertices = [];
 
         for (let x = 0; x < track.mClusters.length; x++) {
