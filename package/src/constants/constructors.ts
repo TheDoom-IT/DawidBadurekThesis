@@ -5,7 +5,7 @@ import {
     MeshStandardMaterial,
     MeshBasicMaterial,
     CapsuleGeometry,
-    DirectionalLight, AmbientLight, Mesh, Points, PointsMaterial, BufferGeometry, Scene
+    DirectionalLight, AmbientLight, Mesh, Points, PointsMaterial, BufferGeometry, Scene, Line, LineBasicMaterial
 } from "../components";
 import * as THREE from 'three';
 
@@ -23,4 +23,6 @@ export const constructors = {
     [PointsMaterial.name]: THREE.PointsMaterial,
     [DirectionalLight.name]: THREE.DirectionalLight,
     [AmbientLight.name]: THREE.AmbientLight,
+    [Line.name]: THREE.Line,
+    [LineBasicMaterial.name]: THREE.LineBasicMaterial,
 }

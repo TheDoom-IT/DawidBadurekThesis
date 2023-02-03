@@ -1,8 +1,11 @@
 import {
     AmbientLight,
+    BoxGeometry,
     BufferGeometry,
     Canvas,
     DirectionalLight,
+    Line,
+    LineBasicMaterial,
     Mesh,
     MeshStandardMaterial,
     PerspectiveCamera,
@@ -89,6 +92,15 @@ export const Renderer = (props: RendererProps) => {
         buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
     }
 
+    const setLine = (buffer: THREE.BufferGeometry | null) => {
+        if(!buffer) {
+            return;
+        }
+
+        const vertices = [0,0,0, 100,100,100];
+        buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
+    }
+
     return <Canvas divId={props.divId}>
         <PerspectiveCamera innerRef={setCamera} />
         <Scene innerRef={setScene}>
@@ -96,8 +108,11 @@ export const Renderer = (props: RendererProps) => {
             <DirectionalLight innerRef={setLight} params={[0xffffff, 0.5]} />
             <Mesh animate={meshAnimation}>
                 <MeshStandardMaterial params={[{ color: 0x43aa45 }]} />
-                {/* <BoxGeometry /> */}
             </Mesh>
+            <Line>
+                <BufferGeometry innerRef={setLine}/>
+                <LineBasicMaterial params={[{color: 0xffffff}]}/>
+            </Line>
             <Points>
                 <BufferGeometry innerRef={setPoints} />
                 <PointsMaterial params={[{ color: 0xffffff }]} />

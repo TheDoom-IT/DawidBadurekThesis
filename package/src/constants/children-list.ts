@@ -11,7 +11,9 @@ import {
     Mesh,
     Points,
     PointsMaterial,
-    BufferGeometry
+    BufferGeometry,
+    Line,
+    LineBasicMaterial
 } from "../components";
 
 export const mainParent = 'Canvas';
@@ -32,6 +34,9 @@ export const geometryChildren = [
 ];
 
 
+const lineMaterialChildren = [
+    LineBasicMaterial.name,
+]
 
 const pointsMaterialChildren = [
     PointsMaterial.name,
@@ -43,6 +48,7 @@ const meshMaterialChildren = [
 export const materialChildren = [
     ...pointsMaterialChildren,
     ...meshMaterialChildren,
+    ...lineMaterialChildren,
 ];
 
 export const lightChildren = [
@@ -53,6 +59,7 @@ export const lightChildren = [
 export const objectChildren = [
     Mesh.name,
     Points.name,
+    Line.name,
 ]
 
 export const sceneChild = Scene.name;
@@ -75,5 +82,9 @@ export const supportedChildren: { [key: string]: string[] } = {
     [Points.name]: [
         ...pointsMaterialChildren,
         bufferGeometryChild,
+    ],
+    [Line.name]: [
+        ...lineMaterialChildren,
+        bufferGeometryChild
     ]
 };
