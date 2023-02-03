@@ -11,7 +11,7 @@ import { tracksSchema } from '../../schemas/tracks-schema';
 export const App = () => {
     const divId = useRef('AppDivId');
     const [trackId, setTrackId] = useState(0);
-    const tracks = tracksSchema.parse(tracks1);
+    const tracks = tracksSchema.parse(tracks2);
 
     return <div id={divId.current} className="App">
         <Renderer divId={divId.current} tracks={tracks} trackId={trackId} />

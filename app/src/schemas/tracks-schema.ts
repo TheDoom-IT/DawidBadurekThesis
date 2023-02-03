@@ -35,3 +35,4 @@ export const tracksSchema = z.object({
 }).refine(obj => obj.trackCount === obj.mTracks.length);
 
 export type Tracks = z.infer<typeof tracksSchema>;
+export type Track = z.infer<typeof mTrackSchema>;

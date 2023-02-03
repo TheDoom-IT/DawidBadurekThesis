@@ -1,21 +1,19 @@
 import {
     AmbientLight,
-    BoxGeometry,
+    animation,
     BufferGeometry,
     Canvas,
     DirectionalLight,
     Line,
     LineBasicMaterial,
-    Mesh,
-    MeshStandardMaterial,
     PerspectiveCamera,
     Points,
     PointsMaterial,
     Scene
 } from "three-js-react-component"
 import * as THREE from 'three';
-import { animation } from "three-js-react-component/dist/types/types/animation";
-import { Tracks } from "../schemas/tracks-schema";
+import { Track, Tracks } from "../schemas/tracks-schema";
+import React, { useEffect, useState } from "react";
 
 interface RendererProps {
     divId: string;
@@ -23,7 +21,26 @@ interface RendererProps {
     trackId: number;
 }
 
+const LINE_SEGMENTS = 10;
+const ANIMATION_SPEED = 500;
+
 export const Renderer = (props: RendererProps) => {
+    const [track, setTrack] = useState<Track>();
+
+    useEffect(() => {
+        if (props.tracks.mTracks.length <= props.trackId) {
+            console.warn('Invalid track id.');
+            setTrack(undefined);
+            return;
+        }
+
+        setTrack(props.tracks.mTracks[props.trackId]);
+    }, [props.trackId]);
+
+    const updatePosition = (attributeIndex: number, trackIndex: number, attribute: THREE.BufferAttribute | THREE.InterleavedBufferAttribute, track: Track) => {
+        attribute.setXYZ(attributeIndex, track.mPolyX[trackIndex], track.mPolyY[trackIndex], track.mPolyZ[trackIndex]);
+    }
+
     const setCamera = (camera: THREE.PerspectiveCamera | null) => {
         if (!camera) {
             return;
@@ -51,39 +68,11 @@ export const Renderer = (props: RendererProps) => {
         light.position.y = 3;
     }
 
-    const meshAnimation: animation<THREE.Mesh> = ((timestamp: number, elapsed: number, ref: THREE.Mesh) => {
-        const rotation = elapsed * 0.0005;
-        ref.rotation.x += rotation;
-        ref.rotation.y += rotation;
-    });
-
-    const setPoints = (buffer: THREE.BufferGeometry | null) => {
-        if (!buffer) {
-            return;
-        }
-
-        if (props.trackId >= props.tracks.mTracks.length) {
-            return;
-        }
-
-        const track = props.tracks.mTracks[props.trackId];
-        const vertices = [];
-        for (let x = 0; x < track.count; x++) {
-            vertices.push(track.mPolyX[x], track.mPolyY[x], track.mPolyZ[x]);
-        }
-
-        buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
-    }
-
     const setCluter = (buffer: THREE.BufferGeometry | null) => {
-        if (!buffer) {
+        if (!buffer || !track) {
             return;
         }
 
-        if (props.trackId >= props.tracks.mTracks.length) {
-            return;
-        }
-        const track = props.tracks.mTracks[props.trackId];
         const vertices = [];
 
         for (let x = 0; x < track.mClusters.length; x++) {
@@ -92,13 +81,43 @@ export const Renderer = (props: RendererProps) => {
         buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
     }
 
-    const setLine = (buffer: THREE.BufferGeometry | null) => {
-        if(!buffer) {
+    const setPoints = (buffer: THREE.BufferGeometry | null) => {
+        if (!buffer) {
             return;
         }
 
-        const vertices = [0,0,0, 100,100,100];
-        buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
+        buffer.setFromPoints([new THREE.Vector3(0, 0, 0)]);
+    }
+
+    const setLine = (buffer: THREE.BufferGeometry | null) => {
+        if (!buffer) {
+            return;
+        }
+
+        const vertices = new Array(LINE_SEGMENTS).fill(new THREE.Vector3(0, 0, 0));
+        buffer.setFromPoints(vertices);
+    }
+
+    const getLineAnimation = (track: Track): animation<THREE.BufferGeometry> => {
+        return (timestamp: number, elapsed: number, ref: THREE.BufferGeometry) => {
+            const position = ref.getAttribute('position');
+
+            const index = Math.floor(timestamp / ANIMATION_SPEED) % track.count;
+            for (let x = 0; x < LINE_SEGMENTS; x++) {
+                updatePosition(x, index < x ? index : index - x, position, track);
+            }
+            position.needsUpdate = true;
+        }
+    }
+
+    const getPointsAnimation = (track: Track): animation<THREE.BufferGeometry> | undefined => {
+        return (timestamp: number, elapsed: number, ref: THREE.BufferGeometry) => {
+            const position = ref.getAttribute('position');
+
+            const index = Math.floor(timestamp / ANIMATION_SPEED) % track.count;
+            updatePosition(0, index, position, track);
+            position.needsUpdate = true;
+        }
     }
 
     return <Canvas divId={props.divId}>
@@ -106,21 +125,21 @@ export const Renderer = (props: RendererProps) => {
         <Scene innerRef={setScene}>
             <AmbientLight params={[0x111111, 0.1]} />
             <DirectionalLight innerRef={setLight} params={[0xffffff, 0.5]} />
-            <Mesh animate={meshAnimation}>
-                <MeshStandardMaterial params={[{ color: 0x43aa45 }]} />
-            </Mesh>
-            <Line>
-                <BufferGeometry innerRef={setLine}/>
-                <LineBasicMaterial params={[{color: 0xffffff}]}/>
-            </Line>
-            <Points>
-                <BufferGeometry innerRef={setPoints} />
-                <PointsMaterial params={[{ color: 0xffffff }]} />
-            </Points>
-            <Points>
-                <BufferGeometry innerRef={setCluter} />
-                <PointsMaterial params={[{ color: 0x000000, size: 2 }]} />
-            </Points>
+            {
+                props.tracks.mTracks.map((track, index) =>
+                (
+                    <React.Fragment key={index}>
+                        <Line>
+                            <BufferGeometry key={index} animate={getLineAnimation(track)} innerRef={setLine} />
+                            <LineBasicMaterial params={[{ color: 0xffffff }]} />
+                        </Line>
+                        <Points>
+                            <BufferGeometry animate={getPointsAnimation(track)} innerRef={setPoints} />
+                            <PointsMaterial params={[{ color: 0xffffff }]} />
+                        </Points>
+                    </React.Fragment>
+                ))
+            }
         </Scene>
     </Canvas>
 }

@@ -1,4 +1,5 @@
 import React, { forwardRef, useEffect, useRef, useLayoutEffect, ReactElement } from 'react';
+import * as ReactIs from 'react-is';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { checkIsElementSupported, getElementType, handleForwardRef, validateChildType } from './utils';
@@ -120,10 +121,16 @@ export const Canvas = (props: CanvasProps) => {
         });
 
         handleForwardRef(validatedChild.props.innerRef, object);
-
     }
 
     const handleChild = (child: ReturnType<typeof React.Children.toArray>[number], parent: any) => {
+        if (ReactIs.typeOf(child) === ReactIs.Fragment) {
+            const children = (child as ReactElement).props.children
+            const childrenArray = React.Children.toArray(children);
+            childrenArray.forEach(child => handleChild(child, parent));
+            return;
+        }
+
         const validatedChild = validateChildType(child);
         const childType = getElementType(validatedChild);
         checkIsElementSupported(childType, parent.type);
