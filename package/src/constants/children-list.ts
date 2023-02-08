@@ -13,7 +13,8 @@ import {
     PointsMaterial,
     BufferGeometry,
     Line,
-    LineBasicMaterial
+    LineBasicMaterial,
+    PlaneGeometry
 } from "../components";
 
 export const mainParent = 'Canvas';
@@ -23,33 +24,25 @@ export const cameraChildren = [
     PerspectiveCamera.name,
 ]
 
-const bufferGeometryChild = BufferGeometry.name;
-const meshGeometryChildren = [
+export const geometryChildren = [
     BoxGeometry.name,
     CapsuleGeometry.name,
-]
-export const geometryChildren = [
-    bufferGeometryChild,
-    ...meshGeometryChildren,
+    PlaneGeometry.name,
+    BufferGeometry.name,
 ];
 
 
-const lineMaterialChildren = [
-    LineBasicMaterial.name,
-]
-
-const pointsMaterialChildren = [
-    PointsMaterial.name,
-]
-const meshMaterialChildren = [
+export const materialChildren = [
     MeshStandardMaterial.name,
     MeshBasicMaterial.name,
-]
-export const materialChildren = [
-    ...pointsMaterialChildren,
-    ...meshMaterialChildren,
-    ...lineMaterialChildren,
+    PointsMaterial.name,
+    LineBasicMaterial.name,
 ];
+
+const geometryMaterialChildren = [
+    ...geometryChildren,
+    ...materialChildren,
+]
 
 export const lightChildren = [
     AmbientLight.name,
@@ -76,15 +69,15 @@ export const supportedChildren: { [key: string]: string[] } = {
         ...lightChildren
     ],
     [Mesh.name]: [
-        ...geometryChildren,
-        ...meshMaterialChildren,
+        ...geometryMaterialChildren,
+        ...objectChildren,
     ],
     [Points.name]: [
-        ...pointsMaterialChildren,
-        bufferGeometryChild,
+        ...geometryMaterialChildren,
+        ...objectChildren,
     ],
     [Line.name]: [
-        ...lineMaterialChildren,
-        bufferGeometryChild
+        ...geometryMaterialChildren,
+        ...objectChildren,
     ]
 };

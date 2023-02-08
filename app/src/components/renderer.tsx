@@ -3,10 +3,12 @@ import {
     animation,
     BufferGeometry,
     Canvas,
-    DirectionalLight,
     Line,
     LineBasicMaterial,
+    Mesh,
+    MeshStandardMaterial,
     PerspectiveCamera,
+    PlaneGeometry,
     Points,
     PointsMaterial,
     Scene
@@ -41,31 +43,12 @@ export const Renderer = (props: RendererProps) => {
         attribute.setXYZ(attributeIndex, track.mPolyX[trackIndex], track.mPolyY[trackIndex], track.mPolyZ[trackIndex]);
     }
 
-    const setCamera = (camera: THREE.PerspectiveCamera | null) => {
-        if (!camera) {
-            return;
-        }
-
-        camera.position.z = 110;
-        camera.position.y = 30;
-    }
-
     const setScene = (scene: THREE.Scene | null) => {
         if (!scene) {
             return;
         }
 
         scene.background = new THREE.Color(0x74acff);
-    }
-
-    const setLight = (light: THREE.DirectionalLight | null) => {
-        if (!light) {
-            return;
-        }
-
-        light.position.z = 5;
-        light.position.x = 3;
-        light.position.y = 3;
     }
 
     const setCluter = (buffer: THREE.BufferGeometry | null) => {
@@ -121,10 +104,13 @@ export const Renderer = (props: RendererProps) => {
     }
 
     return <Canvas divId={props.divId}>
-        <PerspectiveCamera innerRef={setCamera} />
+        <PerspectiveCamera position={[0, 30, 110]} />
         <Scene innerRef={setScene}>
-            <AmbientLight params={[0x111111, 0.1]} />
-            <DirectionalLight innerRef={setLight} params={[0xffffff, 0.5]} />
+            <AmbientLight />
+            <Mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                <PlaneGeometry params={[100, 100, 100]} />
+                <MeshStandardMaterial params={[{ color: 0xffff00, opacity: 0.2, transparent: true, side: THREE.DoubleSide }]} />
+            </Mesh>
             {
                 props.tracks.mTracks.map((track, index) =>
                 (
@@ -141,5 +127,5 @@ export const Renderer = (props: RendererProps) => {
                 ))
             }
         </Scene>
-    </Canvas>
+    </Canvas >
 }

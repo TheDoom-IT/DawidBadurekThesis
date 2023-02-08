@@ -8,18 +8,18 @@ import {
     geometryChildren,
     mainParent,
     materialChildren,
-    objectChildren,
     sceneChild
 } from './constants/children-list';
 import { constructors } from './constants';
 import { GeneralProps } from './types';
 import { useLayoutEffectWithChildren } from './hooks/useEffectWithArray';
+import { Object3D } from 'three';
 
 export type CanvasProps = GeneralProps<{ divId: string }, typeof THREE.WebGLRenderer, THREE.WebGLRenderer>
 
 export const Canvas = (props: CanvasProps) => {
     const rendererRef = useRef<THREE.WebGLRenderer>();
-    const sceneRef = useRef<THREE.Scene>();
+    const sceneRef = useRef<THREE.Object3D>();
     const cameraRef = useRef<THREE.PerspectiveCamera>();
     const animations = useRef<{ (timestamp: number, elapsed: number): void }[]>([]);
     const objects = useRef<any[]>([]);
@@ -96,7 +96,7 @@ export const Canvas = (props: CanvasProps) => {
         if (cameraChildren.includes(type)) {
             childHandler(type, validatedChild, (object) => {
                 if (cameraRef.current !== undefined) {
-                    throw new Error('Canvas should contain only single camera object.');
+                    console.warn('Canvas should contain only single camera object. Only second camera will be used.')
                 }
                 cameraRef.current = object;
                 updateCameraAspect();
@@ -106,7 +106,7 @@ export const Canvas = (props: CanvasProps) => {
         if (type === sceneChild) {
             childHandler(type, validatedChild, (object) => {
                 if (sceneRef.current !== undefined) {
-                    throw new Error('Canvas should contain only single scene object.')
+                    console.warn('Canvas should contain only single scene object. Only second scene will be used.')
                 }
                 sceneRef.current = object;
             });
@@ -117,6 +117,19 @@ export const Canvas = (props: CanvasProps) => {
         const object = new constructors[childType](...(validatedChild.props.params ?? []));
         objects.current.push(object);
         callback(object);
+
+        if (object instanceof Object3D) {
+            if (validatedChild.props.position) {
+                const [x, y, z] = validatedChild.props.position;
+                object.position.set(x, y, z);
+            }
+
+            if (validatedChild.props.rotation) {
+                const [x, y, z] = validatedChild.props.rotation;
+                object.rotation.set(x, y, z);
+            }
+        }
+
 
         if (validatedChild.props.animate) {
             animations.current?.push((timestamp, elapsed) => validatedChild.props.animate(timestamp, elapsed, object));
@@ -142,17 +155,6 @@ export const Canvas = (props: CanvasProps) => {
         const childType = getElementType(validatedChild);
         checkIsElementSupported(childType, parent.type);
 
-        if (objectChildren.includes(childType)) {
-            childHandler(childType, validatedChild, (object) => {
-                if (validatedChild.props.position) {
-                    const [x, y, z] = validatedChild.props.position;
-                    object.position.set(x, y, z);
-                }
-                sceneRef.current?.add(object);
-            })
-            return;
-        }
-
         if (materialChildren.includes(childType)) {
             childHandler(childType, validatedChild, (object) => {
                 parent.material = object;
@@ -167,9 +169,10 @@ export const Canvas = (props: CanvasProps) => {
             return;
         }
 
+        // Object3D
         childHandler(childType, validatedChild, (object) => {
             parent.add(object);
-        })
+        });
     }
 
     // create WebGLRenderer
@@ -201,11 +204,6 @@ export const Canvas = (props: CanvasProps) => {
         childrenArray.forEach((child) => {
             handleMainChild(child);
         });
-
-        // TODO: remove it
-        const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 3);
-        const planeHelper = new THREE.PlaneHelper(plane, 100, 0xffff00);
-        sceneRef.current?.add(planeHelper);
 
         if (cameraRef.current) {
             new OrbitControls(cameraRef.current, rendererRef.current!.domElement);

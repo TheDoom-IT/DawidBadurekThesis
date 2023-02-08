@@ -12,3 +12,5 @@ export const CapsuleGeometry = (props: CapsuleGeometryProps) => <></>
 export type BufferGeometryProps = GeometryProps<typeof THREE.BufferGeometry, THREE.BufferGeometry>
 export const BufferGeometry = (props: BufferGeometryProps) => <></>
 
+export type PlaneGeometryProps = GeometryProps<typeof THREE.PlaneGeometry, THREE.PlaneGeometry>;
+export const PlaneGeometry = (props: PlaneGeometryProps) => <></>

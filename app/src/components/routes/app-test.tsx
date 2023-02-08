@@ -24,11 +24,6 @@ export const AppTest = (props: { pointsNumber: number }) => {
         buffer.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     };
 
-    // useEffect(() => {
-    //     console.log('points changed');
-    //     setPosition();
-    // }, [props.pointsNumber]);
-
     const initGeometry = (buffer: THREE.BufferGeometry | null) => {
         if (buffer == null) {
             return;

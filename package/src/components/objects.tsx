@@ -1,10 +1,10 @@
 import React from 'react';
 import * as THREE from 'three';
-import { ObjectProps } from '../types/props';
+import { Object3DProps } from '../types/props';
 
-export type MeshProps = ObjectProps<typeof THREE.Mesh, THREE.Mesh>;
-export type PointsProps = ObjectProps<typeof THREE.Points, THREE.Points>;
-export type LineProps = ObjectProps<typeof THREE.Line, THREE.Line>;
+export type MeshProps = Object3DProps<typeof THREE.Mesh, THREE.Mesh>;
+export type PointsProps = Object3DProps<typeof THREE.Points, THREE.Points>;
+export type LineProps = Object3DProps<typeof THREE.Line, THREE.Line>;
 
 export const Mesh = (props: MeshProps) => <></>
 export const Points = (props: PointsProps) => <></>

@@ -20,15 +20,17 @@ function renderInsideCanvas(element: React.ReactElement) {
 }
 
 describe('Canvas', () => {
-    let error: jest.SpyInstance;
+    let errorSpy: jest.SpyInstance;
+    let warnSpy: jest.SpyInstance;
 
     beforeAll(() => {
-        error = jest.spyOn(console, 'error').mockImplementation(() => { });
+        errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
     });
 
-    afterAll(() => {
-        error.mockReset();
-    });
+    beforeEach(() => {
+        jest.clearAllMocks();
+    })
 
     describe('when Canvas element is unable to find div element', () => {
         it('should throw an exception', () => {
@@ -94,15 +96,30 @@ describe('Canvas', () => {
     });
 
     describe('with multiple cameras', () => {
-        it('should throw an exception', () => {
-            const test = () => renderInsideCanvas(
+        it('should console.warn', () => {
+            renderInsideCanvas(
                 <>
                     <PerspectiveCamera />
                     <OrtographicCamera />
                 </>
             )
 
-            expect(test).toThrow('Canvas should contain only single camera object.');
+            expect(warnSpy).toHaveBeenCalledTimes(1);
+            expect(warnSpy).toHaveBeenCalledWith('Canvas should contain only single camera object. Only second camera will be used.');
+        });
+    });
+
+    describe('with multiple scenes', () => {
+        it('should console.warn', () => {
+            renderInsideCanvas(
+                <>
+                    <Scene />
+                    <Scene />
+                </>
+            )
+
+            expect(warnSpy).toHaveBeenCalledTimes(1);
+            expect(warnSpy).toHaveBeenCalledWith('Canvas should contain only single scene object. Only second scene will be used.');
         });
     });
 
