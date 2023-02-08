@@ -13,6 +13,7 @@ import {
 } from './constants/children-list';
 import { constructors } from './constants';
 import { GeneralProps } from './types';
+import { useLayoutEffectWithChildren } from './hooks/useEffectWithArray';
 
 export type CanvasProps = GeneralProps<{ divId: string }, typeof THREE.WebGLRenderer, THREE.WebGLRenderer>
 
@@ -81,6 +82,12 @@ export const Canvas = (props: CanvasProps) => {
     }
 
     const handleMainChild = (child: ReturnType<typeof React.Children.toArray>[number]) => {
+        if (ReactIs.typeOf(child) === ReactIs.Fragment) {
+            const children = (child as ReactElement).props.children
+            const childrenArray = React.Children.toArray(children);
+            childrenArray.forEach(child => handleMainChild(child));
+            return;
+        }
         const validatedChild = validateChildType(child);
 
         const type = getElementType(validatedChild);
@@ -188,10 +195,7 @@ export const Canvas = (props: CanvasProps) => {
         }
     }, [props.divId]);
 
-    // add children to the renderer
-    // TODO: use useEffectWithArray to compare props.children
-    // now props.children cause useLayoutEffect to run every render
-    useLayoutEffect(() => {
+    useLayoutEffectWithChildren(() => {
         const childrenArray = React.Children.toArray(props.children);
 
         childrenArray.forEach((child) => {
@@ -203,7 +207,9 @@ export const Canvas = (props: CanvasProps) => {
         const planeHelper = new THREE.PlaneHelper(plane, 100, 0xffff00);
         sceneRef.current?.add(planeHelper);
 
-        const controls = new OrbitControls(cameraRef.current!, rendererRef.current!.domElement);
+        if (cameraRef.current) {
+            new OrbitControls(cameraRef.current, rendererRef.current!.domElement);
+        }
 
         return () => {
             objects.current.forEach(object => {
@@ -222,7 +228,7 @@ export const Canvas = (props: CanvasProps) => {
             objects.current = [];
             animations.current = [];
         }
-    }, [props.children])
+    }, props.children);
 
     useEffect(() => {
         handleForwardRef(props.innerRef, rendererRef.current!);
