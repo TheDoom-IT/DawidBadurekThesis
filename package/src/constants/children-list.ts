@@ -16,8 +16,13 @@ import {
     LineBasicMaterial,
     PlaneGeometry
 } from "../components";
+import { OrbitControls } from "../components/controls";
 
 export const mainParent = 'Canvas';
+
+export const controlsChildren = [
+    OrbitControls.name,
+]
 
 export const cameraChildren = [
     OrtographicCamera.name,
@@ -61,6 +66,7 @@ export const supportedChildren: { [key: string]: string[] } = {
     [mainParent]: [
         ...cameraChildren,
         sceneChild,
+        ...controlsChildren,
     ],
     [PerspectiveCamera.name]: [],
     [OrtographicCamera.name]: [],

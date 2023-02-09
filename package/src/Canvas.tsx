@@ -5,12 +5,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { checkIsElementSupported, getElementType, handleForwardRef, validateChildType } from './utils';
 import {
     cameraChildren,
+    controlsChildren,
     geometryChildren,
     mainParent,
     materialChildren,
     sceneChild
 } from './constants/children-list';
-import { constructors } from './constants';
+import { constructors, controlsConstructor } from './constants';
 import { GeneralProps } from './types';
 import { useLayoutEffectWithChildren } from './hooks/useEffectWithArray';
 import { Object3D } from 'three';
@@ -23,6 +24,7 @@ export const Canvas = (props: CanvasProps) => {
     const cameraRef = useRef<THREE.PerspectiveCamera>();
     const animations = useRef<{ (timestamp: number, elapsed: number): void }[]>([]);
     const objects = useRef<any[]>([]);
+    const controlsToCreate = useRef<string[]>([]);
     const animationFrameId = useRef<number>(0);
     const previousTimestamp = useRef<number>();
 
@@ -81,38 +83,6 @@ export const Canvas = (props: CanvasProps) => {
         animationFrameId.current = requestAnimationFrame(animate);
     }
 
-    const handleMainChild = (child: ReturnType<typeof React.Children.toArray>[number]) => {
-        if (ReactIs.typeOf(child) === ReactIs.Fragment) {
-            const children = (child as ReactElement).props.children
-            const childrenArray = React.Children.toArray(children);
-            childrenArray.forEach(child => handleMainChild(child));
-            return;
-        }
-        const validatedChild = validateChildType(child);
-
-        const type = getElementType(validatedChild);
-        checkIsElementSupported(type, mainParent);
-
-        if (cameraChildren.includes(type)) {
-            childHandler(type, validatedChild, (object) => {
-                if (cameraRef.current !== undefined) {
-                    console.warn('Canvas should contain only single camera object. Only second camera will be used.')
-                }
-                cameraRef.current = object;
-                updateCameraAspect();
-            });
-        }
-
-        if (type === sceneChild) {
-            childHandler(type, validatedChild, (object) => {
-                if (sceneRef.current !== undefined) {
-                    console.warn('Canvas should contain only single scene object. Only second scene will be used.')
-                }
-                sceneRef.current = object;
-            });
-        }
-    }
-
     const childHandler = (childType: string, validatedChild: ReactElement, callback: (object: any) => void) => {
         const object = new constructors[childType](...(validatedChild.props.params ?? []));
         objects.current.push(object);
@@ -137,23 +107,44 @@ export const Canvas = (props: CanvasProps) => {
 
         const childrenArray = React.Children.toArray(validatedChild.props.children);
         childrenArray.forEach((child) => {
-            handleChild(child, object);
+            handleChild(child, object.type, object);
         });
 
         handleForwardRef(validatedChild.props.innerRef, object);
     }
 
-    const handleChild = (child: ReturnType<typeof React.Children.toArray>[number], parent: any) => {
+    const handleChild = (child: ReturnType<typeof React.Children.toArray>[number], parentType: string, parent?: any) => {
         if (ReactIs.typeOf(child) === ReactIs.Fragment) {
             const children = (child as ReactElement).props.children
             const childrenArray = React.Children.toArray(children);
-            childrenArray.forEach(child => handleChild(child, parent));
+            childrenArray.forEach(child => handleChild(child, parentType, parent));
             return;
         }
 
         const validatedChild = validateChildType(child);
         const childType = getElementType(validatedChild);
-        checkIsElementSupported(childType, parent.type);
+        checkIsElementSupported(childType, parentType);
+
+        if (cameraChildren.includes(childType)) {
+            childHandler(childType, validatedChild, (object) => {
+                if (cameraRef.current !== undefined) {
+                    console.warn('Canvas should contain only single camera object. Only second camera will be used.')
+                }
+                cameraRef.current = object;
+                updateCameraAspect();
+            });
+            return;
+        }
+
+        if (childType === sceneChild) {
+            childHandler(childType, validatedChild, (object) => {
+                if (sceneRef.current !== undefined) {
+                    console.warn('Canvas should contain only single scene object. Only second scene will be used.')
+                }
+                sceneRef.current = object;
+            });
+            return;
+        }
 
         if (materialChildren.includes(childType)) {
             childHandler(childType, validatedChild, (object) => {
@@ -169,10 +160,23 @@ export const Canvas = (props: CanvasProps) => {
             return;
         }
 
+        if (controlsChildren.includes(childType)) {
+            controlsToCreate.current.push(childType);
+            return;
+        }
         // Object3D
         childHandler(childType, validatedChild, (object) => {
             parent.add(object);
         });
+    }
+
+    const createControls = () => {
+        controlsToCreate.current.forEach(controlType => {
+            if (cameraRef.current) {
+                const control = controlsConstructor[controlType](cameraRef.current, rendererRef.current!.domElement);
+                objects.current.push(control);
+            }
+        })
     }
 
     // create WebGLRenderer
@@ -202,12 +206,10 @@ export const Canvas = (props: CanvasProps) => {
         const childrenArray = React.Children.toArray(props.children);
 
         childrenArray.forEach((child) => {
-            handleMainChild(child);
+            handleChild(child, mainParent);
         });
 
-        if (cameraRef.current) {
-            new OrbitControls(cameraRef.current, rendererRef.current!.domElement);
-        }
+        createControls();
 
         return () => {
             objects.current.forEach(object => {
@@ -225,6 +227,7 @@ export const Canvas = (props: CanvasProps) => {
             sceneRef.current = undefined;
             objects.current = [];
             animations.current = [];
+            controlsToCreate.current = [];
         }
     }, props.children);
 

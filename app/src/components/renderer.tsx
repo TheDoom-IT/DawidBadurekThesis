@@ -7,6 +7,7 @@ import {
     LineBasicMaterial,
     Mesh,
     MeshStandardMaterial,
+    OrbitControls,
     PerspectiveCamera,
     PlaneGeometry,
     Points,
@@ -104,6 +105,7 @@ export const Renderer = (props: RendererProps) => {
     }
 
     return <Canvas divId={props.divId}>
+        <OrbitControls />
         <PerspectiveCamera position={[0, 30, 110]} />
         <Scene innerRef={setScene}>
             <AmbientLight />
