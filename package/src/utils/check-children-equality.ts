@@ -1,5 +1,5 @@
-import React from "react";
-import { validateChildType } from "./validate-child-type";
+import React from 'react';
+import { validateChildType } from './validate-child-type';
 
 type ReactChildren = ReturnType<typeof React.Children.toArray>;
 
@@ -18,7 +18,7 @@ const checkChildEquality = (a: ReactChildren[number], b: ReactChildren[number]) 
 
     //compare props
     return true;
-}
+};
 
 export const checkChildrenEquality = (a: ReactChildren, b: ReactChildren): boolean => {
     if (a.length !== b.length) {
@@ -29,4 +29,4 @@ export const checkChildrenEquality = (a: ReactChildren, b: ReactChildren): boole
         const bChild = b[index];
         return checkChildEquality(aChild, bChild);
     });
-}
+};

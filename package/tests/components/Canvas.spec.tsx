@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react'
-import { Canvas, Mesh, OrtographicCamera, PerspectiveCamera, Scene } from '../src';
+import { render } from '@testing-library/react';
+import { Canvas, Mesh, OrtographicCamera, PerspectiveCamera, Scene } from '../../src';
 
 jest.mock('three', () => {
     const THREE = jest.requireActual('three');
@@ -12,32 +12,37 @@ jest.mock('three', () => {
             forceContextLoss: jest.fn(),
             domElement: document.createElement('canvas'),
         }),
-    }
+    };
 });
 
 function renderInsideCanvas(element: React.ReactElement) {
-    return render(element, { wrapper: ({ children }) => <div id='id'><Canvas divId='id'>{children}</Canvas></div> });
+    return render(element, {
+        wrapper: ({ children }) => (
+            <div id="id">
+                <Canvas divId="id">{children}</Canvas>
+            </div>
+        ),
+    });
 }
 
 describe('Canvas', () => {
-    let errorSpy: jest.SpyInstance;
     let warnSpy: jest.SpyInstance;
 
     beforeAll(() => {
-        errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
-        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
+        jest.spyOn(console, 'error').mockImplementation();
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation();
     });
 
     beforeEach(() => {
         jest.clearAllMocks();
-    })
+    });
 
     describe('when Canvas element is unable to find div element', () => {
         it('should throw an exception', () => {
-            const id = "unknown id";
+            const id = 'unknown id';
             const test = () => {
-                render(<Canvas divId={id}></Canvas>)
-            }
+                render(<Canvas divId={id}></Canvas>);
+            };
 
             expect(test).toThrow(`Failed to find a div with id "${id}"!`);
         });
@@ -45,7 +50,11 @@ describe('Canvas', () => {
 
     describe('when Canvas element can find div element', () => {
         it('should add canvas to the div element', () => {
-            const renderResult = render(<div id='id'><Canvas divId='id'></Canvas></div>)
+            const renderResult = render(
+                <div id="id">
+                    <Canvas divId="id"></Canvas>
+                </div>,
+            );
 
             const div = renderResult.container.querySelector('#id');
             const canvas = renderResult.container.querySelector('canvas');
@@ -59,7 +68,11 @@ describe('Canvas', () => {
 
     describe('when unmounting the Canvas', () => {
         it('should remove canvas from the DOM', () => {
-            const renderResult = render(<div id='id'><Canvas divId='id'></Canvas></div>)
+            const renderResult = render(
+                <div id="id">
+                    <Canvas divId="id"></Canvas>
+                </div>,
+            );
 
             const canvasBefore = renderResult.container.querySelector('canvas');
             expect(canvasBefore).not.toEqual(null);
@@ -73,13 +86,12 @@ describe('Canvas', () => {
 
     describe('with Scene as a child', () => {
         it('should not throw an exception', () => {
-            const test = () => render(
-                <div id='id'>
-                    <Canvas divId='id'>
-                        {/* <Scene /> */}
-                    </Canvas>
-                </div>
-            );
+            const test = () =>
+                render(
+                    <div id="id">
+                        <Canvas divId="id">{/* <Scene /> */}</Canvas>
+                    </div>,
+                );
 
             expect(test).not.toThrow();
         });
@@ -87,9 +99,7 @@ describe('Canvas', () => {
 
     describe('with PerspectiveCamera as a child', () => {
         it('should not throw an exception', async () => {
-            const test = () => renderInsideCanvas(
-                <PerspectiveCamera />
-            )
+            const test = () => renderInsideCanvas(<PerspectiveCamera />);
 
             expect(test).not.toThrow();
         });
@@ -101,11 +111,13 @@ describe('Canvas', () => {
                 <>
                     <PerspectiveCamera />
                     <OrtographicCamera />
-                </>
-            )
+                </>,
+            );
 
             expect(warnSpy).toHaveBeenCalledTimes(1);
-            expect(warnSpy).toHaveBeenCalledWith('Canvas should contain only single camera object. Only second camera will be used.');
+            expect(warnSpy).toHaveBeenCalledWith(
+                'Canvas should contain only single camera object. Only second camera will be used.',
+            );
         });
     });
 
@@ -115,17 +127,19 @@ describe('Canvas', () => {
                 <>
                     <Scene />
                     <Scene />
-                </>
-            )
+                </>,
+            );
 
             expect(warnSpy).toHaveBeenCalledTimes(1);
-            expect(warnSpy).toHaveBeenCalledWith('Canvas should contain only single scene object. Only second scene will be used.');
+            expect(warnSpy).toHaveBeenCalledWith(
+                'Canvas should contain only single scene object. Only second scene will be used.',
+            );
         });
     });
 
     describe('with unsupported children', () => {
         it('should throw an exception', () => {
-            const test = () => renderInsideCanvas(<Mesh />)
+            const test = () => renderInsideCanvas(<Mesh />);
 
             expect(test).toThrow('Unsupported child type: parent: Canvas, child: Mesh.');
         });

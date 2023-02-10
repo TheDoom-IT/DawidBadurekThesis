@@ -1,8 +1,13 @@
 import React, { ReactNode, useLayoutEffect, useRef } from 'react';
 import { checkChildrenEquality } from '../utils/check-children-equality';
 
-export const useLayoutEffectWithChildren = (callback: () => void, children: ReactNode | ReactNode[]) => {
-    const prevValue = useRef<ReturnType<typeof React.Children.toArray>>(React.Children.toArray(children));
+export const useLayoutEffectWithChildren = (
+    callback: () => void,
+    children: ReactNode | ReactNode[],
+) => {
+    const prevValue = useRef<ReturnType<typeof React.Children.toArray>>(
+        React.Children.toArray(children),
+    );
 
     const newValue = React.Children.toArray(children);
 
@@ -13,5 +18,5 @@ export const useLayoutEffectWithChildren = (callback: () => void, children: Reac
 
     useLayoutEffect(() => {
         return callback();
-    }, [prevValue.current])
-}
+    }, [prevValue.current]);
+};

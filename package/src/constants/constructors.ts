@@ -5,10 +5,19 @@ import {
     MeshStandardMaterial,
     MeshBasicMaterial,
     CapsuleGeometry,
-    DirectionalLight, AmbientLight, Mesh, Points, PointsMaterial, BufferGeometry, Scene, Line, LineBasicMaterial, PlaneGeometry
-} from "../components";
+    DirectionalLight,
+    AmbientLight,
+    Mesh,
+    Points,
+    PointsMaterial,
+    BufferGeometry,
+    Scene,
+    Line,
+    LineBasicMaterial,
+    PlaneGeometry,
+} from '../components';
 import * as THREE from 'three';
-import { OrbitControls } from "../components/controls";
+import { OrbitControls } from '../components/controls';
 import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export const constructors = {
@@ -28,8 +37,9 @@ export const constructors = {
     [Line.name]: THREE.Line,
     [LineBasicMaterial.name]: THREE.LineBasicMaterial,
     [PlaneGeometry.name]: THREE.PlaneGeometry,
-}
+};
 
 export const controlsConstructor = {
-    [OrbitControls.name]: (camera: THREE.Camera, element?: HTMLElement) => new ThreeOrbitControls(camera, element),
-}
+    [OrbitControls.name]: (camera: THREE.Camera, element?: HTMLElement) =>
+        new ThreeOrbitControls(camera, element),
+};
