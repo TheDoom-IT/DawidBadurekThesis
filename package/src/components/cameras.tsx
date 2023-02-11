@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { FC } from 'react';
 import * as THREE from 'three';
-import { GeneralProps } from '../types/props';
+import { Object3DProps } from '../types/props';
 
-export type OrtographicCameraProps = GeneralProps<{}, typeof THREE.OrthographicCamera, THREE.PerspectiveCamera>;
-export type PerspectiveCameraProps = GeneralProps<{}, typeof THREE.PerspectiveCamera, THREE.PerspectiveCamera>;
+export type OrtographicCameraProps = Object3DProps<
+    typeof THREE.OrthographicCamera,
+    THREE.PerspectiveCamera
+>;
+export type PerspectiveCameraProps = Object3DProps<
+    typeof THREE.PerspectiveCamera,
+    THREE.PerspectiveCamera
+>;
 
-export const OrtographicCamera = (props: OrtographicCameraProps) => <></>
-export const PerspectiveCamera = (props: PerspectiveCameraProps) => <></>
+export const OrtographicCamera: FC<OrtographicCameraProps> = () => <></>;
+export const PerspectiveCamera: FC<PerspectiveCameraProps> = () => <></>;

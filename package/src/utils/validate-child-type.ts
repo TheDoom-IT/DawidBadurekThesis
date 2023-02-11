@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement } from 'react';
 import * as ReactIs from 'react-is';
 
 export const validateChildType = (child: ReturnType<typeof React.Children.toArray>[number]) => {
@@ -9,9 +9,9 @@ export const validateChildType = (child: ReturnType<typeof React.Children.toArra
         throw new Error(`Unsupported child type: React.Portal.`);
     }
 
-    if (ReactIs.typeOf(child) === ReactIs.Fragment) {
-        throw new Error(`Unsupported child type: React.Fragment.`);
-    }
+    // if (ReactIs.typeOf(child) === ReactIs.Fragment) {
+    // throw new Error(`Unsupported child type: React.Fragment.`);
+    // }
 
     return child as ReactElement;
-}
+};

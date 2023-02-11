@@ -1,0 +1,46 @@
+.App {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+
+    min-width: 400px;
+    min-height: 300px;
+
+    --padding: 20px
+}
+
+.App .home-link-wrapper {
+    left: 0;
+    right: 0;
+    height: 50px;
+    width: 50px;
+    position: absolute;
+    margin: auto;
+    padding-top: var(--padding)
+}
+
+.App .home-link {
+    text-decoration: none;
+    color: black;
+
+    font-size: 1.2rem;
+}
+
+.App .statistics {
+    padding: 0px 15px 15px 15px;
+    margin: 0 var(--padding) var(--padding) 0;
+    max-width: 300px;
+    min-width: 200px;
+    background-color: rgb(32, 27, 27);
+    border-radius: 10px;
+    border-style: solid;
+    border-color: rgb(204, 202, 202);
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: white;
+}
+
+.App .text-center {
+    text-align: center;
+}

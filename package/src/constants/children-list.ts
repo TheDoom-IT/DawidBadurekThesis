@@ -11,69 +11,49 @@ import {
     Mesh,
     Points,
     PointsMaterial,
-    BufferGeometry
-} from "../components";
+    BufferGeometry,
+    Line,
+    LineBasicMaterial,
+    PlaneGeometry,
+    LineLoop,
+} from '../components';
+import { OrbitControls } from '../components/controls';
 
 export const mainParent = 'Canvas';
 
-export const cameraChildren = [
-    OrtographicCamera.name,
-    PerspectiveCamera.name,
-]
+export const controlsChildren = [OrbitControls.name];
 
-const bufferGeometryChild = BufferGeometry.name;
-const meshGeometryChildren = [
+export const cameraChildren = [OrtographicCamera.name, PerspectiveCamera.name];
+
+export const geometryChildren = [
     BoxGeometry.name,
     CapsuleGeometry.name,
-]
-export const geometryChildren = [
-    bufferGeometryChild,
-    ...meshGeometryChildren,
+    PlaneGeometry.name,
+    BufferGeometry.name,
 ];
 
-
-
-const pointsMaterialChildren = [
-    PointsMaterial.name,
-]
-const meshMaterialChildren = [
+export const materialChildren = [
     MeshStandardMaterial.name,
     MeshBasicMaterial.name,
-]
-export const materialChildren = [
-    ...pointsMaterialChildren,
-    ...meshMaterialChildren,
+    PointsMaterial.name,
+    LineBasicMaterial.name,
 ];
 
-export const lightChildren = [
-    AmbientLight.name,
-    DirectionalLight.name,
-]
+const geometryMaterialChildren = [...geometryChildren, ...materialChildren];
 
-export const objectChildren = [
-    Mesh.name,
-    Points.name,
-]
+export const lightChildren = [AmbientLight.name, DirectionalLight.name];
+
+export const objectChildren = [Mesh.name, Points.name, Line.name, LineLoop.name];
 
 export const sceneChild = Scene.name;
 
 export const supportedChildren: { [key: string]: string[] } = {
-    [mainParent]: [
-        ...cameraChildren,
-        sceneChild,
-    ],
+    [mainParent]: [...cameraChildren, sceneChild, ...controlsChildren],
     [PerspectiveCamera.name]: [],
     [OrtographicCamera.name]: [],
-    [sceneChild]: [
-        ...objectChildren,
-        ...lightChildren
-    ],
-    [Mesh.name]: [
-        ...geometryChildren,
-        ...meshMaterialChildren,
-    ],
-    [Points.name]: [
-        ...pointsMaterialChildren,
-        bufferGeometryChild,
-    ]
+    [sceneChild]: [...objectChildren, ...lightChildren],
+    [Mesh.name]: [...geometryMaterialChildren, ...objectChildren],
+    [Points.name]: [...geometryMaterialChildren, ...objectChildren],
+    [Line.name]: [...geometryMaterialChildren, ...objectChildren],
+    [LineLoop.name]: [...geometryMaterialChildren, ...objectChildren],
 };

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "declaration": true,
     "declarationDir": "dist/types",
     "esModuleInterop": true,
@@ -13,7 +14,8 @@
       "esnext"
     ],
     "types": [
-      "node"
+      "jest",
+      "node",
     ],
     "module": "ES2015",
     "moduleResolution": "node",
@@ -27,5 +29,6 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-  ]
+    "tests/**/*"
+  ],
 }

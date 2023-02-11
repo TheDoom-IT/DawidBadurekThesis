@@ -10,6 +10,7 @@ export const HomeRoute = () => {
             <Link to={ROUTES.RECREATE_CANVAS}>Recreate</Link>
             <Link to={ROUTES.CHILDREN_TEST}>Children test</Link>
             <Link to={ROUTES.APP_TEST}>App test</Link>
+            <Link to={ROUTES.APP}>App</Link>
         </Container>
     );
-}
+};
