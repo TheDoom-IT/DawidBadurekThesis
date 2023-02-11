@@ -15,6 +15,7 @@ import {
     Line,
     LineBasicMaterial,
     PlaneGeometry,
+    LineLoop,
 } from '../components';
 import * as THREE from 'three';
 import { OrbitControls } from '../components/controls';
@@ -37,6 +38,7 @@ export const constructors = {
     [Line.name]: THREE.Line,
     [LineBasicMaterial.name]: THREE.LineBasicMaterial,
     [PlaneGeometry.name]: THREE.PlaneGeometry,
+    [LineLoop.name]: THREE.LineLoop,
 };
 
 export const controlsConstructor = {

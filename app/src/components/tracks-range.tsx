@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 interface TracksRangeProps {
     min: number;
     max: number;
@@ -6,9 +8,16 @@ interface TracksRangeProps {
 }
 
 export const TracksRange = (props: TracksRangeProps) => {
+    const timeout = useRef<ReturnType<typeof setTimeout>>();
+
+    // Add debounce
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const id = Number.parseInt(event.target.value);
-        props.setTrackId(id);
+        clearTimeout(timeout.current);
+
+        timeout.current = setTimeout(() => {
+            const id = Number.parseInt(event.target.value);
+            props.setTrackId(id);
+        }, 100);
     };
 
     return (

@@ -5,6 +5,7 @@ import {
     Canvas,
     Line,
     LineBasicMaterial,
+    LineLoop,
     Mesh,
     MeshStandardMaterial,
     OrbitControls,
@@ -16,30 +17,17 @@ import {
 } from 'three-js-react-component';
 import * as THREE from 'three';
 import { Track, Tracks } from '../schemas/tracks-schema';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 interface RendererProps {
     divId: string;
     tracks: Tracks;
-    trackId: number;
 }
 
 const LINE_SEGMENTS = 10;
 const ANIMATION_SPEED = 500;
 
 export const Renderer = (props: RendererProps) => {
-    const [, setTrack] = useState<Track>();
-
-    useEffect(() => {
-        if (props.tracks.mTracks.length <= props.trackId) {
-            console.warn('Invalid track id.');
-            setTrack(undefined);
-            return;
-        }
-
-        setTrack(props.tracks.mTracks[props.trackId]);
-    }, [props.trackId]);
-
     const updatePosition = (
         attributeIndex: number,
         trackIndex: number,
@@ -107,8 +95,8 @@ export const Renderer = (props: RendererProps) => {
             <PerspectiveCamera position={[0, 30, 110]} />
             <Scene innerRef={setScene}>
                 <AmbientLight />
-                <Mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                    <PlaneGeometry params={[100, 100, 100]} />
+                <Mesh rotation={[Math.PI / 2, 0, 0]}>
+                    <PlaneGeometry params={[100, 100]} />
                     <MeshStandardMaterial
                         params={[
                             {
@@ -119,6 +107,9 @@ export const Renderer = (props: RendererProps) => {
                             },
                         ]}
                     />
+                    <LineLoop>
+                        <PlaneGeometry params={[100, 100]} />
+                    </LineLoop>
                 </Mesh>
                 {props.tracks.mTracks.map((track, index) => (
                     <React.Fragment key={index}>

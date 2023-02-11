@@ -15,6 +15,7 @@ import {
     Line,
     LineBasicMaterial,
     PlaneGeometry,
+    LineLoop,
 } from '../components';
 import { OrbitControls } from '../components/controls';
 
@@ -42,7 +43,7 @@ const geometryMaterialChildren = [...geometryChildren, ...materialChildren];
 
 export const lightChildren = [AmbientLight.name, DirectionalLight.name];
 
-export const objectChildren = [Mesh.name, Points.name, Line.name];
+export const objectChildren = [Mesh.name, Points.name, Line.name, LineLoop.name];
 
 export const sceneChild = Scene.name;
 
@@ -54,4 +55,5 @@ export const supportedChildren: { [key: string]: string[] } = {
     [Mesh.name]: [...geometryMaterialChildren, ...objectChildren],
     [Points.name]: [...geometryMaterialChildren, ...objectChildren],
     [Line.name]: [...geometryMaterialChildren, ...objectChildren],
+    [LineLoop.name]: [...geometryMaterialChildren, ...objectChildren],
 };

@@ -17,7 +17,7 @@ export const App = () => {
 
     return (
         <div id={divId.current} className="App">
-            <Renderer divId={divId.current} tracks={tracks} trackId={trackId} />
+            <Renderer divId={divId.current} tracks={tracks} />
             <div className="home-link-wrapper">
                 <Link className="home-link" to={ROUTES.HOME}>
                     Home
