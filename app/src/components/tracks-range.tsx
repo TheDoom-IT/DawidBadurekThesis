@@ -6,17 +6,18 @@ interface TracksRangeProps {
 }
 
 export const TracksRange = (props: TracksRangeProps) => {
-
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const id = Number.parseInt(event.target.value);
         props.setTrackId(id);
-    }
+    };
 
     return (
         <>
-            Choosen track: {props.defaultValue + 1}<br />
+            Choosen track: {props.defaultValue + 1}
+            <br />
             {props.min + 1}
-            <input type={"range"}
+            <input
+                type={'range'}
                 defaultValue={props.defaultValue}
                 min={props.min}
                 max={props.max}
@@ -24,5 +25,5 @@ export const TracksRange = (props: TracksRangeProps) => {
             />
             {props.max + 1}
         </>
-    )
-}
+    );
+};

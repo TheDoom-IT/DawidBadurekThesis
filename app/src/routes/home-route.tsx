@@ -13,4 +13,4 @@ export const HomeRoute = () => {
             <Link to={ROUTES.APP}>App</Link>
         </Container>
     );
-}
+};

@@ -1,12 +1,10 @@
-import { object, z } from 'zod';
+import { z } from 'zod';
 
-const mCluterSchema = z.object(
-    {
-        X: z.number(),
-        Y: z.number(),
-        Z: z.number(),
-    }
-);
+const mCluterSchema = z.object({
+    X: z.number(),
+    Y: z.number(),
+    Z: z.number(),
+});
 
 const mTrackSchema = z.object({
     count: z.number(),
@@ -18,21 +16,22 @@ const mTrackSchema = z.object({
 });
 
 function validatemTracksLength(obj: z.infer<typeof mTrackSchema>) {
-    return obj.count === obj.mPolyX.length &&
+    return (
+        obj.count === obj.mPolyX.length &&
         obj.count === obj.mPolyY.length &&
-        obj.count === obj.mPolyZ.length;
+        obj.count === obj.mPolyZ.length
+    );
 }
 
-
-export const tracksSchema = z.object({
-    fileVersion: z.number(),
-    collisionTime: z.coerce.date(),
-    trackCount: z.number(),
-    mTracks: z.array(
-        mTrackSchema.refine(validatemTracksLength),
-    ),
-    mClusters: z.array(mCluterSchema),
-}).refine(obj => obj.trackCount === obj.mTracks.length);
+export const tracksSchema = z
+    .object({
+        fileVersion: z.number(),
+        collisionTime: z.coerce.date(),
+        trackCount: z.number(),
+        mTracks: z.array(mTrackSchema.refine(validatemTracksLength)),
+        mClusters: z.array(mCluterSchema),
+    })
+    .refine((obj) => obj.trackCount === obj.mTracks.length);
 
 export type Tracks = z.infer<typeof tracksSchema>;
 export type Track = z.infer<typeof mTrackSchema>;
