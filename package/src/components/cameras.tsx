@@ -4,7 +4,7 @@ import { Object3DProps } from '../types/props';
 
 export type OrtographicCameraProps = Object3DProps<
     typeof THREE.OrthographicCamera,
-    THREE.PerspectiveCamera
+    THREE.OrthographicCamera
 >;
 export type PerspectiveCameraProps = Object3DProps<
     typeof THREE.PerspectiveCamera,

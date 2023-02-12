@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import * as THREE from 'three';
-import { Canvas, Mesh, PerspectiveCamera, Scene, AmbientLight } from 'three-js-react-component';
+import { Canvas, Mesh, PerspectiveCamera, Scene, AmbientLight } from 'react-three-component';
 import '../../styles/shared.css';
 
 export const ChildrenTest = () => {

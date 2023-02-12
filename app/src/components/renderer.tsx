@@ -14,7 +14,7 @@ import {
     Points,
     PointsMaterial,
     Scene,
-} from 'three-js-react-component';
+} from 'react-three-component';
 import * as THREE from 'three';
 import { Track, Tracks } from '../schemas/tracks-schema';
 import React from 'react';

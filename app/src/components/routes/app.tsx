@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../routes';
 import '../../styles/app/app.css';

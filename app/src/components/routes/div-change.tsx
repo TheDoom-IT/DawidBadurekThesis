@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Canvas } from 'three-js-react-component';
+import { Canvas } from 'react-three-component';
 import '../../styles/shared.css';
 
 export const DivChange = () => {
