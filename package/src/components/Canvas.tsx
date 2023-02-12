@@ -16,15 +16,11 @@ import {
     sceneChild,
 } from '../constants/children-list';
 import { constructors, controlsConstructor } from '../constants';
-import { GeneralProps } from '../types';
+import { ExtendedProps } from '../types';
 import { useLayoutEffectWithChildren } from '../hooks/useEffectWithArray';
 import { Object3D } from 'three';
 
-export type CanvasProps = GeneralProps<
-    { divId: string },
-    typeof THREE.WebGLRenderer,
-    THREE.WebGLRenderer
->;
+export type CanvasProps = ExtendedProps<{ divId: string }, typeof THREE.WebGLRenderer>;
 
 export const Canvas = (props: CanvasProps) => {
     const rendererRef = useRef<THREE.WebGLRenderer>();
