@@ -1,6 +1,13 @@
 import {
+    BoxGeometryTest,
     BufferGeometry,
     Canvas,
+    CanvasTest,
+    MeshBasicMaterial,
+    MeshBasicMaterialTest,
+    MeshStandardMaterial,
+    MeshStandardMaterialTest,
+    MeshTest,
     PerspectiveCamera,
     Points,
     PointsMaterial,
@@ -82,22 +89,17 @@ export const AppTest = (props: { pointsNumber: number }) => {
 
     return (
         <div className="my-box" id={divId}>
-            <Canvas divId={divId}>
-                <PerspectiveCamera
-                    innerRef={(ref) => {
-                        if (ref != null) {
-                            ref.position.z = 10;
-                        }
-                    }}></PerspectiveCamera>
-                <Scene>
-                    <Points animate={pointsAnimatation}>
-                        <BufferGeometry
-                            innerRef={initGeometry}
-                            animate={animateGeometry}></BufferGeometry>
-                        <PointsMaterial params={[{ color: 0xffffff, size: 0.5 }]}></PointsMaterial>
-                    </Points>
-                </Scene>
-            </Canvas>
+            <CanvasTest divId={divId}>
+                <MeshTest
+                    position={[1, 0, 0]}
+                    rotation={[0, 2, 0]}
+                    animate={(t: number, e: number, r: THREE.Mesh) => {
+                        r.rotation.x += 0.01;
+                    }}>
+                    <BoxGeometryTest />
+                    <MeshStandardMaterialTest />
+                </MeshTest>
+            </CanvasTest>
         </div>
     );
 };

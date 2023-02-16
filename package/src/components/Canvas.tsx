@@ -20,7 +20,11 @@ import { ExtendedProps } from '../types';
 import { useLayoutEffectWithChildren } from '../hooks/useEffectWithArray';
 import { Object3D } from 'three';
 
-export type CanvasProps = ExtendedProps<{ divId: string }, typeof THREE.WebGLRenderer>;
+export type CanvasProps = ExtendedProps<
+    { divId: string },
+    typeof THREE.WebGLRenderer,
+    THREE.WebGLRenderer
+>;
 
 export const Canvas = (props: CanvasProps) => {
     const rendererRef = useRef<THREE.WebGLRenderer>();
