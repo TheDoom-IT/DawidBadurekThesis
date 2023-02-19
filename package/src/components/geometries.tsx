@@ -1,7 +1,9 @@
 import { GeometryProps } from '../types/props';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { useParentContext } from '../contexts/parent-context';
+import { useAnimation } from '../hooks/useAnimation';
+import { handleForwardRef } from '../utils';
 
 export type BoxGeometryProps = GeometryProps<typeof THREE.BoxGeometry, THREE.BoxGeometry>;
 export type CapsuleGeometryProps = GeometryProps<
@@ -9,29 +11,38 @@ export type CapsuleGeometryProps = GeometryProps<
     THREE.CapsuleGeometry
 >;
 
-export const BoxGeometry: FC<BoxGeometryProps> = () => <></>;
-export const CapsuleGeometry: FC<CapsuleGeometryProps> = () => <></>;
+export const BoxGeometry: FC<BoxGeometryProps> = createThreeGeometry(THREE.BoxGeometry);
+export const CapsuleGeometry: FC<CapsuleGeometryProps> = createThreeGeometry(THREE.CapsuleGeometry);
 
 export type BufferGeometryProps = GeometryProps<typeof THREE.BufferGeometry, THREE.BufferGeometry>;
-export const BufferGeometry: FC<BufferGeometryProps> = () => <></>;
+export const BufferGeometry: FC<BufferGeometryProps> = createThreeGeometry(THREE.BufferGeometry);
 
 export type PlaneGeometryProps = GeometryProps<typeof THREE.PlaneGeometry, THREE.PlaneGeometry>;
-export const PlaneGeometry: FC<PlaneGeometryProps> = () => <></>;
+export const PlaneGeometry: FC<PlaneGeometryProps> = createThreeGeometry(THREE.PlaneGeometry);
 
-export const BoxGeometryTest = GeometryFC(THREE.BoxGeometry);
-function GeometryFC<C extends new (...params: any) => THREE.BufferGeometry, R>(
+export const BoxGeometryTest = createThreeGeometry(THREE.BoxGeometry);
+
+function createThreeGeometry<C extends new (...params: any) => R, R extends THREE.BufferGeometry>(
     constructor: C,
 ): FC<GeometryProps<C, R>> {
+    //eslint-disable-next-line react/display-name
     return (props: GeometryProps<C, R>) => {
-        const [time] = useState(new Date().getTime());
-        const [object, setObject] = useState<THREE.BufferGeometry | null>(null);
+        const [object, setObject] = useState<R | null>(null);
+        useAnimation(props.animate, object);
         const parent = useParentContext();
 
         useEffect(() => {
-            setObject(new constructor(props.params));
+            // @ts-ignore
+            const newObject = new constructor(...(props.params ?? []));
+            setObject(newObject);
+
+            const cleanRef = handleForwardRef(props.innerRef, newObject);
 
             return () => {
-                object?.dispose();
+                if (cleanRef) {
+                    cleanRef();
+                }
+                newObject.dispose();
             };
         }, []);
 
@@ -45,7 +56,6 @@ function GeometryFC<C extends new (...params: any) => THREE.BufferGeometry, R>(
             }
 
             return () => {
-                console.log('parent removed');
                 // TODO: how to remove material from a parent
                 // parent?.remove(object.current!);
             };

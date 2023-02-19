@@ -1,1 +1,1 @@
-export type animation<R> = (timestamp: number, elapsed: number, ref: R) => void;
+export type Animation<R> = (ref: R, timestamp: number, elapsed: number) => void;

@@ -1,10 +1,10 @@
 import React from 'react';
-import { animation } from './animation';
+import { Animation } from './animation';
 
 export type BasicProps<C extends new (...params: any) => any, R> = {
     innerRef?: React.ForwardedRef<R>;
     children?: React.ReactNode;
-    animate?: animation<R>;
+    animate?: Animation<R>;
     params?: ConstructorParameters<C>;
 };
 
