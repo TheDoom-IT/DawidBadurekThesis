@@ -16,7 +16,7 @@ export const Points: FC<PointsProps> = createThreeObject(THREE.Points);
 export const Line: FC<LineProps> = createThreeObject(THREE.Line);
 export const LineLoop: FC<LineLoopProps> = createThreeObject(THREE.LineLoop);
 
-export function createThreeObject<C extends new (...params: any) => R, R extends THREE.Object3D>(
+export function createThreeObject<C extends new (...params: any[]) => R, R extends THREE.Object3D>(
     constructor: C,
 ): FC<Object3DProps<C, R>> {
     //eslint-disable-next-line react/display-name

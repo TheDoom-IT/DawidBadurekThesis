@@ -22,7 +22,7 @@ export const PlaneGeometry: FC<PlaneGeometryProps> = createThreeGeometry(THREE.P
 
 export const BoxGeometryTest = createThreeGeometry(THREE.BoxGeometry);
 
-function createThreeGeometry<C extends new (...params: any) => R, R extends THREE.BufferGeometry>(
+function createThreeGeometry<C extends new (...params: any[]) => R, R extends THREE.BufferGeometry>(
     constructor: C,
 ): FC<GeometryProps<C, R>> {
     //eslint-disable-next-line react/display-name
@@ -32,7 +32,6 @@ function createThreeGeometry<C extends new (...params: any) => R, R extends THRE
         const parent = useParentContext();
 
         useEffect(() => {
-            // @ts-ignore
             const newObject = new constructor(...(props.params ?? []));
             setObject(newObject);
 
@@ -64,3 +63,5 @@ function createThreeGeometry<C extends new (...params: any) => R, R extends THRE
         return <>{props.children}</>;
     };
 }
+const params: ConstructorParameters<typeof THREE.Object3D> = [];
+new THREE.BoxGeometry(...params);

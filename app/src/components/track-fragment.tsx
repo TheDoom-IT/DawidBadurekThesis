@@ -1,6 +1,5 @@
-import React from 'react';
+import { useMemo } from 'react';
 import {
-    Animation,
     BufferGeometry,
     Line,
     LineBasicMaterial,
@@ -12,9 +11,11 @@ import { Track } from '../schemas/tracks-schema';
 
 export interface TrackFragmentProps {
     track: Track;
+    index: number;
+    max: number;
 }
 
-const LINE_SEGMENTS = 10;
+const LINE_SEGMENTS = 5;
 const ANIMATION_SPEED = 500;
 
 export const TrackFragment = (props: TrackFragmentProps) => {
@@ -49,38 +50,40 @@ export const TrackFragment = (props: TrackFragmentProps) => {
         buffer.setFromPoints(vertices);
     };
 
-    const getLineAnimation = (track: Track): Animation<THREE.BufferGeometry> => {
+    const lineAnimation = useMemo(() => {
         return (ref: THREE.BufferGeometry, timestamp: number) => {
             const position = ref.getAttribute('position');
 
-            const index = Math.floor(timestamp / ANIMATION_SPEED) % track.count;
-            for (let x = 0; x < LINE_SEGMENTS; x++) {
-                updatePosition(x, index < x ? index : index - x, position, track);
+            const index = Math.floor(timestamp / ANIMATION_SPEED) % props.track.count;
+            for (let x = 0; x < LINE_SEGMENTS; ++x) {
+                updatePosition(x, index < x ? 0 : index - x, position, props.track);
             }
             position.needsUpdate = true;
         };
-    };
+    }, [props.track]);
 
-    const getPointsAnimation = (track: Track): Animation<THREE.BufferGeometry> | undefined => {
+    const pointsAnimation = useMemo(() => {
         return (ref: THREE.BufferGeometry, timestamp: number) => {
             const position = ref.getAttribute('position');
 
-            const index = Math.floor(timestamp / ANIMATION_SPEED) % track.count;
-            updatePosition(0, index, position, track);
+            const index = Math.floor(timestamp / ANIMATION_SPEED) % props.track.count;
+            updatePosition(0, index, position, props.track);
             position.needsUpdate = true;
         };
-    };
+    }, [props.track]);
+
+    const color = (0xffffff * props.index) / props.max;
 
     return (
-        <React.Fragment>
+        <>
             <Line>
-                <BufferGeometry animate={getLineAnimation(props.track)} innerRef={setLine} />
-                <LineBasicMaterial params={[{ color: 0xffffff }]} />
+                <BufferGeometry animate={lineAnimation} innerRef={setLine} />
+                <LineBasicMaterial params={[{ color: color }]} />
             </Line>
             <Points>
-                <BufferGeometry animate={getPointsAnimation(props.track)} innerRef={setPoints} />
-                <PointsMaterial params={[{ color: 0xffffff }]} />
+                <BufferGeometry animate={pointsAnimation} innerRef={setPoints} />
+                <PointsMaterial params={[{ color: color }]} />
             </Points>
-        </React.Fragment>
+        </>
     );
 };

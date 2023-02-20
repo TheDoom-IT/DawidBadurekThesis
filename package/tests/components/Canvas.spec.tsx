@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Canvas, Mesh, OrtographicCamera, PerspectiveCamera, Scene } from '../../src';
+import { Canvas, MainScene, Mesh, OrtographicCamera, PerspectiveCamera, Scene } from '../../src';
 
 jest.mock('three', () => {
     const THREE = jest.requireActual('three');
@@ -121,12 +121,12 @@ describe('Canvas', () => {
         });
     });
 
-    describe('with multiple scenes', () => {
+    describe('with multiple main scenes', () => {
         it('should console.warn', () => {
             renderInsideCanvas(
                 <>
-                    <Scene />
-                    <Scene />
+                    <MainScene />
+                    <MainScene />
                 </>,
             );
 
@@ -134,14 +134,6 @@ describe('Canvas', () => {
             expect(warnSpy).toHaveBeenCalledWith(
                 'Canvas should contain only single scene object. Only second scene will be used.',
             );
-        });
-    });
-
-    describe('with unsupported children', () => {
-        it('should throw an exception', () => {
-            const test = () => renderInsideCanvas(<Mesh />);
-
-            expect(test).toThrow('Unsupported child type: parent: Canvas, child: Mesh.');
         });
     });
 });

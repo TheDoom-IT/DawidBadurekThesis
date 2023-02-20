@@ -1,17 +1,14 @@
 import {
     AmbientLight,
     Canvas,
-    LineLoop,
     MainScene,
-    Mesh,
-    MeshStandardMaterial,
     OrbitControls,
     PerspectiveCamera,
-    PlaneGeometry,
 } from 'three-js-react-component';
 import * as THREE from 'three';
 import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
+import { Plane } from './plane';
 
 interface RendererProps {
     divId: string;
@@ -32,24 +29,14 @@ export const Renderer = (props: RendererProps) => {
             <PerspectiveCamera position={[0, 30, 110]} />
             <MainScene innerRef={setScene}>
                 <AmbientLight />
-                <Mesh rotation={[Math.PI / 2, 0, 0]}>
-                    <PlaneGeometry params={[100, 100]} />
-                    <MeshStandardMaterial
-                        params={[
-                            {
-                                color: 0xffff00,
-                                opacity: 0.2,
-                                transparent: true,
-                                side: THREE.DoubleSide,
-                            },
-                        ]}
-                    />
-                    <LineLoop>
-                        <PlaneGeometry params={[100, 100]} />
-                    </LineLoop>
-                </Mesh>
+                <Plane />
                 {props.tracks.mTracks.map((track, index) => (
-                    <TrackFragment key={index} track={track} />
+                    <TrackFragment
+                        key={index}
+                        track={track}
+                        index={index}
+                        max={props.tracks.mTracks.length}
+                    />
                 ))}
             </MainScene>
             <OrbitControls />

@@ -20,7 +20,7 @@ export const PerspectiveCamera: FC<PerspectiveCameraProps> = createThreeCamera(
     THREE.PerspectiveCamera,
 );
 
-function createThreeCamera<C extends new (...params: any) => R, R extends THREE.Camera>(
+function createThreeCamera<C extends new (...params: any[]) => R, R extends THREE.Camera>(
     constructor: C,
 ): FC<Object3DProps<C, R>> {
     //eslint-disable-next-line react/display-name
@@ -33,8 +33,14 @@ function createThreeCamera<C extends new (...params: any) => R, R extends THREE.
                 return;
             }
 
+            if (canvasContext?.camera !== null && canvasContext.camera !== object) {
+                console.warn(
+                    'Canvas should contain only single camera object. Only second camera will be used.',
+                );
+            }
+
             canvasContext.setCamera(object);
-        }, [object, canvasContext?.setCamera]);
+        }, [object, canvasContext?.setCamera, canvasContext?.camera]);
 
         return <>{props.children}</>;
     };

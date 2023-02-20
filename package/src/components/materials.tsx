@@ -32,7 +32,7 @@ export const LineBasicMaterial: FC<LineBasicMaterialProps> = createThreeMaterial
     THREE.LineBasicMaterial,
 );
 
-function createThreeMaterial<C extends new (...params: any) => R, R extends THREE.Material>(
+function createThreeMaterial<C extends new (...params: any[]) => R, R extends THREE.Material>(
     constructor: C,
 ): FC<MaterialProps<C, R>> {
     //eslint-disable-next-line react/display-name
@@ -42,7 +42,6 @@ function createThreeMaterial<C extends new (...params: any) => R, R extends THRE
         const parent = useParentContext();
 
         useEffect(() => {
-            // @ts-ignore
             const newObject = new constructor(...(props.params ?? []));
             setObject(newObject);
 

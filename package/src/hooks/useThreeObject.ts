@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParentContext } from '../contexts/parent-context';
-import { Animation, Object3DProps } from '../types';
+import { Object3DProps } from '../types';
 import { handleForwardRef } from '../utils';
 import { useAnimation } from './useAnimation';
 
-export function useThreeObject<C extends new (...params: any) => R, R extends THREE.Object3D>(
+export function useThreeObject<C extends new (...params: any[]) => R, R extends THREE.Object3D>(
     constructor: C,
     props: Object3DProps<C, R>,
 ) {
@@ -14,13 +14,12 @@ export function useThreeObject<C extends new (...params: any) => R, R extends TH
 
     useEffect(() => {
         // TODO: how to handle change of params
-        // @ts-ignore
         const newObject = new constructor(...(props.params ?? []));
         setObject(newObject);
 
         // TODO: how to handle change ref???
         // should i handle it?
-        // it is useful only for creatiion of new object
+        // it is useful only for creation of new object
         return handleForwardRef(props.innerRef, newObject);
     }, []);
 
