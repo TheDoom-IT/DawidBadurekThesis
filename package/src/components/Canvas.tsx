@@ -2,7 +2,7 @@ import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from '
 import * as THREE from 'three';
 import { handleForwardRef } from '../utils';
 import { ExtendedProps } from '../types';
-import { CanvasContext } from '../contexts/canvas-context';
+import { CanvasContext, CanvasContextType } from '../contexts/canvas-context';
 import { useAnimation } from '../hooks/useAnimation';
 
 export type CanvasProps = ExtendedProps<
@@ -26,7 +26,7 @@ export const Canvas = (props: CanvasProps) => {
         [setCamera],
     );
 
-    const canvasContext = useMemo<CanvasContext>(() => {
+    const canvasContext = useMemo<CanvasContextType>(() => {
         return {
             renderer,
             mainScene: scene,

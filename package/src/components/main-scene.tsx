@@ -11,7 +11,6 @@ export const MainScene: FC<MainSceneProps> = (props: MainSceneProps) => {
     const object = useThreeObject(THREE.Scene, props);
     const canvasContext = useCanvasContext();
 
-    // TODO: add innerRef and animate functions
     useLayoutEffect(() => {
         if (!object || !canvasContext?.setScene) {
             return;

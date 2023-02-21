@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Canvas, MainScene, Mesh, OrtographicCamera, PerspectiveCamera, Scene } from '../../src';
+import { Canvas, MainScene, OrtographicCamera, PerspectiveCamera } from '../../src';
 
 jest.mock('three', () => {
     const THREE = jest.requireActual('three');

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { FC } from 'react';
 import { Object3DProps } from '../types/props';
-import { createThreeObject } from './objects';
+import { createThreeObject } from '../utils/create-three-object';
 
 export type AmbientLightProps = Object3DProps<typeof THREE.AmbientLight, THREE.AmbientLight>;
 export type DirectionalLightProps = Object3DProps<

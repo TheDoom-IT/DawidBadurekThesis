@@ -13,13 +13,9 @@ export function useThreeObject<C extends new (...params: any[]) => R, R extends 
     const parent = useParentContext();
 
     useEffect(() => {
-        // TODO: how to handle change of params
         const newObject = new constructor(...(props.params ?? []));
         setObject(newObject);
 
-        // TODO: how to handle change ref???
-        // should i handle it?
-        // it is useful only for creation of new object
         return handleForwardRef(props.innerRef, newObject);
     }, []);
 
