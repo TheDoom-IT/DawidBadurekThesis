@@ -3,10 +3,10 @@ import {
     AmbientLight,
     BoxGeometry,
     Canvas,
+    MainScene,
     Mesh,
     MeshBasicMaterial,
     PerspectiveCamera,
-    Scene,
 } from 'react-three-component';
 
 export const RecreateCanvas = () => {
@@ -24,18 +24,14 @@ export const RecreateCanvas = () => {
             <button onClick={() => setKey(key + 1)}> Recreate Canvas</button>
             <div id={divId} style={divStyle}>
                 <Canvas divId={divId} key={key}>
-                    <PerspectiveCamera
-                        innerRef={(r) => {
-                            if (r != null) r.position.z = 5;
-                        }}
-                    />
-                    <Scene>
+                    <PerspectiveCamera position={[0, 0, 5]} />
+                    <MainScene>
                         <AmbientLight />
                         <Mesh>
                             <BoxGeometry></BoxGeometry>
                             <MeshBasicMaterial params={[{ color: 0xffffff }]}></MeshBasicMaterial>
                         </Mesh>
-                    </Scene>
+                    </MainScene>
                 </Canvas>
             </div>
         </>

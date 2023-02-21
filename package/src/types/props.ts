@@ -1,21 +1,21 @@
-import { animation } from './animation';
-import { SupportedChildren } from './supported-child';
+import React from 'react';
+import { Animation } from './animation';
 
-export type MinimalProps<R> = {
+export type BasicProps<R> = {
     innerRef?: React.ForwardedRef<R>;
-    children?: SupportedChildren;
-    animate?: animation<R>;
+    children?: React.ReactNode;
+    animate?: Animation<R>;
 };
 
-export type EmptyProps<C extends new (...params: any) => any, R> = MinimalProps<R> & {
+export type ParamsProps<C extends new (...params: any[]) => R, R> = BasicProps<R> & {
     params?: ConstructorParameters<C>;
 };
 
-export type GeneralProps<P, C extends new (...params: any) => any, R> = P & EmptyProps<C, R>;
+export type ExtendedProps<P, C extends new (...params: any[]) => R, R> = P & ParamsProps<C, R>;
 
-export type MaterialProps<C extends new (...params: any) => any, R> = EmptyProps<C, R>;
-export type GeometryProps<C extends new (...params: any) => any, R> = EmptyProps<C, R>;
-export type Object3DProps<C extends new (...params: any) => any, R> = GeneralProps<
+export type MaterialProps<C extends new (...params: any[]) => R, R> = ParamsProps<C, R>;
+export type GeometryProps<C extends new (...params: any[]) => R, R> = ParamsProps<C, R>;
+export type Object3DProps<C extends new (...params: any[]) => R, R> = ExtendedProps<
     {
         position?: [x: number, y: number, z: number];
         rotation?: [x: number, y: number, z: number];

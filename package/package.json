@@ -13,8 +13,8 @@
     "build": "rm -rf  dist/ && npm run build:esm && npm run build:cjs",
     "build:esm": "tsc --project tsconfig.build.json",
     "build:cjs": "tsc --module CommonJS --outDir dist/cjs --project tsconfig.build.json",
-    "lint": "eslint **/src/**/*.{ts,tsx} **/tests/**/*.{ts,tsx}",
-    "lint:fix": "eslint --fix **/src/**/*.{ts,tsx} **/tests/**/*.{ts,tsx}",
+    "lint": "eslint \"**/src/**/*.{ts,tsx}\"  \"**/tests/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint --fix \"**/src/**/*.{ts,tsx}\"  \"**/tests/**/*.{ts,tsx}\"",
     "test": "jest",
     "watch": "tsc --watch --project tsconfig.build.json"
   },

@@ -1,40 +1,40 @@
-import React, { forwardRef, useEffect, useRef, useLayoutEffect, ReactElement } from 'react';
-import * as ReactIs from 'react-is';
+import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import * as THREE from 'three';
-import {
-    checkIsElementSupported,
-    getElementType,
-    handleForwardRef,
-    validateChildType,
-} from '../utils';
-import {
-    cameraChildren,
-    controlsChildren,
-    geometryChildren,
-    mainParent,
-    materialChildren,
-    sceneChild,
-} from '../constants/children-list';
-import { constructors, controlsConstructor } from '../constants';
-import { GeneralProps } from '../types';
-import { useLayoutEffectWithChildren } from '../hooks/useEffectWithArray';
-import { Object3D } from 'three';
+import { handleForwardRef } from '../utils';
+import { ExtendedProps } from '../types';
+import { CanvasContext, CanvasContextType } from '../contexts/canvas-context';
+import { useAnimation } from '../hooks/useAnimation';
 
-export type CanvasProps = GeneralProps<
+export type CanvasProps = ExtendedProps<
     { divId: string },
     typeof THREE.WebGLRenderer,
     THREE.WebGLRenderer
 >;
 
 export const Canvas = (props: CanvasProps) => {
-    const rendererRef = useRef<THREE.WebGLRenderer>();
-    const sceneRef = useRef<THREE.Object3D>();
-    const cameraRef = useRef<THREE.PerspectiveCamera>();
-    const animations = useRef<{ (timestamp: number, elapsed: number): void }[]>([]);
-    const objects = useRef<any[]>([]);
-    const controlsToCreate = useRef<string[]>([]);
-    const animationFrameId = useRef<number>(0);
-    const previousTimestamp = useRef<number>();
+    const [renderer, setRenderer] = useState<THREE.WebGLRenderer | null>(null);
+    const [scene, setScene] = useState<THREE.Scene | null>(null);
+    const [camera, setCamera] = useState<THREE.Camera | null>(null);
+    useAnimation(props.animate, renderer);
+    const animationFrameId = useRef<number | null>(null);
+
+    const setNewCamera = useCallback(
+        (camera: THREE.Camera) => {
+            setCamera(camera);
+            updateCameraAspect(camera);
+        },
+        [setCamera],
+    );
+
+    const canvasContext = useMemo<CanvasContextType>(() => {
+        return {
+            renderer,
+            mainScene: scene,
+            setScene,
+            camera: camera,
+            setCamera: setNewCamera,
+        };
+    }, [renderer, scene, camera, setScene, setCamera]);
 
     const findDiv = () => {
         const div = document.getElementById(props.divId);
@@ -44,220 +44,87 @@ export const Canvas = (props: CanvasProps) => {
         return div;
     };
 
-    const updateCameraAspect = (aspect?: number) => {
-        if (!cameraRef.current) {
+    const updateCameraAspect = (camera: THREE.Camera | null, aspect?: number) => {
+        if (!camera || !(camera instanceof THREE.PerspectiveCamera)) {
             return;
         }
 
         if (aspect !== undefined) {
-            cameraRef.current.aspect = aspect;
+            camera.aspect = aspect;
         } else {
             const div = findDiv();
             const { height, width } = div.getBoundingClientRect();
-            cameraRef.current.aspect = width / height;
+            camera.aspect = width / height;
         }
 
-        cameraRef.current.updateProjectionMatrix();
+        camera.updateProjectionMatrix();
     };
 
     // make canvas addaptive to the div size
     const resizeCanvasIfNeeded = () => {
+        if (!renderer) {
+            return;
+        }
         const div = findDiv();
 
         const { height, width } = div.getBoundingClientRect();
-        const { height: canvasHeight, width: canvasWidth } = rendererRef.current!.domElement; //eslint-disable-line @typescript-eslint/no-non-null-assertion
+        const { height: canvasHeight, width: canvasWidth } = renderer.domElement;
 
         if (height !== canvasHeight || width !== canvasWidth) {
-            rendererRef.current?.setSize(width, height, false);
-            updateCameraAspect(width / height);
+            renderer.setSize(width, height, false);
+            updateCameraAspect(camera, width / height);
         }
     };
 
-    const animate = (timestamp: number) => {
-        if (previousTimestamp.current == undefined) {
-            previousTimestamp.current = timestamp;
-        }
-
-        const elapsed = timestamp - previousTimestamp.current;
-        previousTimestamp.current = timestamp;
+    const render = () => {
         resizeCanvasIfNeeded();
 
-        animations.current?.forEach((animation) => animation(timestamp, elapsed));
-
-        if (sceneRef.current !== undefined && cameraRef.current !== undefined) {
-            rendererRef.current?.render(sceneRef.current, cameraRef.current);
+        if (scene !== null && camera !== null) {
+            renderer?.render(scene, camera);
         }
 
-        animationFrameId.current = requestAnimationFrame(animate);
+        animationFrameId.current = requestAnimationFrame(render);
     };
-
-    const childHandler = (
-        childType: string,
-        validatedChild: ReactElement,
-        callback: (object: any) => void,
-    ) => {
-        const object = new constructors[childType](...(validatedChild.props.params ?? []));
-        objects.current.push(object);
-        callback(object);
-
-        if (object instanceof Object3D) {
-            if (validatedChild.props.position) {
-                const [x, y, z] = validatedChild.props.position;
-                object.position.set(x, y, z);
-            }
-
-            if (validatedChild.props.rotation) {
-                const [x, y, z] = validatedChild.props.rotation;
-                object.rotation.set(x, y, z);
-            }
-        }
-
-        if (validatedChild.props.animate) {
-            animations.current?.push((timestamp, elapsed) =>
-                validatedChild.props.animate(timestamp, elapsed, object),
-            );
-        }
-
-        const childrenArray = React.Children.toArray(validatedChild.props.children);
-        childrenArray.forEach((child) => {
-            handleChild(child, object.type, object);
-        });
-
-        handleForwardRef(validatedChild.props.innerRef, object);
-    };
-
-    const handleChild = (
-        child: ReturnType<typeof React.Children.toArray>[number],
-        parentType: string,
-        parent?: any,
-    ) => {
-        if (ReactIs.typeOf(child) === ReactIs.Fragment) {
-            const children = (child as ReactElement).props.children;
-            const childrenArray = React.Children.toArray(children);
-            childrenArray.forEach((child) => handleChild(child, parentType, parent));
-            return;
-        }
-
-        const validatedChild = validateChildType(child);
-        const childType = getElementType(validatedChild);
-        checkIsElementSupported(childType, parentType);
-
-        if (cameraChildren.includes(childType)) {
-            childHandler(childType, validatedChild, (object) => {
-                if (cameraRef.current !== undefined) {
-                    console.warn(
-                        'Canvas should contain only single camera object. Only second camera will be used.',
-                    );
-                }
-                cameraRef.current = object;
-                updateCameraAspect();
-            });
-            return;
-        }
-
-        if (childType === sceneChild) {
-            childHandler(childType, validatedChild, (object) => {
-                if (sceneRef.current !== undefined) {
-                    console.warn(
-                        'Canvas should contain only single scene object. Only second scene will be used.',
-                    );
-                }
-                sceneRef.current = object;
-            });
-            return;
-        }
-
-        if (materialChildren.includes(childType)) {
-            childHandler(childType, validatedChild, (object) => {
-                parent.material = object;
-            });
-            return;
-        }
-
-        if (geometryChildren.includes(childType)) {
-            childHandler(childType, validatedChild, (object) => {
-                parent.geometry = object;
-            });
-            return;
-        }
-
-        if (controlsChildren.includes(childType)) {
-            controlsToCreate.current.push(childType);
-            return;
-        }
-        // Object3D
-        childHandler(childType, validatedChild, (object) => {
-            parent.add(object);
-        });
-    };
-
-    const createControls = () => {
-        controlsToCreate.current.forEach((controlType) => {
-            if (cameraRef.current) {
-                const control = controlsConstructor[controlType](
-                    cameraRef.current,
-                    rendererRef.current?.domElement,
-                );
-                objects.current.push(control);
-            }
-        });
-    };
-
-    // create WebGLRenderer
-    useLayoutEffect(() => {
-        rendererRef.current = new THREE.WebGLRenderer();
-        animationFrameId.current = requestAnimationFrame(animate);
-
-        return () => {
-            cancelAnimationFrame(animationFrameId.current);
-
-            rendererRef.current?.dispose();
-            rendererRef.current?.forceContextLoss();
-        };
-    }, []);
 
     // append canvas to the DOM
     useLayoutEffect(() => {
+        if (!renderer) {
+            return;
+        }
         const div = findDiv();
-        div.appendChild(rendererRef.current!.domElement); //eslint-disable-line @typescript-eslint/no-non-null-assertion
+        div.appendChild(renderer.domElement);
+        return () => {
+            div.removeChild(renderer.domElement);
+        };
+    }, [props.divId, renderer]);
+
+    useLayoutEffect(() => {
+        const newRenderer = new THREE.WebGLRenderer();
+        setRenderer(newRenderer);
+
+        const cleanRef = handleForwardRef(props.innerRef, newRenderer);
 
         return () => {
-            div.removeChild(rendererRef.current!.domElement); //eslint-disable-line @typescript-eslint/no-non-null-assertion
+            if (cleanRef) {
+                cleanRef();
+            }
+            newRenderer.dispose();
+            // TODO: React.ScrictMode causes canvas to show lack of context for a single frame
+            newRenderer.forceContextLoss();
         };
-    }, [props.divId]);
+    }, []);
 
-    useLayoutEffectWithChildren(() => {
-        const childrenArray = React.Children.toArray(props.children);
-
-        childrenArray.forEach((child) => {
-            handleChild(child, mainParent);
-        });
-
-        createControls();
+    // start render loop
+    useLayoutEffect(() => {
+        animationFrameId.current = requestAnimationFrame(render);
 
         return () => {
-            objects.current.forEach((object) => {
-                // TODO: check if children array should be cleared
-                // maybe dispose() is enough
-                // if (object.children) {
-                // object.children = [];
-                // }
-
-                if (typeof object.dispose === 'function') {
-                    object.dispose();
-                }
-            });
-            cameraRef.current = undefined;
-            sceneRef.current = undefined;
-            objects.current = [];
-            animations.current = [];
-            controlsToCreate.current = [];
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current);
+            }
+            animationFrameId.current = null;
         };
-    }, props.children);
+    }, [renderer, scene, camera]);
 
-    useEffect(() => {
-        handleForwardRef(props.innerRef, rendererRef.current!); //eslint-disable-line @typescript-eslint/no-non-null-assertion
-    }, [forwardRef]);
-
-    return <></>;
+    return <CanvasContext.Provider value={canvasContext}>{props.children}</CanvasContext.Provider>;
 };
