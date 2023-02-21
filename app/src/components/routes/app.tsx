@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../routes';
 import '../../styles/app/app.css';
@@ -13,7 +13,7 @@ const trackFiles = [tracks1, tracks2];
 export const App = () => {
     const divId = useRef('AppDivId');
     const [trackId, setTrackId] = useState(0);
-    const tracks = tracksSchema.parse(trackFiles[1]);
+    const tracks = useMemo(() => tracksSchema.parse(trackFiles[1]), []);
 
     return (
         <div id={divId.current} className="App">
