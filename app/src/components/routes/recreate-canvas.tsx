@@ -7,7 +7,7 @@ import {
     Mesh,
     MeshBasicMaterial,
     PerspectiveCamera,
-} from 'three-js-react-component';
+} from 'react-three-component';
 
 export const RecreateCanvas = () => {
     const [divId] = useState(new Date().getTime().toString());

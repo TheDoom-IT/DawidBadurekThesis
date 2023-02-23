@@ -1,8 +1,8 @@
 {
-  "name": "three-js-react-component",
-  "version": "1.0.0",
+  "name": "react-three-component",
+  "version": "0.0.4",
   "description": "React component using three.js library to display 3d graphics",
-  "author": "Dawid Badurek",
+  "author": "TheDoom-IT",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
@@ -16,12 +16,15 @@
     "lint": "eslint \"**/src/**/*.{ts,tsx}\"  \"**/tests/**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/src/**/*.{ts,tsx}\"  \"**/tests/**/*.{ts,tsx}\"",
     "test": "jest",
-    "watch": "tsc --watch --project tsconfig.build.json",
-    "link": "npm link && cd ../app && npm link three-js-react-component"
+    "watch": "tsc --watch --project tsconfig.build.json"
   },
+  "keywords": [
+    "react",
+    "three",
+    "react-component"
+  ],
   "license": "MIT",
   "dependencies": {
-    "react-is": "^18.2.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",

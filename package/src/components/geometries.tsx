@@ -17,5 +17,3 @@ export const BufferGeometry: FC<BufferGeometryProps> = createThreeGeometry(THREE
 
 export type PlaneGeometryProps = GeometryProps<typeof THREE.PlaneGeometry, THREE.PlaneGeometry>;
 export const PlaneGeometry: FC<PlaneGeometryProps> = createThreeGeometry(THREE.PlaneGeometry);
-
-export const BoxGeometryTest = createThreeGeometry(THREE.BoxGeometry);

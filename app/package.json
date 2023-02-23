@@ -8,12 +8,14 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint \"**/src/**/*.{ts,tsx}\"",
-    "lint:fix": "eslint --fix \"**/src/**/*.{ts,tsx}\""
+    "lint:fix": "eslint --fix \"**/src/**/*.{ts,tsx}\"",
+    "link": "cd ../package && npm link && cd ../app && npm link react-three-component"
   },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
+    "react-three-component": "^0.0.4",
     "three": "^0.144.0",
     "zod": "^3.20.2"
   },

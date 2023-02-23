@@ -5,7 +5,7 @@ import {
     LineBasicMaterial,
     Points,
     PointsMaterial,
-} from 'three-js-react-component';
+} from 'react-three-component';
 import * as THREE from 'three';
 import { Track } from '../schemas/tracks-schema';
 

@@ -1,4 +1,4 @@
-import { LineLoop, Mesh, MeshStandardMaterial, PlaneGeometry } from 'three-js-react-component';
+import { LineLoop, Mesh, MeshStandardMaterial, PlaneGeometry } from 'react-three-component';
 import * as THREE from 'three';
 import React from 'react';
 
