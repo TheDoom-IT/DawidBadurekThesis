@@ -55,7 +55,7 @@ export const ThreeComponent = () => {
 ```
 Result:
 
-<img src="https://raw.githubusercontent.com/TheDoom-IT/DawidBadurekThesis/feat/publish-package/docs/example.gif" alt="Exemplary component video">
+![Exemplary component video](https://raw.githubusercontent.com/TheDoom-IT/DawidBadurekThesis/master/docs/example.gif)
 
 ## Canvas
 `Canvas` is the main element that is reponsible for the whole rendering process. It requires `divId` param. HTML `<canvas>` element will be injected to the given `div` element. Its size will be equal to the `div` element.
