@@ -1,0 +1,20 @@
+name: Lint
+description: fdsf
+
+inputs:
+  working-directory:
+    description: default
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - run: |
+          npm ci
+          npm run lint
+      working-directory: ${{ inputs.working-directory }}
+      shell: bash
+      

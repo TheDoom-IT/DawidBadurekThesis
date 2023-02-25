@@ -3,10 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://thedoom-it.github.io/DawidBadurekThesis/",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "test": "echo 'Tests finished...'",
     "lint": "eslint \"**/src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint --fix \"**/src/**/*.{ts,tsx}\"",
     "link": "cd ../package && npm link && cd ../app && npm link react-three-component"
