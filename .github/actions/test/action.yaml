@@ -1,9 +1,9 @@
 name: Test
-description: fdsf
+description: Run tests
 
 inputs:
   working-directory:
-    description: default
+    description: Working directory of the tests
     required: true
 
 runs:

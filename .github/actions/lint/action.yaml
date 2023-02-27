@@ -1,9 +1,9 @@
 name: Lint
-description: fdsf
+description: Run linter
 
 inputs:
   working-directory:
-    description: default
+    description: Working directory of the linter
     required: true
 
 runs:
