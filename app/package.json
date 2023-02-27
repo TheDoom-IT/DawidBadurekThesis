@@ -18,6 +18,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
     "react-three-component": "^0.0.4",
+    "reactjs-popup": "^2.0.5",
     "three": "^0.144.0",
     "zod": "^3.20.2"
   },

@@ -7,6 +7,7 @@ import { Statistics } from '../statistics';
 import tracks1 from '../../static/tracks1647477806262.json';
 import tracks2 from '../../static/tracks1647635306347.json';
 import { tracksSchema } from '../../schemas/tracks-schema';
+import { LoadFilePopup } from '../load-file-popup';
 
 const trackFiles = [tracks1, tracks2];
 
@@ -16,14 +17,17 @@ export const App = () => {
     const tracks = useMemo(() => tracksSchema.parse(trackFiles[1]), []);
 
     return (
-        <div id={divId.current} className="App">
-            <Renderer divId={divId.current} tracks={tracks} />
-            <div className="home-link-wrapper">
-                <Link className="home-link" to={ROUTES.HOME}>
-                    Home
-                </Link>
+        <>
+            <LoadFilePopup />
+            <div id={divId.current} className="App">
+                <Renderer divId={divId.current} tracks={tracks} />
+                <div className="home-link-wrapper">
+                    <Link className="home-link" to={ROUTES.HOME}>
+                        Home
+                    </Link>
+                </div>
+                <Statistics tracks={tracks} setTrackId={setTrackId} trackId={trackId} />
             </div>
-            <Statistics tracks={tracks} setTrackId={setTrackId} trackId={trackId} />
-        </div>
+        </>
     );
 };
