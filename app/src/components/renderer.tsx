@@ -13,6 +13,7 @@ import { Plane } from './plane';
 interface RendererProps {
     divId: string;
     tracks: Tracks;
+    color: string;
 }
 
 export const Renderer = (props: RendererProps) => {
@@ -21,7 +22,7 @@ export const Renderer = (props: RendererProps) => {
             return;
         }
 
-        scene.background = new THREE.Color(0x74acff);
+        scene.background = new THREE.Color(props.color);
     };
 
     return (
