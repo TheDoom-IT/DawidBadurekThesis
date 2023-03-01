@@ -6,7 +6,9 @@
     min-width: 400px;
     min-height: 300px;
 
-    --padding: 20px
+    --padding: 20px;
+
+    background-color: #74acff;
 }
 
 .App .home-link-wrapper {
@@ -26,19 +28,35 @@
     font-size: 1.2rem;
 }
 
-.App .statistics {
-    padding: 0px 15px 15px 15px;
-    margin: 0 var(--padding) var(--padding) 0;
-    max-width: 300px;
-    min-width: 200px;
+.box {
     background-color: rgb(32, 27, 27);
     border-radius: 10px;
     border-style: solid;
     border-color: rgb(204, 202, 202);
+    color: white;
+    padding: 0px 15px 15px 15px;
+}
+
+.hline {
+    margin: 10px 0;
+    
+    border-top: 3px;
+    border-left: 0;
+    border-bottom: 0;
+    border-right: 0;
+    
+    border-color: white;
+    border-style: dashed;
+    border-radius: 10px;
+}
+
+.App .statistics {
+    margin: 0 var(--padding) var(--padding) 0;
+    max-width: 300px;
+    min-width: 200px;
     position: absolute;
     right: 0;
     bottom: 0;
-    color: white;
 }
 
 .App .text-center {
