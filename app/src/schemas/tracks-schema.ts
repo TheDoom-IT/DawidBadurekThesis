@@ -8,6 +8,7 @@ const mCluterSchema = z.object({
 
 const mTrackSchema = z.object({
     count: z.number(),
+    source: z.number(),
     jsonStartingXYZ: z.array(z.number()).length(3),
     mPolyX: z.array(z.number()),
     mPolyY: z.array(z.number()),

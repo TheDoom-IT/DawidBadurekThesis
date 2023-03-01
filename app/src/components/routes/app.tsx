@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../routes';
 import '../../styles/app/app.css';
@@ -6,13 +6,31 @@ import { Renderer } from '../renderer';
 import { Statistics } from '../statistics';
 import { Tracks } from '../../schemas/tracks-schema';
 import { LoadFileMenu } from '../load-file-menu';
+import { SelectedSource } from '../../types/selected-source';
 
 export const App = () => {
     const divId = useRef('AppDivId');
     const divRef = useRef<HTMLDivElement>(null);
     const [color, setColor] = useState('#ffffff');
-    const [trackId, setTrackId] = useState(0);
     const [tracks, setTracks] = useState<Tracks | null>(null);
+    const [selectedSources, setSelectedSources] = useState<SelectedSource[]>([]);
+
+    useEffect(() => {
+        if (!tracks) {
+            setSelectedSources([]);
+            return;
+        }
+        const sources = new Set<number>();
+
+        tracks.mTracks.forEach((track) => sources.add(track.source));
+
+        const result: SelectedSource[] = Array.from(sources).map((source) => ({
+            name: source.toString(),
+            selected: true,
+        }));
+
+        setSelectedSources(result);
+    }, [tracks]);
 
     useEffect(() => {
         if (!divRef.current) {
@@ -42,9 +60,9 @@ export const App = () => {
                         </div>
                         <Statistics
                             tracks={tracks}
-                            setTrackId={setTrackId}
-                            trackId={trackId}
                             closeFile={closeFile}
+                            selectedSources={selectedSources}
+                            setSelectedSources={setSelectedSources}
                         />
                     </>
                 )}
