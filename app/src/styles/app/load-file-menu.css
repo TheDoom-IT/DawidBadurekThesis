@@ -1,6 +1,6 @@
 #LoadFileMenu {
     z-index: 100;
-
+    max-width: 400px;
 
     position: absolute;
     top: 50%;

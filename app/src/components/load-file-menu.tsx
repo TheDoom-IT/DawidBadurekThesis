@@ -13,6 +13,7 @@ export interface LoadFileMenuProps {
 
 export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const [buttonEnabled, setButtonEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -21,8 +22,29 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
         setTracks(tracks);
     };
 
-    const handleError = () => {
-        setError('Failed to load a file.');
+    const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isFileChosen = e.target.value !== '';
+        setButtonEnabled(isFileChosen);
+        setError(null);
+    };
+
+    const parseJson = (fileString: string) => {
+        try {
+            return JSON.parse(fileString);
+        } catch {
+            throw new Error('Failed to parse a JSON file.');
+        }
+    };
+
+    const validateInputFile = (fileAsJson: any): Tracks => {
+        try {
+            return tracksSchema.parse(fileAsJson);
+        } catch (e) {
+            console.error(e);
+            throw new Error(
+                `Cannot read a file. It has an unsupported format(check the console for more information).`,
+            );
+        }
     };
 
     const handleFile = async () => {
@@ -41,16 +63,18 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
         try {
             const fileResult = await readFile(file);
             if (fileResult === null) {
-                handleError();
-                setLoading(false);
-                return;
+                throw new Error('Failed to load a file.');
             }
 
-            const fileAsJson = JSON.parse(fileResult.toString());
-            const tracks = tracksSchema.parse(fileAsJson);
+            const fileAsJson = parseJson(fileResult.toString());
+            const tracks = validateInputFile(fileAsJson);
             setTracks(tracks);
-        } catch {
-            handleError();
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('Unexpected error occured.');
+            }
         }
 
         setLoading(false);
@@ -61,8 +85,12 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
             <h3 className="text-center">Choose a file</h3>
             <div className="hline"></div>
             <div className="file-form">
-                <input ref={inputRef} type="file" accept="application/JSON"></input>
-                <button onClick={handleFile} disabled={loading}>
+                <input
+                    onChange={onFileChange}
+                    ref={inputRef}
+                    type="file"
+                    accept="application/JSON"></input>
+                <button onClick={handleFile} disabled={loading || !buttonEnabled}>
                     Load
                 </button>
                 <div className="hline"></div>
