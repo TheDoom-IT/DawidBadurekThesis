@@ -6,32 +6,35 @@ interface SelectSourceProps {
 }
 
 export const SelectSource = ({ selectedSources, setSelectedSources }: SelectSourceProps) => {
-    const onChange = (source: SelectedSource) =>
+    const onChange = (sourceIndex: number) =>
         setSelectedSources(
-            selectedSources.map((oldSource) => {
-                if (source.name === oldSource.name) {
+            selectedSources.map((source, index) => {
+                if (index === sourceIndex) {
                     return {
-                        name: source.name,
+                        ...source,
                         selected: !source.selected,
                     };
                 }
 
-                return oldSource;
+                return source;
             }),
         );
 
     return (
         <>
-            {selectedSources.map((source) => (
-                <div key={source.name}>
-                    <input
-                        id={source.name}
-                        type="checkbox"
-                        name={`source_${source.name}`}
-                        checked={source.selected}
-                        onChange={() => onChange(source)}
-                    />
-                    <label htmlFor={`source_${source.name}`}>{source.name}</label>
+            {selectedSources.map((source, index) => (
+                <div className={'source-checkbox-wrapper'} key={source.name}>
+                    <span>
+                        <input
+                            id={source.name}
+                            type="checkbox"
+                            name={`source_${source.name}`}
+                            checked={source.selected}
+                            onChange={() => onChange(index)}
+                        />
+                        <label htmlFor={`source_${source.name}`}>{source.name}</label>
+                    </span>
+                    <span>{source.count} tracks</span>
                 </div>
             ))}
         </>

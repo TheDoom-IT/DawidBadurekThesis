@@ -1,6 +1,7 @@
 import { Tracks } from '../schemas/tracks-schema';
 import { SelectedSource } from '../types/selected-source';
 import { SelectSource } from './select-source';
+import './../styles/app/statistics.css';
 
 interface StatisticsProps {
     tracks: Tracks;

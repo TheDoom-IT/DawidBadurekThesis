@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../routes';
 import '../../styles/app/app.css';
@@ -20,14 +20,17 @@ export const App = () => {
             setSelectedSources([]);
             return;
         }
-        const sources = new Set<number>();
+        const result: SelectedSource[] = [];
 
-        tracks.mTracks.forEach((track) => sources.add(track.source));
+        tracks.mTracks.forEach((track) => {
+            if (result[track.source] === undefined) {
+                const nameRegex = /\[(.*)\/.*\/.*\]/; //match [name/0/00]
+                const sourceName = nameRegex.exec(track.gid)?.[1] ?? `source ${track.source}`;
+                result[track.source] = { name: sourceName, selected: true, count: 0 };
+            }
 
-        const result: SelectedSource[] = Array.from(sources).map((source) => ({
-            name: source.toString(),
-            selected: true,
-        }));
+            result[track.source].count = result[track.source].count + 1;
+        });
 
         setSelectedSources(result);
     }, [tracks]);
@@ -52,7 +55,12 @@ export const App = () => {
                 {tracks === null && <LoadFileMenu setTracks={setTracks} />}
                 {tracks !== null && (
                     <>
-                        <Renderer divId={divId.current} tracks={tracks} color={color} />
+                        <Renderer
+                            divId={divId.current}
+                            tracks={tracks}
+                            color={color}
+                            selectedSources={selectedSources}
+                        />
                         <div className="home-link-wrapper">
                             <Link className="home-link" to={ROUTES.HOME}>
                                 Home
