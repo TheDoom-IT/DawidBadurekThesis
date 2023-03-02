@@ -1,0 +1,13 @@
+.statistics .source-checkbox-wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.statistics {
+    margin: 0 var(--padding) var(--padding) 0;
+    max-width: 300px;
+    min-width: 200px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
