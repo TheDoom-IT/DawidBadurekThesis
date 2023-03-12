@@ -27,7 +27,6 @@ function validatemTracksLength(obj: z.infer<typeof mTrackSchema>) {
 
 export const tracksSchema = z
     .object({
-        fileVersion: z.number(),
         collisionTime: z.coerce.date(),
         trackCount: z.number(),
         mTracks: z.array(mTrackSchema.refine(validatemTracksLength)),
