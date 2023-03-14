@@ -29,6 +29,7 @@ export const Statistics = ({
                 <label htmlFor={'rotateClipping'}>Rotate</label>
                 <input
                     id={'rotateClipping'}
+                    className="checkbox-input"
                     type="checkbox"
                     name={'rotateClipping'}
                     checked={clipRotationAsCamera}

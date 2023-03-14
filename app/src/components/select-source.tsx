@@ -34,6 +34,7 @@ export const SelectSource = ({ selectedSources, setSelectedSources }: SelectSour
                     <span>
                         <input
                             id={source.name}
+                            className="checkbox-input"
                             type="checkbox"
                             name={`source_${source.name}`}
                             checked={source.selected}
