@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 
 const vertexShader = `
-varying vec3 vPosition;
+varying vec3 v_position;
 #include <clipping_planes_pars_vertex>
 
 void main()
@@ -12,12 +12,12 @@ void main()
     #include <begin_vertex>
     #include <project_vertex>
 
-    vPosition = mvPosition.xyz;
+    v_position = mvPosition.xyz;
     #include <clipping_planes_vertex>
 }`;
 
 const fragmentShader = `
-varying vec3 vPosition;
+varying vec3 v_position;
 
 #include <clipping_planes_pars_fragment>
 
@@ -25,13 +25,14 @@ void main()
 {
     #include <clipping_planes_fragment>
     
-    gl_FragColor = vec4(1.0, 0, 0, 1.0);
+    gl_FragColor = vec4(0.0, 0, 0, 1.0);
 
     #if NUM_CLIPPING_PLANES > 0
         vec4 clippingPlane = clippingPlanes[0];
-        float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;
-        if(abs(distance) < 10.0) {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        // clippingPlane is in the camera coordinates
+        float distance = dot(v_position, clippingPlane.xyz) + clippingPlane.w;
+        if(abs(distance) < 1.0) {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         }
     #endif
 }`;
@@ -71,11 +72,9 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
     return (
         <Mesh>
             <TorusGeometry params={[250, 50, 16, 100]} />
-            {/* <BoxGeometry params={[100, 100, 100]} /> */}
             <ShaderMaterial
                 params={[
                     {
-                        // color: 0x123456,
                         side: THREE.DoubleSide,
 
                         clipping: true,
