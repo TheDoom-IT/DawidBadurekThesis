@@ -22,7 +22,6 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
         setTracks(tracks);
     };
 
-    useEffect(loadExemplaryFile, []);
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const isFileChosen = e.target.value !== '';
         setButtonEnabled(isFileChosen);
