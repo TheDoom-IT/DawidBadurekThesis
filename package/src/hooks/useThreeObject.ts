@@ -27,16 +27,19 @@ export function useThreeObject<C extends new (...params: any[]) => R, R extends 
         if (props.position) {
             const [x, y, z] = props.position;
             object.position.set(x, y, z);
-        } else {
-            object.position.set(0, 0, 0);
         }
+        // TODO: should it be here??? Cannot set position and rotation inside innerRef
+        // else {
+        //     object.position.set(0, 0, 0);
+        // }
 
         if (props.rotation) {
             const [x, y, z] = props.rotation;
             object.rotation.set(x, y, z);
-        } else {
-            object.rotation.set(0, 0, 0);
         }
+        // else {
+        //     object.rotation.set(0, 0, 0);
+        // }
     }, [object, JSON.stringify(props.position), JSON.stringify(props.rotation)]);
 
     useEffect(() => {

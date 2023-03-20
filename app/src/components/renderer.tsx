@@ -10,6 +10,7 @@ import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
 import { Plane } from './plane';
 import { SelectedSource } from '../types/selected-source';
+import { CaloFragment } from './calo-fragment';
 
 interface RendererProps {
     divId: string;
@@ -46,6 +47,10 @@ export const Renderer = ({ divId, tracks, color, selectedSources }: RendererProp
                             max={tracks.mTracks.length}
                         />
                     );
+                })}
+                {tracks.mCalo?.[1] && <CaloFragment calo={tracks.mCalo[1]} />}
+                {tracks.mCalo?.map((calo, index) => {
+                    return <CaloFragment key={index} calo={calo} />;
                 })}
             </MainScene>
             <OrbitControls />
