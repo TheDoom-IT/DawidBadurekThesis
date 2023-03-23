@@ -10,6 +10,8 @@ interface StatisticsProps {
     setSelectedSources: (sources: SelectedSourceObject) => void;
     clipRotationAsCamera: boolean;
     setClipRotationAsCamera: (value: boolean) => void;
+    showMCalo: boolean;
+    setShowMCalo: (value: boolean) => void;
 }
 
 export const Statistics = ({
@@ -19,13 +21,15 @@ export const Statistics = ({
     setSelectedSources,
     clipRotationAsCamera,
     setClipRotationAsCamera,
+    showMCalo,
+    setShowMCalo,
 }: StatisticsProps) => {
     return (
         <div className="statistics box">
             <h3 className="text-center">Statistics</h3>
             Number of tracks: {tracks.trackCount}
             <br />
-            <span>
+            <div>
                 <label htmlFor={'rotateClipping'}>Rotate</label>
                 <input
                     id={'rotateClipping'}
@@ -35,8 +39,18 @@ export const Statistics = ({
                     checked={clipRotationAsCamera}
                     onChange={() => setClipRotationAsCamera(!clipRotationAsCamera)}
                 />
-            </span>
-            <br />
+            </div>
+            <div>
+                <label htmlFor={'showMCalo'}>Show mCalo</label>
+                <input
+                    id={'showMCalo'}
+                    className="checkbox-input"
+                    type="checkbox"
+                    name={'showMCalo'}
+                    checked={showMCalo}
+                    onChange={() => setShowMCalo(!showMCalo)}
+                />
+            </div>
             <div className="hline"></div>
             <SelectSource
                 selectedSources={selectedSources}

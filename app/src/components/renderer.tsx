@@ -23,6 +23,7 @@ interface RendererProps {
     color: string;
     selectedSources: SelectedSourceObject;
     clipRotationAsCamera: boolean;
+    showMCalo: boolean;
 }
 
 export const Renderer = ({
@@ -31,6 +32,7 @@ export const Renderer = ({
     color,
     selectedSources,
     clipRotationAsCamera,
+    showMCalo,
 }: RendererProps) => {
     const [controls, setControls] = useState<Controls | null>(null);
 
@@ -71,9 +73,10 @@ export const Renderer = ({
                 {selectedTracks.map((track) => {
                     return <TrackFragment key={track.index} track={track.track} />;
                 })}
-                {tracks.mCalo?.map((calo, index) => {
-                    return <CaloElement key={index} calo={calo} />;
-                })}
+                {showMCalo &&
+                    tracks.mCalo?.map((calo, index) => {
+                        return <CaloElement key={index} calo={calo} />;
+                    })}
             </MainScene>
         </Canvas>
     );

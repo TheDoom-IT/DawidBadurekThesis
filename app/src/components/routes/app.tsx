@@ -15,6 +15,7 @@ export const App = () => {
     const [tracks, setTracks] = useState<Tracks | null>(null);
     const [selectedSources, setSelectedSources] = useState<SelectedSourceObject>({});
     const [clipRotationAsCamera, setClipRotationAsCamera] = useState(false);
+    const [showMCalo, setShowMCalo] = useState(true);
 
     useEffect(() => {
         if (!tracks) {
@@ -62,6 +63,7 @@ export const App = () => {
                             color={color}
                             selectedSources={selectedSources}
                             clipRotationAsCamera={clipRotationAsCamera}
+                            showMCalo={showMCalo}
                         />
                         <div className="home-link-wrapper">
                             <Link className="home-link" to={ROUTES.HOME}>
@@ -75,6 +77,8 @@ export const App = () => {
                             setSelectedSources={setSelectedSources}
                             clipRotationAsCamera={clipRotationAsCamera}
                             setClipRotationAsCamera={setClipRotationAsCamera}
+                            showMCalo={showMCalo}
+                            setShowMCalo={setShowMCalo}
                         />
                     </>
                 )}

@@ -12,6 +12,8 @@ interface DataWindowsProps {
     setSelectedSources: (sources: SelectedSourceObject) => void;
     clipRotationAsCamera: boolean;
     setClipRotationAsCamera: (value: boolean) => void;
+    showMCalo: boolean;
+    setShowMCalo: (value: boolean) => void;
 }
 
 export const DataWindows = ({
@@ -21,6 +23,8 @@ export const DataWindows = ({
     setSelectedSources,
     clipRotationAsCamera,
     setClipRotationAsCamera,
+    showMCalo,
+    setShowMCalo,
 }: DataWindowsProps) => {
     const [collapsed, setCollapsed] = useState(false);
 
@@ -38,6 +42,8 @@ export const DataWindows = ({
                     setSelectedSources={setSelectedSources}
                     clipRotationAsCamera={clipRotationAsCamera}
                     setClipRotationAsCamera={setClipRotationAsCamera}
+                    showMCalo={showMCalo}
+                    setShowMCalo={setShowMCalo}
                 />
             </div>
         </div>
