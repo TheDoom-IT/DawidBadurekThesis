@@ -11,14 +11,12 @@ import { Track } from '../schemas/tracks-schema';
 
 export interface TrackFragmentProps {
     track: Track;
-    index: number;
-    max: number;
 }
 
 const LINE_SEGMENTS = 5;
 const ANIMATION_SPEED = 500;
 
-export const TrackFragment = (props: TrackFragmentProps) => {
+export const TrackFragment = ({ track }: TrackFragmentProps) => {
     const updatePosition = (
         attributeIndex: number,
         trackIndex: number,
@@ -54,23 +52,23 @@ export const TrackFragment = (props: TrackFragmentProps) => {
         return (ref: THREE.BufferGeometry, timestamp: number) => {
             const position = ref.getAttribute('position');
 
-            const index = Math.floor(timestamp / ANIMATION_SPEED) % props.track.count;
+            const index = Math.floor(timestamp / ANIMATION_SPEED) % track.count;
             for (let x = 0; x < LINE_SEGMENTS; ++x) {
-                updatePosition(x, index < x ? 0 : index - x, position, props.track);
+                updatePosition(x, index < x ? 0 : index - x, position, track);
             }
             position.needsUpdate = true;
         };
-    }, [props.track]);
+    }, [track]);
 
     const pointsAnimation = useMemo(() => {
         return (ref: THREE.BufferGeometry, timestamp: number) => {
             const position = ref.getAttribute('position');
 
-            const index = Math.floor(timestamp / ANIMATION_SPEED) % props.track.count;
-            updatePosition(0, index, position, props.track);
+            const index = Math.floor(timestamp / ANIMATION_SPEED) % track.count;
+            updatePosition(0, index, position, track);
             position.needsUpdate = true;
         };
-    }, [props.track]);
+    }, [track]);
 
     const color = useMemo(() => {
         return 0xffffff * Math.random();

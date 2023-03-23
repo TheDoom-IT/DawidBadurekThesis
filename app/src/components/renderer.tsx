@@ -45,14 +45,7 @@ export const Renderer = ({ divId, tracks, color, selectedSources }: RendererProp
                 <AmbientLight />
                 <Plane />
                 {selectedTracks.map((track) => {
-                    return (
-                        <TrackFragment
-                            key={track.index}
-                            track={track.track}
-                            index={track.index}
-                            max={selectedTracks.length}
-                        />
-                    );
+                    return <TrackFragment key={track.index} track={track.track} />;
                 })}
                 {tracks.mCalo?.map((calo, index) => {
                     return <CaloElement key={index} calo={calo} />;
