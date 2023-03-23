@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { Mesh, ShaderMaterial, TorusGeometry } from 'react-three-component';
+import { Mesh, OBJLoader, ShaderMaterial, TorusGeometry } from 'react-three-component';
 import * as THREE from 'three';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -68,6 +68,8 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
             controls.removeEventListener('change', onControlsChange);
         };
     }, [controls, clipRotationAsCamera, onControlsChange]);
+
+    return <OBJLoader innerRef={console.log} url="/public/gltf.glb" />;
 
     return (
         <Mesh>

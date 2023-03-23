@@ -52,8 +52,8 @@ export const Renderer = ({
         <Canvas divId={divId} innerRef={initRenderer}>
             <PerspectiveCamera position={[0, 30, 110]} />
             <MainScene innerRef={setScene}>
-                <AmbientLight />
-                <DirectionalLight position={[0, 20, 0]} />
+                <AmbientLight params={['white', 0.3]} />
+                <DirectionalLight position={[0, 20, 10]} />
                 <OrbitControls innerRef={(ref) => setControls(ref)} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 <Plane />
