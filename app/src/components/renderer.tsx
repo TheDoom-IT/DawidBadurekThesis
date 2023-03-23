@@ -14,6 +14,8 @@ import { useState } from 'react';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 import { Plane } from './plane';
 import { MachineModel } from './machine-model';
+import { CaloElement } from './calo-element';
+import { useMemo } from 'react';
 
 interface RendererProps {
     divId: string;
@@ -48,6 +50,15 @@ export const Renderer = ({
         renderer.localClippingEnabled = true;
     };
 
+    const selectedTracks = useMemo(() => {
+        return tracks.mTracks
+            .map((track, index) => ({
+                track,
+                index,
+            }))
+            .filter((track) => selectedSources[track.track.source]?.selected === true);
+    }, [selectedSources, tracks]);
+
     return (
         <Canvas divId={divId} innerRef={initRenderer}>
             <PerspectiveCamera position={[0, 30, 110]} />
@@ -57,19 +68,11 @@ export const Renderer = ({
                 <OrbitControls innerRef={(ref) => setControls(ref)} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 <Plane />
-                {tracks.mTracks.map((track, index) => {
-                    if (selectedSources[track.source]?.selected !== true) {
-                        return null;
-                    }
-
-                    return (
-                        <TrackFragment
-                            key={index}
-                            track={track}
-                            index={index}
-                            max={tracks.mTracks.length}
-                        />
-                    );
+                {selectedTracks.map((track) => {
+                    return <TrackFragment key={track.index} track={track.track} />;
+                })}
+                {tracks.mCalo?.map((calo, index) => {
+                    return <CaloElement key={index} calo={calo} />;
                 })}
             </MainScene>
         </Canvas>
