@@ -10,6 +10,8 @@ import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
 import { Plane } from './plane';
 import { SelectedSource } from '../types/selected-source';
+import { CaloElement } from './calo-element';
+import { useMemo } from 'react';
 
 interface RendererProps {
     divId: string;
@@ -27,25 +29,26 @@ export const Renderer = ({ divId, tracks, color, selectedSources }: RendererProp
         scene.background = new THREE.Color(color);
     };
 
+    const selectedTracks = useMemo(() => {
+        return tracks.mTracks
+            .map((track, index) => ({
+                track,
+                index,
+            }))
+            .filter((track) => selectedSources[track.track.source]?.selected === true);
+    }, [selectedSources, tracks]);
+
     return (
         <Canvas divId={divId}>
             <PerspectiveCamera position={[0, 30, 110]} />
             <MainScene innerRef={setScene}>
                 <AmbientLight />
                 <Plane />
-                {tracks.mTracks.map((track, index) => {
-                    if (selectedSources[track.source]?.selected !== true) {
-                        return null;
-                    }
-
-                    return (
-                        <TrackFragment
-                            key={index}
-                            track={track}
-                            index={index}
-                            max={tracks.mTracks.length}
-                        />
-                    );
+                {selectedTracks.map((track) => {
+                    return <TrackFragment key={track.index} track={track.track} />;
+                })}
+                {tracks.mCalo?.map((calo, index) => {
+                    return <CaloElement key={index} calo={calo} />;
                 })}
             </MainScene>
             <OrbitControls />

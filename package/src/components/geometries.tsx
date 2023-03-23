@@ -8,9 +8,16 @@ export type CapsuleGeometryProps = GeometryProps<
     typeof THREE.CapsuleGeometry,
     THREE.CapsuleGeometry
 >;
+export type CylinderGeometryProps = GeometryProps<
+    typeof THREE.CylinderGeometry,
+    THREE.CylinderGeometry
+>;
 
 export const BoxGeometry: FC<BoxGeometryProps> = createThreeGeometry(THREE.BoxGeometry);
 export const CapsuleGeometry: FC<CapsuleGeometryProps> = createThreeGeometry(THREE.CapsuleGeometry);
+export const CylinderGeometry: FC<CylinderGeometryProps> = createThreeGeometry(
+    THREE.CylinderGeometry,
+);
 
 export type BufferGeometryProps = GeometryProps<typeof THREE.BufferGeometry, THREE.BufferGeometry>;
 export const BufferGeometry: FC<BufferGeometryProps> = createThreeGeometry(THREE.BufferGeometry);

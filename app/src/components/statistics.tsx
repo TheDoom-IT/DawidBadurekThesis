@@ -20,8 +20,6 @@ export const Statistics = ({
         <div className="statistics box">
             <h3 className="text-center">Statistics</h3>
             <br />
-            File version: {tracks.fileVersion}
-            <br />
             Number of tracks: {tracks.trackCount}
             <br />
             <div className="hline"></div>
