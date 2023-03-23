@@ -10,7 +10,8 @@ import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
 import { Plane } from './plane';
 import { SelectedSource } from '../types/selected-source';
-import { CaloFragment } from './calo-fragment';
+import { CaloElement } from './calo-element';
+import { useMemo } from 'react';
 
 interface RendererProps {
     divId: string;
@@ -28,29 +29,33 @@ export const Renderer = ({ divId, tracks, color, selectedSources }: RendererProp
         scene.background = new THREE.Color(color);
     };
 
+    const selectedTracks = useMemo(() => {
+        return tracks.mTracks
+            .map((track, index) => ({
+                track,
+                index,
+            }))
+            .filter((track) => selectedSources[track.track.source]?.selected === true);
+    }, [selectedSources, tracks]);
+
     return (
         <Canvas divId={divId}>
             <PerspectiveCamera position={[0, 30, 110]} />
             <MainScene innerRef={setScene}>
                 <AmbientLight />
                 <Plane />
-                {tracks.mTracks.map((track, index) => {
-                    if (selectedSources[track.source]?.selected !== true) {
-                        return null;
-                    }
-
+                {selectedTracks.map((track) => {
                     return (
                         <TrackFragment
-                            key={index}
-                            track={track}
-                            index={index}
-                            max={tracks.mTracks.length}
+                            key={track.index}
+                            track={track.track}
+                            index={track.index}
+                            max={selectedTracks.length}
                         />
                     );
                 })}
-                {tracks.mCalo?.[1] && <CaloFragment calo={tracks.mCalo[1]} />}
                 {tracks.mCalo?.map((calo, index) => {
-                    return <CaloFragment key={index} calo={calo} />;
+                    return <CaloElement key={index} calo={calo} />;
                 })}
             </MainScene>
             <OrbitControls />

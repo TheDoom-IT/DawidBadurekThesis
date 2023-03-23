@@ -72,17 +72,19 @@ export const TrackFragment = (props: TrackFragmentProps) => {
         };
     }, [props.track]);
 
-    const color = (0xffffff * props.index) / props.max;
+    const color = useMemo(() => {
+        return 0xffffff * Math.random();
+    }, []);
 
     return (
         <>
             <Line>
                 <BufferGeometry animate={lineAnimation} innerRef={setLine} />
-                <LineBasicMaterial params={[{ color: color }]} />
+                <LineBasicMaterial params={[{ color }]} />
             </Line>
             <Points>
                 <BufferGeometry animate={pointsAnimation} innerRef={setPoints} />
-                <PointsMaterial params={[{ color: color }]} />
+                <PointsMaterial params={[{ color }]} />
             </Points>
         </>
     );
