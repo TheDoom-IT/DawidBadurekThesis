@@ -63,7 +63,7 @@ export const Renderer = ({
 
     return (
         <Canvas divId={divId} innerRef={initRenderer}>
-            <PerspectiveCamera position={[0, 30, 110]} />
+            <PerspectiveCamera position={[0, 30, 500]} />
             <MainScene innerRef={setScene}>
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 20, 10]} />

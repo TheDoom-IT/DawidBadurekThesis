@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { Object3DProps } from '../types';
 import { handleForwardRef } from '../utils';
 
+// TODO: add loaders
 // interface OBJLoaderProps {
 //     url: string;
 // }

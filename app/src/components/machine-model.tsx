@@ -1,44 +1,19 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { Mesh, OBJLoader, ShaderMaterial, TorusGeometry } from 'react-three-component';
+import {
+    Mesh,
+    OBJLoader,
+    ShaderMaterial,
+    SphereGeometry,
+    TorusGeometry,
+} from 'react-three-component';
 import * as THREE from 'three';
-import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
-
-const vertexShader = `
-varying vec3 v_position;
-#include <clipping_planes_pars_vertex>
-
-void main()
-{
-    #include <begin_vertex>
-    #include <project_vertex>
-
-    v_position = mvPosition.xyz;
-    #include <clipping_planes_vertex>
-}`;
-
-const fragmentShader = `
-varying vec3 v_position;
-
-#include <clipping_planes_pars_fragment>
-
-void main()
-{
-    #include <clipping_planes_fragment>
-    
-    gl_FragColor = vec4(0.0, 0, 0, 1.0);
-
-    #if NUM_CLIPPING_PLANES > 0
-        vec4 clippingPlane = clippingPlanes[0];
-        // clippingPlane is in the camera coordinates
-        float distance = dot(v_position, clippingPlane.xyz) + clippingPlane.w;
-        if(abs(distance) < 1.0) {
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-        }
-    #endif
-}`;
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import vertexShader from '../shaders/vertex-shader.glsl?raw';
+import fragmentShader from '../shaders/fragment-shader.glsl?raw';
+import glowFragment from '../shaders/glow-fragment.glsl?raw';
 
 interface MachineModelProps {
-    controls: Controls | null;
+    controls: OrbitControls | null;
     clipRotationAsCamera: boolean;
 }
 
@@ -69,10 +44,19 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
         };
     }, [controls, clipRotationAsCamera, onControlsChange]);
 
-    return <OBJLoader innerRef={console.log} url="/public/gltf.glb" />;
+    // return <OBJLoader innerRef={console.log} url="/public/gltf.glb" />;
+
+    const initGlow = (mesh: THREE.Mesh | null) => {
+        if (!mesh) {
+            return;
+        }
+
+        mesh.scale.set(1.02, 1.02, 1.02);
+    };
 
     return (
         <Mesh>
+            <SphereGeometry params={[150, 32, 16]} />
             <TorusGeometry params={[250, 50, 16, 100]} />
             <ShaderMaterial
                 params={[
@@ -87,6 +71,24 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
                     },
                 ]}
             />
+            <Mesh innerRef={initGlow}>
+                <SphereGeometry params={[150, 32, 16]} />
+                <TorusGeometry params={[250, 50, 16, 100]} />
+                <ShaderMaterial
+                    params={[
+                        {
+                            side: THREE.BackSide,
+                            blending: THREE.AdditiveBlending,
+
+                            clipping: true,
+                            clippingPlanes: clippingPlanes,
+
+                            fragmentShader: glowFragment,
+                            vertexShader: vertexShader,
+                        },
+                    ]}
+                />
+            </Mesh>
         </Mesh>
     );
 };
