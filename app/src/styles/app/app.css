@@ -12,6 +12,7 @@
 }
 
 .App .home-link-wrapper {
+    top: 0;
     left: 0;
     right: 0;
     height: 50px;
@@ -52,4 +53,9 @@
 
 .App .text-center {
     text-align: center;
+}
+
+.checkbox-input {
+    width: 15px;
+    height: 15px;
 }
