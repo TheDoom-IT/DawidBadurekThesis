@@ -62,7 +62,6 @@ export const App = () => {
                             tracks={tracks}
                             color={color}
                             selectedSources={selectedSources}
-                            clipRotationAsCamera={clipRotationAsCamera}
                             showMCalo={showMCalo}
                         />
                         <div className="home-link-wrapper">

@@ -13,7 +13,6 @@ import { SelectedSourceObject } from '../types/selected-source';
 import { useState } from 'react';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 import { Plane } from './plane';
-import { MachineModel } from './machine-model';
 import { CaloElement } from './calo-element';
 import { useMemo } from 'react';
 
@@ -22,18 +21,10 @@ interface RendererProps {
     tracks: Tracks;
     color: string;
     selectedSources: SelectedSourceObject;
-    clipRotationAsCamera: boolean;
     showMCalo: boolean;
 }
 
-export const Renderer = ({
-    divId,
-    tracks,
-    color,
-    selectedSources,
-    clipRotationAsCamera,
-    showMCalo,
-}: RendererProps) => {
+export const Renderer = ({ divId, tracks, color, selectedSources, showMCalo }: RendererProps) => {
     const [controls, setControls] = useState<Controls | null>(null);
 
     const setScene = (scene: THREE.Scene | null) => {
@@ -42,14 +33,6 @@ export const Renderer = ({
         }
 
         scene.background = new THREE.Color(color);
-    };
-
-    const initRenderer = (renderer: THREE.WebGLRenderer | null) => {
-        if (!renderer) {
-            return;
-        }
-
-        renderer.localClippingEnabled = true;
     };
 
     const selectedTracks = useMemo(() => {
@@ -62,13 +45,12 @@ export const Renderer = ({
     }, [selectedSources, tracks]);
 
     return (
-        <Canvas divId={divId} innerRef={initRenderer}>
+        <Canvas divId={divId}>
             <PerspectiveCamera position={[0, 30, 500]} />
             <MainScene innerRef={setScene}>
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 20, 10]} />
                 <OrbitControls innerRef={(ref) => setControls(ref)} />
-                <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 <Plane />
                 {selectedTracks.map((track) => {
                     return <TrackFragment key={track.index} track={track.track} />;

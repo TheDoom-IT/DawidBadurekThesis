@@ -17,7 +17,6 @@ export const Canvas = (props: CanvasProps) => {
     const [camera, setCamera] = useState<THREE.Camera | null>(null);
     useAnimation(props.animate, renderer);
     const animationFrameId = useRef<number | null>(null);
-    const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
 
     const setNewCamera = useCallback(
         (camera: THREE.Camera) => {
@@ -88,23 +87,19 @@ export const Canvas = (props: CanvasProps) => {
     };
 
     // append canvas to the DOM
-    // useLayoutEffect(() => {
-    //     if (!renderer) {
-    //         return;
-    //     }
-    //     const div = findDiv();
-    //     div.appendChild(renderer.domElement);
-    //     return () => {
-    //         div.removeChild(renderer.domElement);
-    //     };
-    // }, [props.divId, renderer]);
-
     useLayoutEffect(() => {
-        if (!canvas) {
+        if (!renderer) {
             return;
         }
+        const div = findDiv();
+        div.appendChild(renderer.domElement);
+        return () => {
+            div.removeChild(renderer.domElement);
+        };
+    }, [props.divId, renderer]);
 
-        const newRenderer = new THREE.WebGLRenderer({ canvas: canvas });
+    useLayoutEffect(() => {
+        const newRenderer = new THREE.WebGLRenderer();
         setRenderer(newRenderer);
 
         const cleanRef = handleForwardRef(props.innerRef, newRenderer);
@@ -117,7 +112,7 @@ export const Canvas = (props: CanvasProps) => {
             // TODO: React.ScrictMode causes canvas to show lack of context for a single frame
             newRenderer.forceContextLoss();
         };
-    }, [canvas]);
+    }, []);
 
     // start render loop
     useLayoutEffect(() => {
@@ -131,12 +126,5 @@ export const Canvas = (props: CanvasProps) => {
         };
     }, [renderer, scene, camera]);
 
-    return (
-        <canvas
-            //???
-            style={{ display: 'block', width: '100%', height: '100%' }}
-            ref={(ref) => setCanvas(ref)}>
-            <CanvasContext.Provider value={canvasContext}>{props.children}</CanvasContext.Provider>
-        </canvas>
-    );
+    return <CanvasContext.Provider value={canvasContext}>{props.children}</CanvasContext.Provider>;
 };
