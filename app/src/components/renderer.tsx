@@ -15,6 +15,10 @@ import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitCont
 import { Plane } from './plane';
 import { CaloElement } from './calo-element';
 import { useMemo } from 'react';
+import { AnimationData } from '../types/animation-data';
+
+const ANIMATION_LENGTH_MS = 3000;
+const ANIMATION_STEP_LENGTH = 50;
 
 interface RendererProps {
     divId: string;
@@ -44,6 +48,32 @@ export const Renderer = ({ divId, tracks, color, selectedSources, showMCalo }: R
             .filter((track) => selectedSources[track.track.source]?.selected === true);
     }, [selectedSources, tracks]);
 
+    const animationData: AnimationData = useMemo(() => {
+        const timeFields = tracks.mTracks.map((track) => track.time);
+        const trackMinTime = Math.min(...timeFields);
+        const trackMaxTime = Math.max(...timeFields);
+        const trackTimeLength = trackMaxTime - trackMinTime;
+
+        const animationsFinishTime = tracks.mTracks.map((track) => {
+            const trackTimeInMs =
+                ((track.time - trackMinTime) / trackTimeLength) * ANIMATION_LENGTH_MS;
+            return trackTimeInMs + ANIMATION_STEP_LENGTH * track.count;
+        });
+
+        const maxFinishTime = Math.max(...animationsFinishTime, ANIMATION_LENGTH_MS);
+        const extendedMaxTime =
+            trackMaxTime +
+            ((maxFinishTime - ANIMATION_LENGTH_MS) * trackMaxTime) / ANIMATION_LENGTH_MS;
+
+        return {
+            minTime: trackMinTime,
+            maxTime: extendedMaxTime,
+            trackTimeLength: trackTimeLength,
+            animationLength: maxFinishTime,
+            stepLength: ANIMATION_STEP_LENGTH,
+        };
+    }, [tracks]);
+
     return (
         <Canvas divId={divId}>
             <PerspectiveCamera position={[0, 30, 500]} />
@@ -53,7 +83,13 @@ export const Renderer = ({ divId, tracks, color, selectedSources, showMCalo }: R
                 <OrbitControls innerRef={(ref) => setControls(ref)} />
                 <Plane />
                 {selectedTracks.map((track) => {
-                    return <TrackFragment key={track.index} track={track.track} />;
+                    return (
+                        <TrackFragment
+                            key={track.index}
+                            track={track.track}
+                            animationData={animationData}
+                        />
+                    );
                 })}
                 {showMCalo &&
                     tracks.mCalo?.map((calo, index) => {
