@@ -27,7 +27,7 @@ export const Statistics = ({
     return (
         <div className="statistics box">
             <h3 className="text-center">Statistics</h3>
-            Number of tracks: {tracks.trackCount}
+            Number of tracks: {tracks.mTracks.length}
             <br />
             <div>
                 <label htmlFor={'rotateClipping'}>Rotate</label>
