@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
     BufferGeometry,
     LineBasicMaterial,
@@ -9,28 +9,36 @@ import {
 import * as THREE from 'three';
 import { Track } from '../schemas/tracks-schema';
 import { AnimationData } from '../types/animation-data';
+import { ANIMATION_LENGTH_MS, LINE_SEGMENTS } from '../constants/animation';
 
 export interface TrackFragmentProps {
     track: Track;
     animationData: AnimationData;
 }
 
-const LINE_SEGMENTS = 5;
-
 export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
-    const updatePosition = (
-        attributeIndex: number,
-        trackIndex: number,
-        attribute: THREE.BufferAttribute | THREE.InterleavedBufferAttribute,
-        track: Track,
-    ) => {
-        attribute.setXYZ(
-            attributeIndex,
-            track.mPolyX[trackIndex],
-            track.mPolyY[trackIndex],
-            track.mPolyZ[trackIndex],
+    const trackStartTime = useMemo(() => {
+        return (
+            ((track.time - animationData.minTime) / animationData.trackTimeLength) *
+            ANIMATION_LENGTH_MS
         );
-    };
+    }, [track, animationData]);
+
+    const updatePosition = useCallback(
+        (
+            attributeIndex: number,
+            trackIndex: number,
+            attribute: THREE.BufferAttribute | THREE.InterleavedBufferAttribute,
+        ) => {
+            attribute.setXYZ(
+                attributeIndex,
+                track.mPolyX[trackIndex],
+                track.mPolyY[trackIndex],
+                track.mPolyZ[trackIndex],
+            );
+        },
+        [track],
+    );
 
     const setPoints = (buffer: THREE.BufferGeometry | null) => {
         if (!buffer) {
@@ -45,7 +53,8 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
         if (!buffer) {
             return;
         }
-        const count = LINE_SEGMENTS > track.count ? track.count : LINE_SEGMENTS;
+
+        const count = Math.min(LINE_SEGMENTS, track.count);
 
         const vertices: number[] = new Array(count * 2 * 3).fill(0);
 
@@ -67,28 +76,20 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             color.needsUpdate = true;
             position.needsUpdate = true;
 
-            const time = timestamp % animationData.animationLength;
-            const startTime =
-                ((track.time - animationData.minTime) / animationData.trackTimeLength) *
-                animationData.animationLength;
+            const time = timestamp % animationData.extendedAnimationLength;
 
-            if (time < startTime) {
-                // invisible
-                color.setW(0, 0);
-                return;
-            }
+            const index = Math.floor((time - trackStartTime) / animationData.stepLength);
 
-            const index = Math.floor((time - startTime) / animationData.stepLength);
-            if (index >= track.count) {
-                color.setW(0, 0);
+            if (time < trackStartTime || index >= track.count) {
+                color.setW(0, 0); // transparent
                 return;
             }
 
             // visible
             color.setW(0, 1);
-            updatePosition(0, index, position, track);
+            updatePosition(0, index, position);
         },
-        [track],
+        [track, updatePosition],
     );
 
     const lineAnimation = useCallback(
@@ -96,44 +97,55 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             const position = ref.getAttribute('position');
             position.needsUpdate = true;
 
-            const time = timestamp % animationData.animationLength;
-            const startTime =
-                ((track.time - animationData.minTime) / animationData.trackTimeLength) *
-                animationData.animationLength;
+            const time = timestamp % animationData.extendedAnimationLength;
 
-            if (time < startTime) {
-                for (let x = 0; x < LINE_SEGMENTS; ++x) {
-                    updatePosition(x * 2, 0, position, track);
-                    updatePosition(x * 2 + 1, 0, position, track);
+            const index = Math.floor((time - trackStartTime) / animationData.stepLength);
+
+            if (time < trackStartTime || index >= track.count + LINE_SEGMENTS) {
+                for (let x = 0; x < LINE_SEGMENTS * 2; ++x) {
+                    updatePosition(x, 0, position);
                 }
                 return;
             }
 
-            const index = Math.floor((time - startTime) / animationData.stepLength);
             if (index >= track.count) {
-                // TODO: finish the animation in a smooth way
+                // make smooth finish
                 for (let x = 0; x < LINE_SEGMENTS; ++x) {
-                    updatePosition(x * 2, 0, position, track);
-                    updatePosition(x * 2 + 1, 0, position, track);
+                    let trackIndex2 = index - (x + 1);
+                    trackIndex2 = trackIndex2 < 0 || trackIndex2 >= track.count ? 0 : trackIndex2;
+                    let trackIndex1 = index - x;
+                    trackIndex1 =
+                        trackIndex1 < 0 || trackIndex1 >= track.count ? trackIndex2 : trackIndex1;
+
+                    updatePosition(x * 2, trackIndex1, position);
+                    updatePosition(x * 2 + 1, trackIndex2, position);
                 }
                 return;
             }
 
             for (let x = 0; x < LINE_SEGMENTS; ++x) {
-                updatePosition(x * 2, index < x ? 0 : index - x, position, track);
-                updatePosition(x * 2 + 1, index < x + 1 ? 0 : index - (x + 1), position, track);
+                updatePosition(x * 2, index < x ? 0 : index - x, position);
+                updatePosition(x * 2 + 1, index < x + 1 ? 0 : index - (x + 1), position);
             }
         },
-        [track],
+        [track, updatePosition],
     );
+
+    const setFrustumCulled = useCallback((ref: THREE.LineSegments | THREE.Points | null) => {
+        if (!ref) {
+            return;
+        }
+
+        ref.frustumCulled = false;
+    }, []);
 
     return (
         <>
-            <LineSegments>
+            <LineSegments innerRef={setFrustumCulled}>
                 <BufferGeometry animate={lineAnimation} innerRef={setLine} />
                 <LineBasicMaterial params={[{ vertexColors: true, transparent: true }]} />
             </LineSegments>
-            <Points>
+            <Points innerRef={setFrustumCulled}>
                 <BufferGeometry animate={pointsAnimation} innerRef={setPoints} />
                 <PointsMaterial params={[{ vertexColors: true, transparent: true }]} />
             </Points>

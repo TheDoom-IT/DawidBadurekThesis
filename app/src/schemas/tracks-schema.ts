@@ -32,15 +32,13 @@ function validatemTracksLength(obj: z.infer<typeof mTrackSchema>) {
     );
 }
 
-export const tracksSchema = z
-    .object({
-        collisionTime: z.coerce.date(),
-        trackCount: z.number(),
-        mTracks: z.array(mTrackSchema.refine(validatemTracksLength)),
-        mClusters: z.array(mCluterSchema),
-        mCalo: z.array(mCaloSchema).optional(),
-    })
-    .refine((obj) => obj.trackCount === obj.mTracks.length);
+export const tracksSchema = z.object({
+    mTracks: z.array(
+        mTrackSchema.refine(validatemTracksLength, 'PolyX, PolyY, PolyZ should have same length'),
+    ),
+    mClusters: z.array(mCluterSchema),
+    mCalo: z.array(mCaloSchema).optional(),
+});
 
 export type Tracks = z.infer<typeof tracksSchema>;
 export type Track = z.infer<typeof mTrackSchema>;
