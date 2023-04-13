@@ -69,7 +69,7 @@ export const Renderer = ({
                 <DirectionalLight position={[0, 20, 10]} />
                 <OrbitControls innerRef={(ref) => setControls(ref)} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
-                <Plane />
+                {/*<Plane />*/}
                 {selectedTracks.map((track) => {
                     return <TrackFragment key={track.index} track={track.track} />;
                 })}
