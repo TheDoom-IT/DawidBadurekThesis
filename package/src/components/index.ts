@@ -6,4 +6,3 @@ export * from './lights';
 export * from './main-scene';
 export * from './controls';
 export * from './Canvas';
-export * from './loaders';

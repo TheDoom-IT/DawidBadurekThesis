@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import {
-    Mesh,
-    OBJLoader,
-    ShaderMaterial,
-    SphereGeometry,
-    TorusGeometry,
-} from 'react-three-component';
+import { Mesh, ShaderMaterial, SphereGeometry, TorusGeometry } from 'react-three-component';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import vertexShader from '../shaders/vertex-shader.glsl?raw';
@@ -43,8 +37,6 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
             controls.removeEventListener('change', onControlsChange);
         };
     }, [controls, clipRotationAsCamera, onControlsChange]);
-
-    // return <OBJLoader innerRef={console.log} url="/public/gltf.glb" />;
 
     const initGlow = (mesh: THREE.Mesh | null) => {
         if (!mesh) {
