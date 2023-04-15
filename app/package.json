@@ -9,8 +9,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "echo 'Tests finished...'",
-    "lint": "eslint \"**/src/**/*.{ts,tsx}\"",
-    "lint:fix": "eslint --fix \"**/src/**/*.{ts,tsx}\"",
+    "lint": "eslint --ext .ts,.tsx src/ --max-warnings 0",
+    "lint:fix": "eslint --fix --ext .ts,.tsx src/",
     "link": "cd ../package && npm link && cd ../app && npm link react-three-component"
   },
   "dependencies": {

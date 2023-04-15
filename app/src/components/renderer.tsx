@@ -10,8 +10,6 @@ import * as THREE from 'three';
 import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
 import { SelectedSourceObject } from '../types/selected-source';
-import { useState } from 'react';
-import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 import { Plane } from './plane';
 import { CaloElement } from './calo-element';
 import { useMemo } from 'react';
@@ -27,8 +25,6 @@ interface RendererProps {
 }
 
 export const Renderer = ({ divId, tracks, color, selectedSources, showMCalo }: RendererProps) => {
-    const [controls, setControls] = useState<Controls | null>(null);
-
     const setScene = (scene: THREE.Scene | null) => {
         if (!scene) {
             return;
@@ -79,7 +75,7 @@ export const Renderer = ({ divId, tracks, color, selectedSources, showMCalo }: R
             <MainScene innerRef={setScene}>
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 20, 10]} />
-                <OrbitControls innerRef={(ref) => setControls(ref)} />
+                <OrbitControls />
                 <Plane />
                 {selectedTracks.map((track) => (
                     <TrackFragment
