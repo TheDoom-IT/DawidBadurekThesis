@@ -2,11 +2,16 @@ import {
     AmbientLight,
     Canvas,
     DirectionalLight,
+    EffectComposer,
+    EffectPass,
     MainScene,
     OrbitControls,
     PerspectiveCamera,
+    RenderPass,
+    BloomEffect,
 } from 'react-three-component';
 import * as THREE from 'three';
+import * as POST from 'postprocessing';
 import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
 import { SelectedSourceObject } from '../types/selected-source';
@@ -91,7 +96,17 @@ export const Renderer = ({
     }, [tracks]);
 
     return (
-        <Canvas divId={divId} innerRef={initRenderer}>
+        <Canvas
+            divId={divId}
+            params={[
+                {
+                    powerPreference: 'high-performance',
+                    antialias: false,
+                    stencil: false,
+                    depth: false,
+                },
+            ]}
+            innerRef={initRenderer}>
             <PerspectiveCamera position={[0, 30, 500]} />
             <MainScene innerRef={setScene}>
                 <AmbientLight params={['white', 0.3]} />
@@ -109,6 +124,26 @@ export const Renderer = ({
                 {showMCalo &&
                     tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
+            <EffectComposer
+                params={[undefined, { frameBufferType: THREE.HalfFloatType }]}
+                innerRef={(composer) => {
+                    if (!composer) {
+                        return;
+                    }
+
+                    // composer.addPass(
+                    //     new POST.RenderPass(new THREE.Scene(), new THREE.PerspectiveCamera()),
+                    // );
+                    // composer.addPass(
+                    //     new POST.EffectPass(new THREE.PerspectiveCamera(), new POST.BloomEffect()),
+                    // );
+                }}>
+                {/*<RenderPass />*/}
+                {/*<EffectPass>*/}
+                {/*    // /!*<BloomEffect params={[{ luminanceThreshold: 1, intensity: 2 }]} />*!/*/}
+                {/*    //{' '}*/}
+                {/*</EffectPass>*/}
+            </EffectComposer>
         </Canvas>
     );
 };
