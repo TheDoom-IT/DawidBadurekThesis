@@ -138,11 +138,10 @@ export const Renderer = ({
                     //     new POST.EffectPass(new THREE.PerspectiveCamera(), new POST.BloomEffect()),
                     // );
                 }}>
-                {/*<RenderPass />*/}
-                {/*<EffectPass>*/}
-                {/*    // /!*<BloomEffect params={[{ luminanceThreshold: 1, intensity: 2 }]} />*!/*/}
-                {/*    //{' '}*/}
-                {/*</EffectPass>*/}
+                <RenderPass />
+                <EffectPass>
+                    <BloomEffect params={[{ luminanceThreshold: 1, intensity: 2 }]} />
+                </EffectPass>
             </EffectComposer>
         </Canvas>
     );
