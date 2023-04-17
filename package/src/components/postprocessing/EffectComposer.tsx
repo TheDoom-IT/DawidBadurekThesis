@@ -1,15 +1,14 @@
 import { ParamsProps } from '../../types';
 import * as POST from 'postprocessing';
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { useCanvasContext } from '../../contexts/canvas-context';
-import { handleForwardRef } from '../../utils';
-import { EffectContext } from '../../contexts/effect-context';
+import { useDisposableObject } from '../../hooks/useDisposableObject';
 
 export type EffectComposerProps = ParamsProps<typeof POST.EffectComposer, POST.EffectComposer>;
 
 export const EffectComposer: FC<EffectComposerProps> = (props) => {
     const canvasContext = useCanvasContext();
-    const [composer, setComposer] = useState<POST.EffectComposer | null>(null);
+    const composer = useDisposableObject(POST.EffectComposer, props.params, props.innerRef);
 
     const setRenderer = useCallback(() => {
         if (!canvasContext?.renderer || !composer) {
@@ -18,21 +17,6 @@ export const EffectComposer: FC<EffectComposerProps> = (props) => {
 
         composer.setRenderer(canvasContext.renderer);
     }, [composer, canvasContext?.renderer]);
-
-    useEffect(() => {
-        const effectComposer = new POST.EffectComposer(...(props.params || []));
-
-        setComposer(effectComposer);
-
-        const cleanRef = handleForwardRef(props.innerRef, effectComposer);
-
-        return () => {
-            if (cleanRef) {
-                cleanRef();
-            }
-            effectComposer.dispose();
-        };
-    }, []);
 
     useEffect(() => {
         if (!composer || !canvasContext?.size || !composer.getRenderer()) {
@@ -50,5 +34,5 @@ export const EffectComposer: FC<EffectComposerProps> = (props) => {
         setRenderer();
     }, [setRenderer]);
 
-    return <EffectContext.Provider value={composer}>{props.children}</EffectContext.Provider>;
+    return <>{props.children}</>;
 };

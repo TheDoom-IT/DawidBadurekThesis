@@ -2,17 +2,11 @@ import {
     AmbientLight,
     Canvas,
     DirectionalLight,
-    EffectComposer,
-    EffectPass,
     MainScene,
     OrbitControls,
     PerspectiveCamera,
-    RenderPass,
-    BloomEffect,
-    FXAAEffect,
 } from 'react-three-component';
 import * as THREE from 'three';
-import * as POST from 'postprocessing';
 import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
 import { SelectedSourceObject } from '../types/selected-source';
@@ -24,6 +18,7 @@ import { CaloElement } from './calo-element';
 import { useMemo } from 'react';
 import { AnimationData } from '../types/animation-data';
 import { ANIMATION_LENGTH_MS, ANIMATION_STEP_LENGTH, LINE_SEGMENTS } from '../constants/animation';
+import { Postprocessing } from './postprocessing';
 
 interface RendererProps {
     divId: string;
@@ -125,21 +120,7 @@ export const Renderer = ({
                 {showMCalo &&
                     tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
-            <EffectComposer
-                params={[undefined, { frameBufferType: THREE.HalfFloatType, stencilBuffer: true }]}>
-                <RenderPass />
-                <EffectPass>
-                    <FXAAEffect />
-                    <BloomEffect
-                        params={[
-                            {
-                                luminanceThreshold: 1,
-                                intensity: 2,
-                            },
-                        ]}
-                    />
-                </EffectPass>
-            </EffectComposer>
+            <Postprocessing />
         </Canvas>
     );
 };

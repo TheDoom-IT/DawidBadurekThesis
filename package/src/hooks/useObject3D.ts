@@ -3,8 +3,9 @@ import { useParentContext } from '../contexts/parent-context';
 import { Object3DProps } from '../types';
 import { handleForwardRef } from '../utils';
 import { useAnimation } from './useAnimation';
+import * as THREE from 'three';
 
-export function useThreeObject<C extends new (...params: any[]) => R, R extends THREE.Object3D>(
+export function useObject3D<C extends new (...params: any[]) => R, R extends THREE.Object3D>(
     constructor: C,
     props: Object3DProps<C, R>,
 ) {

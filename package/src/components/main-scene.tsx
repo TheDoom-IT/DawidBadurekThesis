@@ -2,13 +2,13 @@ import React, { FC, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 import { useCanvasContext } from '../contexts/canvas-context';
 import { ParentContext } from '../contexts/parent-context';
-import { useThreeObject } from '../hooks/useThreeObject';
+import { useObject3D } from '../hooks/useObject3D';
 import { BasicProps } from '../types/props';
 
 export type MainSceneProps = BasicProps<THREE.Scene>;
 
 export const MainScene: FC<MainSceneProps> = (props: MainSceneProps) => {
-    const object = useThreeObject(THREE.Scene, props);
+    const object = useObject3D(THREE.Scene, props);
     const canvasContext = useCanvasContext();
 
     useLayoutEffect(() => {

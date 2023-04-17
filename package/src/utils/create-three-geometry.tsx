@@ -3,6 +3,7 @@ import { useParentContext } from '../contexts/parent-context';
 import { useAnimation } from '../hooks/useAnimation';
 import { GeometryProps } from '../types';
 import { handleForwardRef } from './handle-forward-ref';
+import * as THREE from 'three';
 
 export function createThreeGeometry<
     C extends new (...params: any[]) => R,

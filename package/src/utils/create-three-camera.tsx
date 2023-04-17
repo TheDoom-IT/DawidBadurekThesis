@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import * as THREE from 'three';
 import { useCanvasContext } from '../contexts/canvas-context';
-import { useThreeObject } from '../hooks/useThreeObject';
+import { useObject3D } from '../hooks/useObject3D';
 import { Object3DProps } from '../types/props';
 
 export function createThreeCamera<C extends new (...params: any[]) => R, R extends THREE.Camera>(
@@ -9,7 +9,7 @@ export function createThreeCamera<C extends new (...params: any[]) => R, R exten
 ): FC<Object3DProps<C, R>> {
     //eslint-disable-next-line react/display-name
     return (props: Object3DProps<C, R>) => {
-        const object = useThreeObject(constructor, props);
+        const object = useObject3D(constructor, props);
         const canvasContext = useCanvasContext();
 
         useEffect(() => {
