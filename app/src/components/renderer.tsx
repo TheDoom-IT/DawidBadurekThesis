@@ -9,6 +9,7 @@ import {
     PerspectiveCamera,
     RenderPass,
     BloomEffect,
+    FXAAEffect,
 } from 'react-three-component';
 import * as THREE from 'three';
 import * as POST from 'postprocessing';
@@ -111,7 +112,7 @@ export const Renderer = ({
             <MainScene innerRef={setScene}>
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 20, 10]} />
-                <OrbitControls innerRef={(ref) => setControls(ref)} />
+                <OrbitControls innerRef={(ref: Controls | null) => setControls(ref)} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 <Plane />
                 {selectedTracks.map((track) => (
@@ -125,22 +126,18 @@ export const Renderer = ({
                     tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
             <EffectComposer
-                params={[undefined, { frameBufferType: THREE.HalfFloatType }]}
-                innerRef={(composer) => {
-                    if (!composer) {
-                        return;
-                    }
-
-                    // composer.addPass(
-                    //     new POST.RenderPass(new THREE.Scene(), new THREE.PerspectiveCamera()),
-                    // );
-                    // composer.addPass(
-                    //     new POST.EffectPass(new THREE.PerspectiveCamera(), new POST.BloomEffect()),
-                    // );
-                }}>
+                params={[undefined, { frameBufferType: THREE.HalfFloatType, stencilBuffer: true }]}>
                 <RenderPass />
                 <EffectPass>
-                    <BloomEffect params={[{ luminanceThreshold: 1, intensity: 2 }]} />
+                    <FXAAEffect />
+                    <BloomEffect
+                        params={[
+                            {
+                                luminanceThreshold: 1,
+                                intensity: 2,
+                            },
+                        ]}
+                    />
                 </EffectPass>
             </EffectComposer>
         </Canvas>
