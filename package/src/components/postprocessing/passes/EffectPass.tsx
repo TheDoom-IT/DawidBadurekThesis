@@ -1,6 +1,6 @@
 import { ParamsProps } from '../../../types';
 import * as POST from 'postprocessing';
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { EffectPassContext, EffectPassContextType } from '../../../contexts/effect-pass-context';
 import { usePass } from '../../../hooks/postprocessing/usePass';
 
@@ -43,7 +43,7 @@ export const EffectPass: FC<EffectPassProps> = (props) => {
         };
     }, [pass, addEffect, removeEffect]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!pass) {
             return;
         }

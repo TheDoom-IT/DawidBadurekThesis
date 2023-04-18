@@ -1,17 +1,18 @@
-import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
+import React, { useRef, useLayoutEffect, useState, useMemo, useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import * as POST from 'postprocessing';
 import { handleForwardRef } from '../utils';
 import { ExtendedProps } from '../types';
 import { CanvasContext, CanvasContextType } from '../contexts/canvas-context';
 import { useAnimation } from '../hooks/useAnimation';
+import Stats from 'three/examples/jsm/libs/stats.module';
 
 export type CanvasProps = ExtendedProps<
     { divId: string },
     typeof THREE.WebGLRenderer,
     THREE.WebGLRenderer
 >;
-
+const stats = Stats();
 export const Canvas = (props: CanvasProps) => {
     const [renderer, setRenderer] = useState<THREE.WebGLRenderer | null>(null);
     const [scene, setScene] = useState<THREE.Scene | null>(null);
@@ -68,23 +69,29 @@ export const Canvas = (props: CanvasProps) => {
     };
 
     // make canvas adaptive to the div size
-    const resizeCanvasIfNeeded = () => {
+    const resizeCanvasIfNeeded = useCallback(() => {
         if (!renderer) {
             return;
         }
         const div = findDiv();
 
         const { height, width } = div.getBoundingClientRect();
-        const { height: canvasHeight, width: canvasWidth } = renderer.domElement;
+        const { height: canvasHeight, width: canvasWidth } =
+            renderer.domElement.getBoundingClientRect();
 
-        if (height !== canvasHeight || width !== canvasWidth) {
+        if (
+            Math.round(height) !== Math.round(canvasHeight) ||
+            Math.round(width) !== Math.round(canvasWidth)
+        ) {
+            // TODO: fix it
+            console.log('fds', height, canvasHeight, width, canvasWidth);
             renderer.setSize(width, height, false);
             setSize({ width, height });
             updateCameraAspect(camera, width / height);
         }
-    };
+    }, [renderer, camera]);
 
-    const render = () => {
+    const render = useCallback(() => {
         resizeCanvasIfNeeded();
 
         if (effectComposer !== null) {
@@ -93,8 +100,9 @@ export const Canvas = (props: CanvasProps) => {
             renderer?.render(scene, camera);
         }
 
+        stats.update();
         animationFrameId.current = requestAnimationFrame(render);
-    };
+    }, [effectComposer, scene, camera, renderer, resizeCanvasIfNeeded]);
 
     // append canvas to the DOM
     useLayoutEffect(() => {
@@ -103,6 +111,8 @@ export const Canvas = (props: CanvasProps) => {
         }
         const div = findDiv();
         div.appendChild(renderer.domElement);
+
+        div.appendChild(stats.dom);
         return () => {
             div.removeChild(renderer.domElement);
         };
@@ -134,7 +144,7 @@ export const Canvas = (props: CanvasProps) => {
             }
             animationFrameId.current = null;
         };
-    }, [renderer, scene, camera]);
+    }, [render]);
 
     return <CanvasContext.Provider value={canvasContext}>{props.children}</CanvasContext.Provider>;
 };

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import * as POST from 'postprocessing';
 import { useDisposableObject } from '../useDisposableObject';
 import { ParamsProps } from '../../types';
@@ -12,15 +12,15 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
 
     const pass = useDisposableObject(constructor, props.params, props.innerRef);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!pass || !canvasContext?.size) {
             return;
         }
 
         pass.setSize(canvasContext.size.width, canvasContext.size.height);
-    }, [pass, canvasContext?.size]);
+    }, [pass]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!canvasContext?.mainScene || !pass) {
             return;
         }
@@ -28,7 +28,7 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         pass.mainScene = canvasContext.mainScene;
     }, [canvasContext?.mainScene, pass]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!canvasContext?.camera || !pass) {
             return;
         }
@@ -36,7 +36,7 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         pass.mainCamera = canvasContext.camera;
     }, [canvasContext?.camera, pass]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (
             !pass ||
             !canvasContext?.effectComposer ||

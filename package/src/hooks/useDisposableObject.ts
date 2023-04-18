@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { handleForwardRef } from '../utils';
 import { Disposable } from 'postprocessing';
 
@@ -9,7 +9,7 @@ export function useDisposableObject<C extends new (...params: any[]) => R, R ext
 ): R | null {
     const [object, setObject] = useState<R | null>(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const newObject = new constructor(...(params || []));
         setObject(newObject);
 

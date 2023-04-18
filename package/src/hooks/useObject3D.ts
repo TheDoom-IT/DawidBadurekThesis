@@ -9,7 +9,6 @@ export function useObject3D<C extends new (...params: any[]) => R, R extends THR
     constructor: C,
     props: Object3DProps<C, R>,
 ): R {
-    // TODO: fix it - postprocessing doesnt work
     const object = useRef<R>(new constructor(...(props.params ?? [])));
 
     useAnimation(props.animate, object.current);

@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import * as THREE from 'three';
 import { useCanvasContext } from '../contexts/canvas-context';
 import { useObject3D } from '../hooks/useObject3D';
-import { Object3DProps } from '../types/props';
+import { Object3DProps } from '../types';
 
 export function createThreeCamera<C extends new (...params: any[]) => R, R extends THREE.Camera>(
     constructor: C,

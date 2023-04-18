@@ -109,16 +109,16 @@ export const Renderer = ({
                 <DirectionalLight position={[0, 20, 10]} />
                 <OrbitControls innerRef={(ref: Controls | null) => setControls(ref)} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
-                {/*<Plane />*/}
-                {/*{selectedTracks.map((track) => (*/}
-                {/*    <TrackFragment*/}
-                {/*        key={track.index}*/}
-                {/*        track={track.track}*/}
-                {/*        animationData={animationData}*/}
-                {/*    />*/}
-                {/*))}*/}
-                {/*{showMCalo &&*/}
-                {/*    tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}*/}
+                <Plane />
+                {selectedTracks.map((track) => (
+                    <TrackFragment
+                        key={track.index}
+                        track={track.track}
+                        animationData={animationData}
+                    />
+                ))}
+                {showMCalo &&
+                    tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
             <Postprocessing />
         </Canvas>

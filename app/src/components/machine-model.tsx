@@ -57,7 +57,7 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
                             '<dithering_fragment>\nvec4 clippingPlane = clippingPlanes[0]; // clippingPlane is in the camera coordinates\n' +
                                 '    float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;\n' +
                                 '    if(abs(distance) < 10.0) {\n' +
-                                '        gl_FragColor = vec4(10.0, 0.5, 0.5, 1.0);\n' +
+                                '        gl_FragColor = vec4(8.0, 0.2, 2, 1.0);\n' +
                                 '    }',
                         );
                     };

@@ -1,5 +1,5 @@
 import { useEffectPassContext } from '../contexts/effect-pass-context';
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import * as POST from 'postprocessing';
 import { ParamsProps } from '../types';
 import { useDisposableObject } from '../hooks/useDisposableObject';
@@ -13,7 +13,7 @@ export function createEffect<C extends new (...params: any[]) => R, R extends PO
 
         const effect = useDisposableObject(constructor, props.params, props.innerRef);
 
-        useEffect(() => {
+        useLayoutEffect(() => {
             if (!effect || !effectPassContext?.effectPass) {
                 return;
             }
@@ -23,7 +23,12 @@ export function createEffect<C extends new (...params: any[]) => R, R extends PO
             return () => {
                 effectPassContext?.removeEffect(effect);
             };
-        }, [effect, effectPassContext?.effectPass]);
+        }, [
+            effect,
+            effectPassContext?.effectPass,
+            effectPassContext?.addEffect,
+            effectPassContext?.removeEffect,
+        ]);
 
         return <>{props.children}</>;
     };
