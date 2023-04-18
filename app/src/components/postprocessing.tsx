@@ -26,7 +26,7 @@ export const Postprocessing = () => {
                     <BloomEffect
                         params={[
                             {
-                                luminanceThreshold: 1,
+                                luminanceThreshold: 0,
                                 luminanceSmoothing: 0.5,
                                 intensity: 4,
                                 mipmapBlur: true,

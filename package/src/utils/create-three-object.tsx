@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { ParentContext } from '../contexts/parent-context';
 import { useObject3D } from '../hooks/useObject3D';
 import { Object3DProps } from '../types';
+import * as THREE from 'three';
 
 export function createThreeObject<C extends new (...params: any[]) => R, R extends THREE.Object3D>(
     constructor: C,

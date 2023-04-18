@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useParentContext } from '../contexts/parent-context';
 import { Object3DProps } from '../types';
 import { handleForwardRef } from '../utils';
@@ -8,45 +8,36 @@ import * as THREE from 'three';
 export function useObject3D<C extends new (...params: any[]) => R, R extends THREE.Object3D>(
     constructor: C,
     props: Object3DProps<C, R>,
-) {
-    const [object, setObject] = useState<R | null>(null);
-    useAnimation(props.animate, object);
+): R {
+    // TODO: fix it - postprocessing doesnt work
+    const object = useRef<R>(new constructor(...(props.params ?? [])));
+
+    useAnimation(props.animate, object.current);
     const parent = useParentContext();
 
     useEffect(() => {
-        const newObject = new constructor(...(props.params ?? []));
-        setObject(newObject);
-
-        return handleForwardRef(props.innerRef, newObject);
-    }, []);
+        return handleForwardRef(props.innerRef, object.current);
+    }, [object.current]);
 
     useEffect(() => {
-        if (!object) {
-            return;
-        }
-
         if (props.position) {
             const [x, y, z] = props.position;
-            object.position.set(x, y, z);
+            object.current.position.set(x, y, z);
         }
 
         if (props.rotation) {
             const [x, y, z] = props.rotation;
-            object.rotation.set(x, y, z);
+            object.current.rotation.set(x, y, z);
         }
-    }, [object, JSON.stringify(props.position), JSON.stringify(props.rotation)]);
+    }, [object.current, JSON.stringify(props.position), JSON.stringify(props.rotation)]);
 
     useEffect(() => {
-        if (!object) {
-            return;
-        }
-
-        parent?.add(object);
+        parent?.add(object.current);
 
         return () => {
-            parent?.remove(object);
+            parent?.remove(object.current);
         };
-    }, [parent, object]);
+    }, [parent, object.current]);
 
-    return object;
+    return object.current;
 }

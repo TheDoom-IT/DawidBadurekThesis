@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import * as THREE from 'three';
 import * as POST from 'postprocessing';
 import { handleForwardRef } from '../utils';
