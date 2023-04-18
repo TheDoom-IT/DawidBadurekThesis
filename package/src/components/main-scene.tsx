@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { useCanvasContext } from '../contexts/canvas-context';
 import { ParentContext } from '../contexts/parent-context';
 import { useObject3D } from '../hooks/useObject3D';
-import { BasicProps } from '../types/props';
+import { BasicProps } from '../types';
 
 export type MainSceneProps = BasicProps<THREE.Scene>;
 

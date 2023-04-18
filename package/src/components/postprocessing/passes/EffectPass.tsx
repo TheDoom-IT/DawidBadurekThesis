@@ -1,13 +1,23 @@
-import { ParamsProps } from '../../types';
+import { ParamsProps } from '../../../types';
 import * as POST from 'postprocessing';
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { EffectPassContext, EffectPassContextType } from '../../contexts/effect-pass-context';
-import { usePass } from '../../hooks/postprocessing/usePass';
+import { EffectPassContext, EffectPassContextType } from '../../../contexts/effect-pass-context';
+import { usePass } from '../../../hooks/postprocessing/usePass';
+
+class CustomEffectPass extends POST.EffectPass {
+    constructor(...params: ConstructorParameters<typeof POST.EffectPass>) {
+        super(...params);
+    }
+
+    updateEffects(effects: POST.Effect[]) {
+        this.setEffects(effects);
+        this.recompile();
+    }
+}
 
 export type EffectPassProps = ParamsProps<typeof POST.EffectPass, POST.EffectPass>;
 export const EffectPass: FC<EffectPassProps> = (props) => {
-    const pass = usePass(POST.EffectPass, props);
-
+    const pass = usePass(CustomEffectPass, props) as CustomEffectPass | null;
     const [effects, setEffects] = useState<POST.Effect[]>([]);
 
     const addEffect = useCallback((effect: POST.Effect) => {
@@ -38,11 +48,7 @@ export const EffectPass: FC<EffectPassProps> = (props) => {
             return;
         }
 
-        // TODO: find a better way to set effects
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        pass.setEffects(effects);
-        pass.recompile();
+        pass.updateEffects(effects);
     }, [effects, pass]);
 
     return (

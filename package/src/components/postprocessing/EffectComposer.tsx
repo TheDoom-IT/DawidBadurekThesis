@@ -3,7 +3,6 @@ import * as POST from 'postprocessing';
 import React, { FC, useCallback, useEffect } from 'react';
 import { useCanvasContext } from '../../contexts/canvas-context';
 import { useDisposableObject } from '../../hooks/useDisposableObject';
-
 export type EffectComposerProps = ParamsProps<typeof POST.EffectComposer, POST.EffectComposer>;
 
 export const EffectComposer: FC<EffectComposerProps> = (props) => {
