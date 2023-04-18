@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { handleForwardRef } from '../utils';
+import { Disposable } from 'postprocessing';
 
-export function useDisposableObject<C extends new (...params: any[]) => R, R extends object>(
+export function useDisposableObject<C extends new (...params: any[]) => R, R extends Disposable>(
     constructor: C,
     params?: ConstructorParameters<C>,
     innerRef?: React.ForwardedRef<R>,
@@ -18,9 +19,7 @@ export function useDisposableObject<C extends new (...params: any[]) => R, R ext
                 cleanRef();
             }
 
-            if ('dispose' in newObject && typeof newObject.dispose === 'function') {
-                newObject.dispose();
-            }
+            newObject.dispose();
         };
     }, []);
 

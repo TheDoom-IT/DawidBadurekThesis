@@ -11,7 +11,15 @@ export const Postprocessing = () => {
     return (
         <>
             <EffectComposer
-                params={[undefined, { frameBufferType: THREE.HalfFloatType, stencilBuffer: true }]}>
+                params={[
+                    undefined,
+                    {
+                        frameBufferType: THREE.HalfFloatType,
+                        // stencilBuffer removes graphic glitches
+                        // https://github.com/pmndrs/postprocessing/issues/402
+                        stencilBuffer: true,
+                    },
+                ]}>
                 <RenderPass />
                 <EffectPass>
                     <FXAAEffect />
