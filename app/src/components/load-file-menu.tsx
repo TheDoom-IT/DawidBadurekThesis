@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Tracks, tracksSchema } from '../schemas/tracks-schema';
 import { readFile } from '../utils/read-file';
 import tracks1 from '../static/tracks1647477806262.json';

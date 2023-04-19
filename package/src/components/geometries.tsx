@@ -1,7 +1,7 @@
-import { GeometryProps } from '../types/props';
+import { GeometryProps } from '../types';
 import { FC } from 'react';
 import * as THREE from 'three';
-import { createThreeGeometry } from '../utils/create-three-geometry';
+import { createThreeGeometry } from '../utils';
 
 export type BoxGeometryProps = GeometryProps<typeof THREE.BoxGeometry, THREE.BoxGeometry>;
 export type CapsuleGeometryProps = GeometryProps<

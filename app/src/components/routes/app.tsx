@@ -14,7 +14,7 @@ export const App = () => {
     const [color, setColor] = useState('#ffffff');
     const [tracks, setTracks] = useState<Tracks | null>(null);
     const [selectedSources, setSelectedSources] = useState<SelectedSourceObject>({});
-    const [clipRotationAsCamera, setClipRotationAsCamera] = useState(false);
+    const [clipRotationAsCamera, setClipRotationAsCamera] = useState(true);
     const [showMCalo, setShowMCalo] = useState(true);
 
     useEffect(() => {
@@ -62,6 +62,7 @@ export const App = () => {
                             tracks={tracks}
                             color={color}
                             selectedSources={selectedSources}
+                            clipRotationAsCamera={clipRotationAsCamera}
                             showMCalo={showMCalo}
                         />
                         <div className="home-link-wrapper">

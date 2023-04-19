@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { FC } from 'react';
-import { MaterialProps } from '../types/props';
+import { MaterialProps } from '../types';
 import { createThreeMaterial } from '../utils';
 
 export type MeshBasicMaterialProps = MaterialProps<
