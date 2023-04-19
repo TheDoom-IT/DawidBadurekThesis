@@ -18,7 +18,7 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         }
 
         pass.setSize(canvasContext.size.width, canvasContext.size.height);
-    }, [pass]);
+    }, [pass, canvasContext?.size?.width, canvasContext?.size?.height]);
 
     useLayoutEffect(() => {
         if (!canvasContext?.mainScene || !pass) {

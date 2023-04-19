@@ -1,18 +1,16 @@
-import React, { useRef, useLayoutEffect, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import * as THREE from 'three';
 import * as POST from 'postprocessing';
 import { handleForwardRef } from '../utils';
 import { ExtendedProps } from '../types';
 import { CanvasContext, CanvasContextType } from '../contexts/canvas-context';
 import { useAnimation } from '../hooks/useAnimation';
-import Stats from 'three/examples/jsm/libs/stats.module';
 
 export type CanvasProps = ExtendedProps<
     { divId: string },
     typeof THREE.WebGLRenderer,
     THREE.WebGLRenderer
 >;
-const stats = Stats();
 export const Canvas = (props: CanvasProps) => {
     const [renderer, setRenderer] = useState<THREE.WebGLRenderer | null>(null);
     const [scene, setScene] = useState<THREE.Scene | null>(null);
@@ -76,15 +74,9 @@ export const Canvas = (props: CanvasProps) => {
         const div = findDiv();
 
         const { height, width } = div.getBoundingClientRect();
-        const { height: canvasHeight, width: canvasWidth } =
-            renderer.domElement.getBoundingClientRect();
+        const { height: canvasHeight, width: canvasWidth } = renderer.domElement;
 
-        if (
-            Math.round(height) !== Math.round(canvasHeight) ||
-            Math.round(width) !== Math.round(canvasWidth)
-        ) {
-            // TODO: fix it
-            console.log('fds', height, canvasHeight, width, canvasWidth);
+        if (Math.floor(height) !== canvasHeight || Math.floor(width) !== canvasWidth) {
             renderer.setSize(width, height, false);
             setSize({ width, height });
             updateCameraAspect(camera, width / height);
@@ -100,7 +92,6 @@ export const Canvas = (props: CanvasProps) => {
             renderer?.render(scene, camera);
         }
 
-        stats.update();
         animationFrameId.current = requestAnimationFrame(render);
     }, [effectComposer, scene, camera, renderer, resizeCanvasIfNeeded]);
 
@@ -112,7 +103,6 @@ export const Canvas = (props: CanvasProps) => {
         const div = findDiv();
         div.appendChild(renderer.domElement);
 
-        div.appendChild(stats.dom);
         return () => {
             div.removeChild(renderer.domElement);
         };
