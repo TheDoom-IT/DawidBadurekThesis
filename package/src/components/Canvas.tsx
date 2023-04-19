@@ -86,10 +86,12 @@ export const Canvas = (props: CanvasProps) => {
     const render = useCallback(() => {
         resizeCanvasIfNeeded();
 
-        if (effectComposer !== null) {
-            effectComposer.render();
-        } else if (scene !== null && camera !== null) {
-            renderer?.render(scene, camera);
+        if (scene !== null && camera !== null) {
+            if (effectComposer !== null) {
+                effectComposer.render();
+            } else {
+                renderer?.render(scene, camera);
+            }
         }
 
         animationFrameId.current = requestAnimationFrame(render);
