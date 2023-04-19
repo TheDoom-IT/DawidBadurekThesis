@@ -3,24 +3,26 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '../../routes';
 import '../../styles/app/app.css';
 import { Renderer } from '../renderer';
-import { Statistics } from '../statistics';
 import { Tracks } from '../../schemas/tracks-schema';
 import { LoadFileMenu } from '../load-file-menu';
-import { SelectedSource } from '../../types/selected-source';
+import { SelectedSourceObject } from '../../types/selected-source';
+import { DataWindows } from '../data-windows';
 
 export const App = () => {
     const divId = useRef('AppDivId');
     const divRef = useRef<HTMLDivElement>(null);
     const [color, setColor] = useState('#ffffff');
     const [tracks, setTracks] = useState<Tracks | null>(null);
-    const [selectedSources, setSelectedSources] = useState<SelectedSource[]>([]);
+    const [selectedSources, setSelectedSources] = useState<SelectedSourceObject>({});
+    const [clipRotationAsCamera, setClipRotationAsCamera] = useState(true);
+    const [showMCalo, setShowMCalo] = useState(true);
 
     useEffect(() => {
         if (!tracks) {
-            setSelectedSources([]);
+            setSelectedSources({});
             return;
         }
-        const result: SelectedSource[] = [];
+        const result: SelectedSourceObject = {};
 
         tracks.mTracks.forEach((track) => {
             if (result[track.source] === undefined) {
@@ -60,17 +62,23 @@ export const App = () => {
                             tracks={tracks}
                             color={color}
                             selectedSources={selectedSources}
+                            clipRotationAsCamera={clipRotationAsCamera}
+                            showMCalo={showMCalo}
                         />
                         <div className="home-link-wrapper">
                             <Link className="home-link" to={ROUTES.HOME}>
                                 Home
                             </Link>
                         </div>
-                        <Statistics
+                        <DataWindows
                             tracks={tracks}
                             closeFile={closeFile}
                             selectedSources={selectedSources}
                             setSelectedSources={setSelectedSources}
+                            clipRotationAsCamera={clipRotationAsCamera}
+                            setClipRotationAsCamera={setClipRotationAsCamera}
+                            showMCalo={showMCalo}
+                            setShowMCalo={setShowMCalo}
                         />
                     </>
                 )}

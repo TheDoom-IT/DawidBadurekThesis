@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import * as THREE from 'three';
-import { Object3DProps } from '../types/props';
-import { createThreeCamera } from '../utils/create-three-camera';
+import { Object3DProps } from '../types';
+import { createThreeCamera } from '../utils';
 
 export type OrtographicCameraProps = Object3DProps<
     typeof THREE.OrthographicCamera,

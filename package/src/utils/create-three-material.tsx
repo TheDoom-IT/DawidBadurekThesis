@@ -1,8 +1,9 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
 import { useAnimation } from '../hooks/useAnimation';
 import { MaterialProps } from '../types';
-import { handleForwardRef } from './handle-forward-ref';
+import { useDisposableObject } from '../hooks/useDisposableObject';
+import * as THREE from 'three';
 
 export function createThreeMaterial<
     C extends new (...params: any[]) => R,
@@ -10,23 +11,10 @@ export function createThreeMaterial<
 >(constructor: C): FC<MaterialProps<C, R>> {
     //eslint-disable-next-line react/display-name
     return (props: MaterialProps<C, R>) => {
-        const [object, setObject] = useState<R | null>(null);
+        const object = useDisposableObject(constructor, props.params, props.innerRef);
+
         useAnimation(props.animate, object);
         const parent = useParentContext();
-
-        useEffect(() => {
-            const newObject = new constructor(...(props.params ?? []));
-            setObject(newObject);
-
-            const cleanRef = handleForwardRef(props.innerRef, newObject);
-
-            return () => {
-                if (cleanRef) {
-                    cleanRef();
-                }
-                newObject.dispose();
-            };
-        }, []);
 
         useEffect(() => {
             if (!object) {

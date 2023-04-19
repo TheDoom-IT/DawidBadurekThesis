@@ -1,8 +1,9 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
 import { useAnimation } from '../hooks/useAnimation';
 import { GeometryProps } from '../types';
-import { handleForwardRef } from './handle-forward-ref';
+import * as THREE from 'three';
+import { useDisposableObject } from '../hooks/useDisposableObject';
 
 export function createThreeGeometry<
     C extends new (...params: any[]) => R,
@@ -10,23 +11,10 @@ export function createThreeGeometry<
 >(constructor: C): FC<GeometryProps<C, R>> {
     //eslint-disable-next-line react/display-name
     return (props: GeometryProps<C, R>) => {
-        const [object, setObject] = useState<R | null>(null);
-        useAnimation(props.animate, object);
         const parent = useParentContext();
+        const object = useDisposableObject(constructor, props.params, props.innerRef);
 
-        useEffect(() => {
-            const newObject = new constructor(...(props.params ?? []));
-            setObject(newObject);
-
-            const cleanRef = handleForwardRef(props.innerRef, newObject);
-
-            return () => {
-                if (cleanRef) {
-                    cleanRef();
-                }
-                newObject.dispose();
-            };
-        }, []);
+        useAnimation(props.animate, object);
 
         useEffect(() => {
             if (!object) {

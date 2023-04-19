@@ -3,3 +3,7 @@ export interface SelectedSource {
     selected: boolean;
     count: number;
 }
+
+export interface SelectedSourceObject {
+    [key: string]: SelectedSource;
+}
