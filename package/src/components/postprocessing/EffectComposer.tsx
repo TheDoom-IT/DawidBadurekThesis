@@ -31,7 +31,12 @@ export const EffectComposer: FC<EffectComposerProps> = (props) => {
         }
 
         composer.setSize(canvasContext.size.width, canvasContext.size.height, false);
-    }, [composer, canvasContext?.size, composer?.getRenderer()]);
+    }, [
+        composer,
+        canvasContext?.size?.width,
+        canvasContext?.size?.height,
+        composer?.getRenderer(),
+    ]);
 
     useLayoutEffect(() => {
         canvasContext?.setEffectComposer(composer);

@@ -54,7 +54,7 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
                         shader.fragmentShader = 'varying vec3 vPosition;\n' + shader.fragmentShader;
                         shader.fragmentShader = shader.fragmentShader.replace(
                             '<dithering_fragment>',
-                            '<dithering_fragment>\nvec4 clippingPlane = clippingPlanes[0]; // clippingPlane is in the camera coordinates\n' +
+                            '<dithering_fragment>\nvec4 clippingPlane = clippingPlanes[0];\n' +
                                 '    float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;\n' +
                                 '    if(abs(distance) < 10.0) {\n' +
                                 '        gl_FragColor = vec4(8.0, 0.8, 1, 1.0);\n' +
