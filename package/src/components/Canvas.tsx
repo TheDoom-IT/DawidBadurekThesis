@@ -24,7 +24,7 @@ export const Canvas = (props: CanvasProps) => {
     const setNewCamera = useCallback(
         (camera: THREE.Camera) => {
             setCamera(camera);
-            updateCameraAspect(camera);
+            updateCameraAspect(camera, size ? size.width / size.height : undefined);
         },
         [setCamera],
     );
@@ -79,13 +79,15 @@ export const Canvas = (props: CanvasProps) => {
         if (Math.floor(height) !== canvasHeight || Math.floor(width) !== canvasWidth) {
             renderer.setSize(width, height, false);
             setSize({ width, height });
-            updateCameraAspect(camera, width / height);
+            console.log(`size changed: ${width} ${height}`);
+            // updateCameraAspect(camera, width / height);
         }
     }, [renderer, camera]);
 
     const render = useCallback(() => {
-        resizeCanvasIfNeeded();
-
+        // console.log('render before resize');
+        // resizeCanvasIfNeeded();
+        // console.log('render after resize');
         if (scene !== null && camera !== null) {
             if (effectComposer !== null) {
                 effectComposer.render();
@@ -94,6 +96,7 @@ export const Canvas = (props: CanvasProps) => {
             }
         }
 
+        resizeCanvasIfNeeded();
         animationFrameId.current = requestAnimationFrame(render);
     }, [effectComposer, scene, camera, renderer, resizeCanvasIfNeeded]);
 
@@ -128,6 +131,7 @@ export const Canvas = (props: CanvasProps) => {
 
     // start render loop
     useLayoutEffect(() => {
+        console.log('start render loop');
         animationFrameId.current = requestAnimationFrame(render);
 
         return () => {

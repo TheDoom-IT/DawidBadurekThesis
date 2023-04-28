@@ -119,7 +119,7 @@ export const Renderer = ({
                 {showMCalo &&
                     tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
-            <Postprocessing />
+            {/*<Postprocessing />*/}
         </Canvas>
     );
 };
