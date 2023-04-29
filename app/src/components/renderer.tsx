@@ -20,7 +20,6 @@ import { ANIMATION_LENGTH_MS, ANIMATION_STEP_LENGTH, LINE_SEGMENTS } from '../co
 import { Postprocessing } from './postprocessing';
 
 interface RendererProps {
-    divId: string;
     tracks: Tracks;
     color: string;
     selectedSources: SelectedSourceObject;
@@ -29,7 +28,6 @@ interface RendererProps {
 }
 
 export const Renderer = ({
-    divId,
     tracks,
     color,
     selectedSources,
@@ -97,7 +95,6 @@ export const Renderer = ({
 
     return (
         <Canvas
-            divId={divId}
             params={[
                 {
                     powerPreference: 'high-performance',

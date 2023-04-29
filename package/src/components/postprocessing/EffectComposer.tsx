@@ -36,7 +36,8 @@ export const EffectComposer: FC<EffectComposerProps> = (props) => {
 
     useLayoutEffect(() => {
         canvasContext?.setEffectComposer(composer);
-    }, [canvasContext, composer, canvasContext?.setEffectComposer]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [composer, canvasContext?.setEffectComposer]);
 
     return <>{props.children}</>;
 };

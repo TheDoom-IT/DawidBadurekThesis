@@ -23,6 +23,7 @@ export const MainScene: FC<MainSceneProps> = (props: MainSceneProps) => {
         }
 
         canvasContext.setScene(object);
-    }, [canvasContext, object, canvasContext?.setScene, canvasContext?.mainScene]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [canvasContext?.mainScene, canvasContext?.setScene, object]);
     return <ParentContext.Provider value={object}>{props.children}</ParentContext.Provider>;
 };
