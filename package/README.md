@@ -3,7 +3,9 @@ React-three-component is a TypeScript library adding React component.
 
 ## Usage
 Exemplary component rendering two rotating meshes:
+
 ```tsx
+import { useCallback } from "react";
 import {
     BoxGeometry,
     Canvas,
@@ -18,38 +20,34 @@ import {
 import * as THREE from 'three';
 
 export const ThreeComponent = () => {
-    const divId = 'canvas-div';
-
-    const meshAnimation = (ref: THREE.Mesh, timestamp: number, elapsed: number) => {
+    const meshAnimation = useCallback((ref: THREE.Mesh, timestamp: number, elapsed: number) => {
         ref.rotation.x += elapsed * 0.001;
         ref.rotation.z += elapsed * 0.001;
-    };
+    }, []);
 
-    const initializeMainScene = (ref: THREE.Scene | null) => {
+    const initializeMainScene = useCallback((ref: THREE.Scene | null) => {
         if (ref) {
             ref.background = new THREE.Color(0xffffff);
         }
-    };
+    },[]);
 
     return (
-        <div id={divId}>
-            <Canvas divId={divId}>
-                <PerspectiveCamera position={[0, 0, 5]} />
-                <OrbitControls />
-                <MainScene innerRef={initializeMainScene}>
-                    <DirectionalLight params={[0xffffff, 1]} position={[-5, 0, 0]} />
-                    <DirectionalLight params={[0xffffff, 0.8]} position={[5, 0, 3]} />
-                    <Mesh position={[-1, 0, 0]} animate={meshAnimation}>
-                        <BoxGeometry />
-                        <MeshStandardMaterial params={[{ color: 0x47b9db }]} />
-                    </Mesh>
-                    <Mesh position={[1, 0, 0]} animate={meshAnimation}>
-                        <CapsuleGeometry params={[0.5, 0.5, 10, 10]} />
-                        <MeshStandardMaterial params={[{ color: 0xdb47b9 }]} />
-                    </Mesh>
-                </MainScene>
-            </Canvas>
-        </div>
+        <Canvas divId={divId}>
+            <PerspectiveCamera position={[0, 0, 5]}/>
+            <OrbitControls/>
+            <MainScene innerRef={initializeMainScene}>
+                <DirectionalLight params={[0xffffff, 1]} position={[-5, 0, 0]}/>
+                <DirectionalLight params={[0xffffff, 0.8]} position={[5, 0, 3]}/>
+                <Mesh position={[-1, 0, 0]} animate={meshAnimation}>
+                    <BoxGeometry/>
+                    <MeshStandardMaterial params={[{color: 0x47b9db}]}/>
+                </Mesh>
+                <Mesh position={[1, 0, 0]} animate={meshAnimation}>
+                    <CapsuleGeometry params={[0.5, 0.5, 10, 10]}/>
+                    <MeshStandardMaterial params={[{color: 0xdb47b9}]}/>
+                </Mesh>
+            </MainScene>
+        </Canvas>
     );
 };
 ```
@@ -58,7 +56,8 @@ Result:
 ![Exemplary component video](https://raw.githubusercontent.com/TheDoom-IT/DawidBadurekThesis/master/docs/example.gif)
 
 ## Canvas
-`Canvas` is the main element that is reponsible for the whole rendering process. It requires `divId` param. HTML `<canvas>` element will be injected to the given `div` element. Its size will be equal to the `div` element.
+`Canvas` is the main element that is responsible for the whole rendering process.
+It takes a 100% width and height of its parent.
 
 ## MainScene
 Main `THREE.Scene` element used by the renderer. All of the objects should placed inside
