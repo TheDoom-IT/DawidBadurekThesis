@@ -1,5 +1,6 @@
 import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import * as THREE from 'three';
+import * as POST from 'postprocessing';
 import { handleForwardRef } from '../utils';
 import { ExtendedProps } from '../types';
 import { CanvasContext, CanvasContextType } from '../contexts/canvas-context';
@@ -10,21 +11,50 @@ export type CanvasProps = ExtendedProps<
     typeof THREE.WebGLRenderer,
     THREE.WebGLRenderer
 >;
-
 export const Canvas = (props: CanvasProps) => {
     const [renderer, setRenderer] = useState<THREE.WebGLRenderer | null>(null);
     const [scene, setScene] = useState<THREE.Scene | null>(null);
     const [camera, setCamera] = useState<THREE.Camera | null>(null);
+    const [effectComposer, setEffectComposer] = useState<POST.EffectComposer | null>(null);
+    const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+
     useAnimation(props.animate, renderer);
     const animationFrameId = useRef<number | null>(null);
     const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+
+    const findDiv = useCallback(() => {
+        const div = document.getElementById(props.divId);
+        if (!div) {
+            throw new Error(`Failed to find a div with id "${props.divId}"!`);
+        }
+        return div;
+    }, [props.divId]);
+
+    const updateCameraAspect = useCallback(
+        (camera: THREE.Camera | null, aspect?: number) => {
+            if (!camera || !(camera instanceof THREE.PerspectiveCamera)) {
+                return;
+            }
+
+            if (aspect !== undefined) {
+                camera.aspect = aspect;
+            } else {
+                const div = findDiv();
+                const { height, width } = div.getBoundingClientRect();
+                camera.aspect = width / height;
+            }
+
+            camera.updateProjectionMatrix();
+        },
+        [findDiv],
+    );
 
     const setNewCamera = useCallback(
         (camera: THREE.Camera) => {
             setCamera(camera);
             updateCameraAspect(camera);
         },
-        [setCamera],
+        [updateCameraAspect],
     );
 
     const canvasContext = useMemo<CanvasContextType>(() => {
@@ -34,35 +64,14 @@ export const Canvas = (props: CanvasProps) => {
             setScene,
             camera: camera,
             setCamera: setNewCamera,
+            setEffectComposer,
+            effectComposer: effectComposer,
+            size,
         };
-    }, [renderer, scene, camera, setScene, setCamera]);
+    }, [renderer, scene, camera, setNewCamera, effectComposer, size]);
 
-    const findDiv = () => {
-        const div = document.getElementById(props.divId);
-        if (!div) {
-            throw new Error(`Failed to find a div with id "${props.divId}"!`);
-        }
-        return div;
-    };
-
-    const updateCameraAspect = (camera: THREE.Camera | null, aspect?: number) => {
-        if (!camera || !(camera instanceof THREE.PerspectiveCamera)) {
-            return;
-        }
-
-        if (aspect !== undefined) {
-            camera.aspect = aspect;
-        } else {
-            const div = findDiv();
-            const { height, width } = div.getBoundingClientRect();
-            camera.aspect = width / height;
-        }
-
-        camera.updateProjectionMatrix();
-    };
-
-    // make canvas addaptive to the div size
-    const resizeCanvasIfNeeded = () => {
+    // make canvas adaptive to the div size
+    const resizeCanvasIfNeeded = useCallback(() => {
         if (!renderer) {
             return;
         }
@@ -71,21 +80,26 @@ export const Canvas = (props: CanvasProps) => {
         const { height, width } = div.getBoundingClientRect();
         const { height: canvasHeight, width: canvasWidth } = renderer.domElement;
 
-        if (height !== canvasHeight || width !== canvasWidth) {
+        if (Math.floor(height) !== canvasHeight || Math.floor(width) !== canvasWidth) {
             renderer.setSize(width, height, false);
+            setSize({ width, height });
             updateCameraAspect(camera, width / height);
         }
-    };
+    }, [findDiv, updateCameraAspect, renderer, camera]);
 
-    const render = () => {
+    const render = useCallback(() => {
         resizeCanvasIfNeeded();
 
         if (scene !== null && camera !== null) {
-            renderer?.render(scene, camera);
+            if (effectComposer !== null) {
+                effectComposer.render();
+            } else {
+                renderer?.render(scene, camera);
+            }
         }
 
         animationFrameId.current = requestAnimationFrame(render);
-    };
+    }, [effectComposer, scene, camera, renderer, resizeCanvasIfNeeded]);
 
     // append canvas to the DOM
     // useLayoutEffect(() => {
@@ -94,10 +108,11 @@ export const Canvas = (props: CanvasProps) => {
     //     }
     //     const div = findDiv();
     //     div.appendChild(renderer.domElement);
+    //
     //     return () => {
     //         div.removeChild(renderer.domElement);
     //     };
-    // }, [props.divId, renderer]);
+    // }, [findDiv, renderer]);
 
     useLayoutEffect(() => {
         if (!canvas) {
@@ -107,17 +122,20 @@ export const Canvas = (props: CanvasProps) => {
         const newRenderer = new THREE.WebGLRenderer({ canvas: canvas });
         setRenderer(newRenderer);
 
-        const cleanRef = handleForwardRef(props.innerRef, newRenderer);
-
         return () => {
-            if (cleanRef) {
-                cleanRef();
-            }
             newRenderer.dispose();
             // TODO: React.ScrictMode causes canvas to show lack of context for a single frame
             newRenderer.forceContextLoss();
         };
     }, [canvas]);
+
+    useLayoutEffect(() => {
+        if (!renderer) {
+            return;
+        }
+
+        return handleForwardRef(props.innerRef, renderer);
+    }, [props.innerRef, renderer]);
 
     // start render loop
     useLayoutEffect(() => {
@@ -129,7 +147,7 @@ export const Canvas = (props: CanvasProps) => {
             }
             animationFrameId.current = null;
         };
-    }, [renderer, scene, camera]);
+    }, [render]);
 
     return (
         <canvas

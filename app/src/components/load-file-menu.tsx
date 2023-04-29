@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Tracks, tracksSchema } from '../schemas/tracks-schema';
 import { readFile } from '../utils/read-file';
 import tracks1 from '../static/tracks1647477806262.json';
@@ -42,7 +42,7 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
         } catch (e) {
             console.error(e);
             throw new Error(
-                `Cannot read a file. It has an unsupported format(check the console for more information).`,
+                `Cannot read a file. It has an unsupported format (check the console for more information).`,
             );
         }
     };
