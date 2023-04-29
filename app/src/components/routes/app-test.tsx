@@ -27,7 +27,7 @@ export const AppTest = () => {
 
     return (
         <div className="my-box" id={divId}>
-            <Canvas divId={divId}>
+            <Canvas>
                 <PerspectiveCamera position={[0, 0, 5]} />
                 <OrbitControls />
                 <MainScene innerRef={initializeMainScene}>

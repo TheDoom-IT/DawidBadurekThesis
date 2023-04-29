@@ -27,7 +27,7 @@ export const ChildrenTest = () => {
             <button onClick={() => setIsVisible(!isVisible)}>Remove/add children</button>
             <button onClick={() => setIndex(index + 1)}>Change children key</button>
             <button onClick={() => setColor(color - 1)}>Change children props</button>
-            <Canvas divId={divId}>
+            <Canvas>
                 <>
                     <PerspectiveCamera params={[75, 21 / 9, 1, 1000]} innerRef={setCamera} />
                 </>
