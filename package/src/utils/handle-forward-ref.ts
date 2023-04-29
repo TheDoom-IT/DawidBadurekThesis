@@ -10,6 +10,9 @@ export function handleForwardRef<T>(
 
     if (typeof forwardRef === 'function') {
         forwardRef(value);
+        return () => {
+            forwardRef(null);
+        };
     } else if (forwardRef) {
         forwardRef.current = value;
         return () => {
