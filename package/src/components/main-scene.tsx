@@ -23,6 +23,6 @@ export const MainScene: FC<MainSceneProps> = (props: MainSceneProps) => {
         }
 
         canvasContext.setScene(object);
-    }, [object, canvasContext?.setScene, canvasContext?.mainScene]);
+    }, [canvasContext, object, canvasContext?.setScene, canvasContext?.mainScene]);
     return <ParentContext.Provider value={object}>{props.children}</ParentContext.Provider>;
 };

@@ -19,7 +19,7 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
         }
 
         clippingPlanes[0].normal = controls.object.position.clone().negate().normalize();
-    }, [controls]);
+    }, [controls, clippingPlanes]);
 
     useEffect(() => {
         if (!controls || !clipRotationAsCamera) {
@@ -33,35 +33,37 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
         return () => {
             controls.removeEventListener('change', onControlsChange);
         };
-    }, [controls, clipRotationAsCamera, onControlsChange]);
+    }, [controls, clipRotationAsCamera, clippingPlanes, onControlsChange]);
+
+    const initMaterial = useCallback((material: THREE.MeshStandardMaterial | null) => {
+        if (!material) {
+            return;
+        }
+
+        material.onBeforeCompile = (shader) => {
+            shader.vertexShader = 'varying vec3 vPosition;\n' + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace(
+                '<fog_vertex>',
+                '<fog_vertex>\nvPosition = mvPosition.xyz;',
+            );
+
+            shader.fragmentShader = 'varying vec3 vPosition;\n' + shader.fragmentShader;
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '<dithering_fragment>',
+                '<dithering_fragment>\nvec4 clippingPlane = clippingPlanes[0];\n' +
+                    '    float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;\n' +
+                    '    if(abs(distance) < 10.0) {\n' +
+                    '        gl_FragColor = vec4(8.0, 0.8, 1, 1.0);\n' +
+                    '    }',
+            );
+        };
+    }, []);
 
     return (
         <Mesh>
             <TorusGeometry params={[250, 50, 16, 100]} />
             <MeshStandardMaterial
-                innerRef={(material) => {
-                    if (!material) {
-                        return;
-                    }
-
-                    material.onBeforeCompile = (shader) => {
-                        shader.vertexShader = 'varying vec3 vPosition;\n' + shader.vertexShader;
-                        shader.vertexShader = shader.vertexShader.replace(
-                            '<fog_vertex>',
-                            '<fog_vertex>\nvPosition = mvPosition.xyz;',
-                        );
-
-                        shader.fragmentShader = 'varying vec3 vPosition;\n' + shader.fragmentShader;
-                        shader.fragmentShader = shader.fragmentShader.replace(
-                            '<dithering_fragment>',
-                            '<dithering_fragment>\nvec4 clippingPlane = clippingPlanes[0];\n' +
-                                '    float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;\n' +
-                                '    if(abs(distance) < 10.0) {\n' +
-                                '        gl_FragColor = vec4(8.0, 0.8, 1, 1.0);\n' +
-                                '    }',
-                        );
-                    };
-                }}
+                innerRef={initMaterial}
                 params={[
                     {
                         side: THREE.DoubleSide,

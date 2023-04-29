@@ -16,7 +16,7 @@ export function useObject3D<C extends new (...params: any[]) => R, R extends THR
 
     useEffect(() => {
         return handleForwardRef(props.innerRef, object.current);
-    }, [object.current]);
+    }, [props.innerRef]);
 
     useEffect(() => {
         if (props.position) {
@@ -28,15 +28,17 @@ export function useObject3D<C extends new (...params: any[]) => R, R extends THR
             const [x, y, z] = props.rotation;
             object.current.rotation.set(x, y, z);
         }
-    }, [object.current, JSON.stringify(props.position), JSON.stringify(props.rotation)]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [JSON.stringify(props.position), JSON.stringify(props.rotation)]);
 
     useEffect(() => {
-        parent?.add(object.current);
+        const tempObject = object.current;
+        parent?.add(tempObject);
 
         return () => {
-            parent?.remove(object.current);
+            parent?.remove(tempObject);
         };
-    }, [parent, object.current]);
+    }, [parent]);
 
     return object.current;
 }

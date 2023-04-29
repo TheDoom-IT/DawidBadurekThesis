@@ -13,15 +13,18 @@ export function useDisposableObject<C extends new (...params: any[]) => R, R ext
         const newObject = new constructor(...(params || []));
         setObject(newObject);
 
-        const cleanRef = handleForwardRef(innerRef, newObject);
         return () => {
-            if (cleanRef) {
-                cleanRef();
-            }
-
             newObject.dispose();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useLayoutEffect(() => {
+        if (!object) {
+            return;
+        }
+
+        return handleForwardRef(innerRef, object);
+    }, [innerRef, object]);
     return object;
 }

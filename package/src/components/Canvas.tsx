@@ -21,12 +21,39 @@ export const Canvas = (props: CanvasProps) => {
     useAnimation(props.animate, renderer);
     const animationFrameId = useRef<number | null>(null);
 
+    const findDiv = useCallback(() => {
+        const div = document.getElementById(props.divId);
+        if (!div) {
+            throw new Error(`Failed to find a div with id "${props.divId}"!`);
+        }
+        return div;
+    }, [props.divId]);
+
+    const updateCameraAspect = useCallback(
+        (camera: THREE.Camera | null, aspect?: number) => {
+            if (!camera || !(camera instanceof THREE.PerspectiveCamera)) {
+                return;
+            }
+
+            if (aspect !== undefined) {
+                camera.aspect = aspect;
+            } else {
+                const div = findDiv();
+                const { height, width } = div.getBoundingClientRect();
+                camera.aspect = width / height;
+            }
+
+            camera.updateProjectionMatrix();
+        },
+        [findDiv],
+    );
+
     const setNewCamera = useCallback(
         (camera: THREE.Camera) => {
             setCamera(camera);
             updateCameraAspect(camera);
         },
-        [setCamera],
+        [updateCameraAspect],
     );
 
     const canvasContext = useMemo<CanvasContextType>(() => {
@@ -40,31 +67,7 @@ export const Canvas = (props: CanvasProps) => {
             effectComposer: effectComposer,
             size,
         };
-    }, [renderer, scene, camera, setScene, setNewCamera, effectComposer, setEffectComposer, size]);
-
-    const findDiv = () => {
-        const div = document.getElementById(props.divId);
-        if (!div) {
-            throw new Error(`Failed to find a div with id "${props.divId}"!`);
-        }
-        return div;
-    };
-
-    const updateCameraAspect = (camera: THREE.Camera | null, aspect?: number) => {
-        if (!camera || !(camera instanceof THREE.PerspectiveCamera)) {
-            return;
-        }
-
-        if (aspect !== undefined) {
-            camera.aspect = aspect;
-        } else {
-            const div = findDiv();
-            const { height, width } = div.getBoundingClientRect();
-            camera.aspect = width / height;
-        }
-
-        camera.updateProjectionMatrix();
-    };
+    }, [renderer, scene, camera, setNewCamera, effectComposer, size]);
 
     // make canvas adaptive to the div size
     const resizeCanvasIfNeeded = useCallback(() => {
@@ -81,7 +84,7 @@ export const Canvas = (props: CanvasProps) => {
             setSize({ width, height });
             updateCameraAspect(camera, width / height);
         }
-    }, [renderer, camera]);
+    }, [findDiv, updateCameraAspect, renderer, camera]);
 
     const render = useCallback(() => {
         resizeCanvasIfNeeded();
@@ -108,23 +111,26 @@ export const Canvas = (props: CanvasProps) => {
         return () => {
             div.removeChild(renderer.domElement);
         };
-    }, [props.divId, renderer]);
+    }, [findDiv, renderer]);
 
     useLayoutEffect(() => {
         const newRenderer = new THREE.WebGLRenderer();
         setRenderer(newRenderer);
 
-        const cleanRef = handleForwardRef(props.innerRef, newRenderer);
-
         return () => {
-            if (cleanRef) {
-                cleanRef();
-            }
             newRenderer.dispose();
             // TODO: React.ScrictMode causes canvas to show lack of context for a single frame
             newRenderer.forceContextLoss();
         };
     }, []);
+
+    useLayoutEffect(() => {
+        if (!renderer) {
+            return;
+        }
+
+        return handleForwardRef(props.innerRef, renderer);
+    }, [props.innerRef, renderer]);
 
     // start render loop
     useLayoutEffect(() => {

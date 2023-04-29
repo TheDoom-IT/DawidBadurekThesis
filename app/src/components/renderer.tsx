@@ -14,7 +14,7 @@ import { Plane } from './plane';
 import { MachineModel } from './machine-model';
 import { CaloElement } from './calo-element';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { AnimationData } from '../types/animation-data';
 import { ANIMATION_LENGTH_MS, ANIMATION_STEP_LENGTH, LINE_SEGMENTS } from '../constants/animation';
 import { Postprocessing } from './postprocessing';
@@ -38,21 +38,26 @@ export const Renderer = ({
 }: RendererProps) => {
     const [controls, setControls] = useState<Controls | null>(null);
 
-    const setScene = (scene: THREE.Scene | null) => {
-        if (!scene) {
-            return;
-        }
+    const initScene = useCallback(
+        (scene: THREE.Scene | null) => {
+            if (!scene) {
+                return;
+            }
 
-        scene.background = new THREE.Color(color);
-    };
+            scene.background = new THREE.Color(color);
+        },
+        [color],
+    );
 
-    const initRenderer = (renderer: THREE.WebGLRenderer | null) => {
+    const initRenderer = useCallback((renderer: THREE.WebGLRenderer | null) => {
         if (!renderer) {
             return;
         }
 
         renderer.localClippingEnabled = true;
-    };
+    }, []);
+
+    const setOrbitControls = useCallback((ref: Controls | null) => setControls(ref), []);
 
     const selectedTracks = useMemo(() => {
         return tracks.mTracks
@@ -103,10 +108,10 @@ export const Renderer = ({
             ]}
             innerRef={initRenderer}>
             <PerspectiveCamera position={[0, 30, 500]} />
-            <MainScene innerRef={setScene}>
+            <MainScene innerRef={initScene}>
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 20, 10]} />
-                <OrbitControls innerRef={(ref: Controls | null) => setControls(ref)} />
+                <OrbitControls innerRef={setOrbitControls} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 <Plane />
                 {selectedTracks.map((track) => (
