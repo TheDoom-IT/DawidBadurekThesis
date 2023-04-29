@@ -9,38 +9,34 @@ export const EffectComposer: FC<EffectComposerProps> = (props) => {
     const canvasContext = useCanvasContext();
     const composer = useDisposableObject(POST.EffectComposer, props.params, props.innerRef);
 
+    const contextAttributes = canvasContext?.renderer?.getContext()?.getContextAttributes();
+    const composerRenderer = composer?.getRenderer();
+
     useLayoutEffect(() => {
-        if (
-            !canvasContext?.renderer ||
-            !composer ||
-            !canvasContext?.renderer?.getContext()?.getContextAttributes()
-        ) {
+        if (!canvasContext?.renderer || !composer || !contextAttributes) {
             return;
         }
 
         composer.setRenderer(canvasContext.renderer);
-    }, [
-        composer,
-        canvasContext?.renderer,
-        canvasContext?.renderer?.getContext()?.getContextAttributes(),
-    ]);
+    }, [composer, canvasContext?.renderer, contextAttributes]);
 
     useLayoutEffect(() => {
-        if (!composer || !canvasContext?.size || !composer.getRenderer()) {
+        if (!composer || !canvasContext?.size || !composerRenderer) {
             return;
         }
 
         composer.setSize(canvasContext.size.width, canvasContext.size.height, false);
     }, [
         composer,
+        canvasContext?.size,
         canvasContext?.size?.width,
         canvasContext?.size?.height,
-        composer?.getRenderer(),
+        composerRenderer,
     ]);
 
     useLayoutEffect(() => {
         canvasContext?.setEffectComposer(composer);
-    }, [composer, canvasContext?.setEffectComposer]);
+    }, [canvasContext, composer, canvasContext?.setEffectComposer]);
 
     return <>{props.children}</>;
 };

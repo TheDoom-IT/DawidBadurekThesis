@@ -40,34 +40,37 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
         [track],
     );
 
-    const setPoints = (buffer: THREE.BufferGeometry | null) => {
+    const setPoints = useCallback((buffer: THREE.BufferGeometry | null) => {
         if (!buffer) {
             return;
         }
 
         buffer.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3));
         buffer.setAttribute('color', new THREE.Float32BufferAttribute([1, 1, 1, 1], 4));
-    };
+    }, []);
 
-    const setLine = (buffer: THREE.BufferGeometry | null) => {
-        if (!buffer) {
-            return;
-        }
+    const setLine = useCallback(
+        (buffer: THREE.BufferGeometry | null) => {
+            if (!buffer) {
+                return;
+            }
 
-        const count = Math.min(LINE_SEGMENTS, track.count);
+            const count = Math.min(LINE_SEGMENTS, track.count);
 
-        const vertices: number[] = new Array(count * 2 * 3).fill(0);
+            const vertices: number[] = new Array(count * 2 * 3).fill(0);
 
-        const colors: number[] = [];
-        for (let x = 0; x < count; x++) {
-            const color1 = 1 - x / count;
-            const color2 = 1 - (x + 1) / count;
-            colors.push(color1, color1, color1, color1, color2, color2, color2, color2);
-        }
+            const colors: number[] = [];
+            for (let x = 0; x < count; x++) {
+                const color1 = 1 - x / count;
+                const color2 = 1 - (x + 1) / count;
+                colors.push(color1, color1, color1, color1, color2, color2, color2, color2);
+            }
 
-        buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-        buffer.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
-    };
+            buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            buffer.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
+        },
+        [track.count],
+    );
 
     const pointsAnimation = useCallback(
         (ref: THREE.BufferGeometry, timestamp: number) => {
@@ -89,7 +92,13 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             color.setW(0, 1);
             updatePosition(0, index, position);
         },
-        [track, updatePosition],
+        [
+            animationData.extendedAnimationLength,
+            animationData.stepLength,
+            track.count,
+            trackStartTime,
+            updatePosition,
+        ],
     );
 
     const lineAnimation = useCallback(
@@ -128,7 +137,13 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
                 updatePosition(x * 2 + 1, index < x + 1 ? 0 : index - (x + 1), position);
             }
         },
-        [track, updatePosition],
+        [
+            animationData.extendedAnimationLength,
+            animationData.stepLength,
+            track.count,
+            trackStartTime,
+            updatePosition,
+        ],
     );
 
     const setFrustumCulled = useCallback((ref: THREE.LineSegments | THREE.Points | null) => {

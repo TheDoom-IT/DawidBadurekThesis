@@ -25,6 +25,7 @@ export function createEffect<C extends new (...params: any[]) => R, R extends PO
             };
         }, [
             effect,
+            effectPassContext,
             effectPassContext?.effectPass,
             effectPassContext?.addEffect,
             effectPassContext?.removeEffect,

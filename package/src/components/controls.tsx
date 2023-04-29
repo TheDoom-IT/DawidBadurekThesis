@@ -25,14 +25,18 @@ export const OrbitControls = (props: OrbitControlsProps) => {
 
         setObject(controls);
 
-        const cleanRef = handleForwardRef(props.innerRef, controls);
-
         return () => {
-            if (cleanRef) {
-                cleanRef();
-            }
             controls.dispose();
         };
     }, [canvasContext?.camera, canvasContext?.renderer]);
+
+    useLayoutEffect(() => {
+        if (!object) {
+            return;
+        }
+
+        return handleForwardRef(props.innerRef, object);
+    }, [props.innerRef, object]);
+
     return <>{props.children}</>;
 };

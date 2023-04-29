@@ -22,7 +22,7 @@ export const EffectPass: FC<EffectPassProps> = (props) => {
 
     const addEffect = useCallback((effect: POST.Effect) => {
         setEffects((prev) => {
-            const index = effects.findIndex((el) => el === effect);
+            const index = prev.findIndex((el) => el === effect);
             if (index === -1) {
                 return [...prev, effect];
             }

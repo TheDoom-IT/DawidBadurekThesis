@@ -24,7 +24,7 @@ export function createThreeCamera<C extends new (...params: any[]) => R, R exten
             }
 
             canvasContext.setCamera(object);
-        }, [object, canvasContext?.setCamera, canvasContext?.camera]);
+        }, [object, canvasContext, canvasContext?.setCamera, canvasContext?.camera]);
 
         return <>{props.children}</>;
     };

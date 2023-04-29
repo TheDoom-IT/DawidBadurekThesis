@@ -18,7 +18,7 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         }
 
         pass.setSize(canvasContext.size.width, canvasContext.size.height);
-    }, [pass, canvasContext?.size?.width, canvasContext?.size?.height]);
+    }, [pass, canvasContext?.size, canvasContext?.size?.width, canvasContext?.size?.height]);
 
     useLayoutEffect(() => {
         if (!canvasContext?.mainScene || !pass) {
@@ -36,12 +36,10 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         pass.mainCamera = canvasContext.camera;
     }, [canvasContext?.camera, pass]);
 
+    const renderer = canvasContext?.effectComposer?.getRenderer();
     useLayoutEffect(() => {
-        if (
-            !pass ||
-            !canvasContext?.effectComposer ||
-            !canvasContext.effectComposer?.getRenderer()
-        ) {
+        // Pass cannot be added when renderer is not created yet
+        if (!pass || !canvasContext?.effectComposer || !renderer) {
             return;
         }
 
@@ -50,7 +48,7 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         return () => {
             canvasContext.effectComposer?.removePass(pass);
         };
-    }, [pass, canvasContext?.effectComposer, canvasContext?.effectComposer?.getRenderer()]);
+    }, [pass, canvasContext?.effectComposer, renderer]);
 
     return pass;
 }
