@@ -29,9 +29,9 @@ export const ChildrenTest = () => {
             <button onClick={() => setColor(color - 1)}>Change children props</button>
             <Canvas>
                 <>
-                    <PerspectiveCamera params={[75, 21 / 9, 1, 1000]} innerRef={setCamera} />
+                    <PerspectiveCamera params={[75, 21 / 9, 1, 1000]} ref={setCamera} />
                 </>
-                <Scene innerRef={setScene}>
+                <Scene ref={setScene}>
                     <AmbientLight key={index} params={[color]}></AmbientLight>
                     {isVisible && <Mesh />}
                 </Scene>

@@ -63,7 +63,7 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
         <Mesh>
             <TorusGeometry params={[250, 50, 16, 100]} />
             <MeshStandardMaterial
-                innerRef={initMaterial}
+                ref={initMaterial}
                 params={[
                     {
                         side: THREE.DoubleSide,

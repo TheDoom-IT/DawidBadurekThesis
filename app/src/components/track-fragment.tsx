@@ -156,12 +156,12 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
 
     return (
         <>
-            <LineSegments innerRef={setFrustumCulled}>
-                <BufferGeometry animate={lineAnimation} innerRef={setLine} />
+            <LineSegments ref={setFrustumCulled}>
+                <BufferGeometry animate={lineAnimation} ref={setLine} />
                 <LineBasicMaterial params={[{ vertexColors: true, transparent: true }]} />
             </LineSegments>
-            <Points innerRef={setFrustumCulled}>
-                <BufferGeometry animate={pointsAnimation} innerRef={setPoints} />
+            <Points ref={setFrustumCulled}>
+                <BufferGeometry animate={pointsAnimation} ref={setPoints} />
                 <PointsMaterial params={[{ vertexColors: true, transparent: true }]} />
             </Points>
         </>
