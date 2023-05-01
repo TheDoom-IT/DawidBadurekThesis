@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { ForwardedRef, useEffect, useRef } from 'react';
 import { useParentContext } from '../contexts/parent-context';
 import { Object3DProps } from '../types';
 import { handleForwardRef } from '../utils';
@@ -8,6 +8,7 @@ import * as THREE from 'three';
 export function useObject3D<C extends new (...params: any[]) => R, R extends THREE.Object3D>(
     constructor: C,
     props: Object3DProps<C, R>,
+    ref: ForwardedRef<R>,
 ): R {
     const object = useRef<R>(new constructor(...(props.params ?? [])));
 
@@ -15,8 +16,8 @@ export function useObject3D<C extends new (...params: any[]) => R, R extends THR
     const parent = useParentContext();
 
     useEffect(() => {
-        return handleForwardRef(props.innerRef, object.current);
-    }, [props.innerRef]);
+        return handleForwardRef(ref, object.current);
+    }, [ref]);
 
     useEffect(() => {
         if (props.position) {

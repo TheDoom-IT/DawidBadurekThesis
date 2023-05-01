@@ -1,5 +1,5 @@
 import { useEffectPassContext } from '../contexts/effect-pass-context';
-import React, { useLayoutEffect } from 'react';
+import React, { ForwardedRef, useLayoutEffect } from 'react';
 import * as POST from 'postprocessing';
 import { ParamsProps } from '../types';
 import { useDisposableObject } from '../hooks/useDisposableObject';
@@ -8,29 +8,31 @@ export function createEffect<C extends new (...params: any[]) => R, R extends PO
     constructor: C,
 ) {
     // eslint-disable-next-line react/display-name
-    return (props: ParamsProps<C, R>) => {
-        const effectPassContext = useEffectPassContext();
+    return React.forwardRef<R, ParamsProps<C, R>>(
+        (props: ParamsProps<C, R>, ref: ForwardedRef<R>) => {
+            const effectPassContext = useEffectPassContext();
 
-        const effect = useDisposableObject(constructor, props.params, props.innerRef);
+            const effect = useDisposableObject(constructor, props.params, ref);
 
-        useLayoutEffect(() => {
-            if (!effect || !effectPassContext?.effectPass) {
-                return;
-            }
+            useLayoutEffect(() => {
+                if (!effect || !effectPassContext?.effectPass) {
+                    return;
+                }
 
-            effectPassContext?.addEffect(effect);
+                effectPassContext?.addEffect(effect);
 
-            return () => {
-                effectPassContext?.removeEffect(effect);
-            };
-        }, [
-            effect,
-            effectPassContext,
-            effectPassContext?.effectPass,
-            effectPassContext?.addEffect,
-            effectPassContext?.removeEffect,
-        ]);
+                return () => {
+                    effectPassContext?.removeEffect(effect);
+                };
+            }, [
+                effect,
+                effectPassContext,
+                effectPassContext?.effectPass,
+                effectPassContext?.addEffect,
+                effectPassContext?.removeEffect,
+            ]);
 
-        return <>{props.children}</>;
-    };
+            return <>{props.children}</>;
+        },
+    );
 }

@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { FC } from 'react';
 import { MaterialProps } from '../types';
 import { createThreeMaterial } from '../utils';
 
@@ -13,21 +12,15 @@ export type MeshStandardMaterialProps = MaterialProps<
 >;
 export type ShaderMaterialProps = MaterialProps<typeof THREE.ShaderMaterial, THREE.ShaderMaterial>;
 
-export const MeshBasicMaterial: FC<MeshBasicMaterialProps> = createThreeMaterial(
-    THREE.MeshBasicMaterial,
-);
-export const MeshStandardMaterial: FC<MeshStandardMaterialProps> = createThreeMaterial(
-    THREE.MeshStandardMaterial,
-);
-export const ShaderMaterial: FC<ShaderMaterialProps> = createThreeMaterial(THREE.ShaderMaterial);
+export const MeshBasicMaterial = createThreeMaterial(THREE.MeshBasicMaterial);
+export const MeshStandardMaterial = createThreeMaterial(THREE.MeshStandardMaterial);
+export const ShaderMaterial = createThreeMaterial(THREE.ShaderMaterial);
 
 export type PointsMaterialProps = MaterialProps<typeof THREE.PointsMaterial, THREE.PointsMaterial>;
-export const PointsMaterial: FC<PointsMaterialProps> = createThreeMaterial(THREE.PointsMaterial);
+export const PointsMaterial = createThreeMaterial(THREE.PointsMaterial);
 
 export type LineBasicMaterialProps = MaterialProps<
     typeof THREE.LineBasicMaterial,
     THREE.LineBasicMaterial
 >;
-export const LineBasicMaterial: FC<LineBasicMaterialProps> = createThreeMaterial(
-    THREE.LineBasicMaterial,
-);
+export const LineBasicMaterial = createThreeMaterial(THREE.LineBasicMaterial);
