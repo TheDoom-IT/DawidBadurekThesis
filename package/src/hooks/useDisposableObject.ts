@@ -4,8 +4,8 @@ import { Disposable } from 'postprocessing';
 
 export function useDisposableObject<C extends new (...params: any[]) => R, R extends Disposable>(
     constructor: C,
-    params?: ConstructorParameters<C>,
-    ref?: ForwardedRef<R>,
+    params: ConstructorParameters<C> | undefined,
+    ref: ForwardedRef<R>,
 ): R | null {
     const [object, setObject] = useState<R | null>(null);
 

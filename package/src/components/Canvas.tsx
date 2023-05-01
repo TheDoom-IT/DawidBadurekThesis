@@ -100,13 +100,14 @@ export const Canvas = React.forwardRef<THREE.WebGLRenderer, CanvasProps>(functio
             return;
         }
 
-        const newRenderer = new THREE.WebGLRenderer({ canvas });
+        const newRenderer = new THREE.WebGLRenderer({ ...(props.params?.[0] ?? []), canvas });
         setRenderer(newRenderer);
 
         return () => {
             newRenderer.dispose();
             newRenderer.forceContextLoss();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [canvas]);
 
     useLayoutEffect(() => {
