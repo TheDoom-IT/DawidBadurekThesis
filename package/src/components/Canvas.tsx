@@ -1,4 +1,11 @@
-import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
+import React, {
+    useRef,
+    useLayoutEffect,
+    useState,
+    useMemo,
+    useCallback,
+    ForwardedRef,
+} from 'react';
 import * as THREE from 'three';
 import * as POST from 'postprocessing';
 import { handleForwardRef } from '../utils';
@@ -8,7 +15,10 @@ import { useAnimation } from '../hooks/useAnimation';
 
 export type CanvasProps = ParamsProps<typeof THREE.WebGLRenderer, THREE.WebGLRenderer>;
 
-export const Canvas = (props: CanvasProps) => {
+export const Canvas = React.forwardRef<THREE.WebGLRenderer, CanvasProps>(function Canvas(
+    props: CanvasProps,
+    ref: ForwardedRef<THREE.WebGLRenderer>,
+) {
     const [renderer, setRenderer] = useState<THREE.WebGLRenderer | null>(null);
     const [scene, setScene] = useState<THREE.Scene | null>(null);
     const [camera, setCamera] = useState<THREE.Camera | null>(null);
@@ -104,8 +114,8 @@ export const Canvas = (props: CanvasProps) => {
             return;
         }
 
-        return handleForwardRef(props.innerRef, renderer);
-    }, [props.innerRef, renderer]);
+        return handleForwardRef(ref, renderer);
+    }, [ref, renderer]);
 
     // start render loop
     useLayoutEffect(() => {
@@ -128,4 +138,4 @@ export const Canvas = (props: CanvasProps) => {
             </canvas>
         </div>
     );
-};
+});

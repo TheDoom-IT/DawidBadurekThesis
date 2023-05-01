@@ -1,11 +1,11 @@
-import React, { useLayoutEffect, useState } from 'react';
+import { ForwardedRef, useLayoutEffect, useState } from 'react';
 import { handleForwardRef } from '../utils';
 import { Disposable } from 'postprocessing';
 
 export function useDisposableObject<C extends new (...params: any[]) => R, R extends Disposable>(
     constructor: C,
     params?: ConstructorParameters<C>,
-    innerRef?: React.ForwardedRef<R>,
+    ref?: ForwardedRef<R>,
 ): R | null {
     const [object, setObject] = useState<R | null>(null);
 
@@ -24,7 +24,7 @@ export function useDisposableObject<C extends new (...params: any[]) => R, R ext
             return;
         }
 
-        return handleForwardRef(innerRef, object);
-    }, [innerRef, object]);
+        return handleForwardRef(ref, object);
+    }, [ref, object]);
     return object;
 }

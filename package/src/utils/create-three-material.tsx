@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { ForwardedRef, useEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
 import { useAnimation } from '../hooks/useAnimation';
 import { MaterialProps } from '../types';
@@ -8,29 +8,31 @@ import * as THREE from 'three';
 export function createThreeMaterial<
     C extends new (...params: any[]) => R,
     R extends THREE.Material,
->(constructor: C): FC<MaterialProps<C, R>> {
+>(constructor: C) {
     //eslint-disable-next-line react/display-name
-    return (props: MaterialProps<C, R>) => {
-        const object = useDisposableObject(constructor, props.params, props.innerRef);
+    return React.forwardRef<R, MaterialProps<C, R>>(
+        (props: MaterialProps<C, R>, ref: ForwardedRef<R>) => {
+            const object = useDisposableObject(constructor, props.params, ref);
 
-        useAnimation(props.animate, object);
-        const parent = useParentContext();
+            useAnimation(props.animate, object);
+            const parent = useParentContext();
 
-        useEffect(() => {
-            if (!object) {
-                return;
-            }
+            useEffect(() => {
+                if (!object) {
+                    return;
+                }
 
-            if (parent && 'material' in parent) {
-                parent.material = object;
+                if (parent && 'material' in parent) {
+                    parent.material = object;
 
-                return () => {
-                    // TODO: how to remove material from a parent
-                    // parent.material = null;
-                };
-            }
-        }, [parent, object]);
+                    return () => {
+                        // TODO: how to remove material from a parent
+                        // parent.material = null;
+                    };
+                }
+            }, [parent, object]);
 
-        return <>{props.children}</>;
-    };
+            return <>{props.children}</>;
+        },
+    );
 }

@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { ForwardedRef, useLayoutEffect } from 'react';
 import * as POST from 'postprocessing';
 import { useDisposableObject } from '../useDisposableObject';
 import { ParamsProps } from '../../types';
@@ -7,10 +7,11 @@ import { useCanvasContext } from '../../contexts/canvas-context';
 export function usePass<C extends new (...params: any[]) => R, R extends POST.Pass>(
     constructor: C,
     props: ParamsProps<C, R>,
+    ref: ForwardedRef<R>,
 ): R | null {
     const canvasContext = useCanvasContext();
 
-    const pass = useDisposableObject(constructor, props.params, props.innerRef);
+    const pass = useDisposableObject(constructor, props.params, ref);
 
     useLayoutEffect(() => {
         if (!pass || !canvasContext?.size) {
