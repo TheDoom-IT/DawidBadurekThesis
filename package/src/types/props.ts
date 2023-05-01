@@ -11,8 +11,6 @@ export type ParamsProps<C extends new (...params: any[]) => R, R> = BasicProps<R
     params?: ConstructorParameters<C>;
 };
 
-export type ExtendedProps<P, C extends new (...params: any[]) => R, R> = P & ParamsProps<C, R>;
-
 export type MaterialProps<
     C extends new (...params: any[]) => R,
     R extends THREE.Material,
@@ -26,11 +24,7 @@ export type GeometryProps<
 export type Object3DProps<
     C extends new (...params: any[]) => R,
     R extends THREE.Object3D,
-> = ExtendedProps<
-    {
-        position?: [x: number, y: number, z: number];
-        rotation?: [x: number, y: number, z: number];
-    },
-    C,
-    R
->;
+> = ParamsProps<C, R> & {
+    position?: [x: number, y: number, z: number];
+    rotation?: [x: number, y: number, z: number];
+};
