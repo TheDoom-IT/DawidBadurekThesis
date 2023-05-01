@@ -90,12 +90,11 @@ export const Canvas = (props: CanvasProps) => {
             return;
         }
 
-        const newRenderer = new THREE.WebGLRenderer({ canvas: canvas });
+        const newRenderer = new THREE.WebGLRenderer({ canvas });
         setRenderer(newRenderer);
 
         return () => {
             newRenderer.dispose();
-            // TODO: React.ScrictMode causes canvas to show lack of context for a single frame
             newRenderer.forceContextLoss();
         };
     }, [canvas]);
@@ -120,13 +119,9 @@ export const Canvas = (props: CanvasProps) => {
         };
     }, [render]);
 
-    const initCanvas = useCallback((ref: HTMLCanvasElement | null) => {
-        setCanvas(ref);
-    }, []);
-
     return (
         <div style={{ width: '100%', height: '100%' }} ref={divRef}>
-            <canvas ref={initCanvas} style={{ display: 'block' }}>
+            <canvas ref={setCanvas} style={{ display: 'block' }}>
                 <CanvasContext.Provider value={canvasContext}>
                     {props.children}
                 </CanvasContext.Provider>
