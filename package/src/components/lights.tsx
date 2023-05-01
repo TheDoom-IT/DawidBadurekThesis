@@ -8,5 +8,10 @@ export type DirectionalLightProps = Object3DProps<
     THREE.DirectionalLight
 >;
 
-export const AmbientLight = createThreeObject(THREE.AmbientLight);
-export const DirectionalLight = createThreeObject(THREE.DirectionalLight);
+export const AmbientLight = createThreeObject<typeof THREE.AmbientLight, THREE.AmbientLight>(
+    THREE.AmbientLight,
+);
+export const DirectionalLight = createThreeObject<
+    typeof THREE.DirectionalLight,
+    THREE.DirectionalLight
+>(THREE.DirectionalLight);

@@ -11,5 +11,11 @@ export type PerspectiveCameraProps = Object3DProps<
     THREE.PerspectiveCamera
 >;
 
-export const OrtographicCamera = createThreeCamera(THREE.OrthographicCamera);
-export const PerspectiveCamera = createThreeCamera(THREE.PerspectiveCamera);
+export const OrtographicCamera = createThreeCamera<
+    typeof THREE.OrthographicCamera,
+    THREE.OrthographicCamera
+>(THREE.OrthographicCamera);
+export const PerspectiveCamera = createThreeCamera<
+    typeof THREE.PerspectiveCamera,
+    THREE.PerspectiveCamera
+>(THREE.PerspectiveCamera);

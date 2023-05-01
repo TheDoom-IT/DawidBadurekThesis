@@ -12,15 +12,30 @@ export type MeshStandardMaterialProps = MaterialProps<
 >;
 export type ShaderMaterialProps = MaterialProps<typeof THREE.ShaderMaterial, THREE.ShaderMaterial>;
 
-export const MeshBasicMaterial = createThreeMaterial(THREE.MeshBasicMaterial);
-export const MeshStandardMaterial = createThreeMaterial(THREE.MeshStandardMaterial);
-export const ShaderMaterial = createThreeMaterial(THREE.ShaderMaterial);
+export const MeshBasicMaterial = createThreeMaterial<
+    typeof THREE.MeshBasicMaterial,
+    THREE.MeshBasicMaterial
+>(THREE.MeshBasicMaterial);
+export const MeshStandardMaterial = createThreeMaterial<
+    typeof THREE.MeshStandardMaterial,
+    THREE.MeshStandardMaterial
+>(THREE.MeshStandardMaterial);
+export const ShaderMaterial = createThreeMaterial<
+    typeof THREE.ShaderMaterial,
+    THREE.ShaderMaterial
+>(THREE.ShaderMaterial);
 
 export type PointsMaterialProps = MaterialProps<typeof THREE.PointsMaterial, THREE.PointsMaterial>;
-export const PointsMaterial = createThreeMaterial(THREE.PointsMaterial);
+export const PointsMaterial = createThreeMaterial<
+    typeof THREE.PointsMaterial,
+    THREE.PointsMaterial
+>(THREE.PointsMaterial);
 
 export type LineBasicMaterialProps = MaterialProps<
     typeof THREE.LineBasicMaterial,
     THREE.LineBasicMaterial
 >;
-export const LineBasicMaterial = createThreeMaterial(THREE.LineBasicMaterial);
+export const LineBasicMaterial = createThreeMaterial<
+    typeof THREE.LineBasicMaterial,
+    THREE.LineBasicMaterial
+>(THREE.LineBasicMaterial);

@@ -1,4 +1,4 @@
-import { ForwardedRef, useEffect, useRef } from 'react';
+import { ForwardedRef, useLayoutEffect, useRef } from 'react';
 import { useParentContext } from '../contexts/parent-context';
 import { Object3DProps } from '../types';
 import { handleForwardRef } from '../utils';
@@ -15,11 +15,11 @@ export function useObject3D<C extends new (...params: any[]) => R, R extends THR
     useAnimation(props.animate, object.current);
     const parent = useParentContext();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         return handleForwardRef(ref, object.current);
     }, [ref]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (props.position) {
             const [x, y, z] = props.position;
             object.current.position.set(x, y, z);
@@ -32,7 +32,7 @@ export function useObject3D<C extends new (...params: any[]) => R, R extends THR
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(props.position), JSON.stringify(props.rotation)]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const tempObject = object.current;
         parent?.add(tempObject);
 
