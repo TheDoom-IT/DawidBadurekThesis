@@ -1,16 +1,16 @@
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { Animation } from '../types';
 
 export function useAnimation<R>(animateFunction: Animation<R> | undefined, object: R | null) {
     const animationFrameId = useRef<number | null>(null);
     const previousTimestamp = useRef<number | null>(null);
 
-    const animate = useCallback(
-        (timestamp: number) => {
-            if (!animateFunction || !object) {
-                return;
-            }
+    const animate = useMemo(() => {
+        if (!animateFunction || !object) {
+            return;
+        }
 
+        const animateFrame = (timestamp: number) => {
             if (previousTimestamp.current === null) {
                 previousTimestamp.current = timestamp;
             }
@@ -19,13 +19,14 @@ export function useAnimation<R>(animateFunction: Animation<R> | undefined, objec
 
             animateFunction(object, timestamp, elapsed);
 
-            animationFrameId.current = requestAnimationFrame(animate);
-        },
-        [animateFunction, object],
-    );
+            animationFrameId.current = requestAnimationFrame(animateFrame);
+        };
+
+        return animateFrame;
+    }, [animateFunction, object]);
 
     useLayoutEffect(() => {
-        if (!animateFunction) {
+        if (!animate) {
             return;
         }
 
@@ -38,5 +39,5 @@ export function useAnimation<R>(animateFunction: Animation<R> | undefined, objec
             animationFrameId.current = null;
             previousTimestamp.current = null;
         };
-    }, [animate, animateFunction]);
+    }, [animate]);
 }

@@ -1,16 +1,20 @@
 import { ForwardedRef, useLayoutEffect, useState } from 'react';
 import { handleForwardRef } from '../utils';
 import { Disposable } from 'postprocessing';
+import { ParamsProps } from '../types';
+import { useAnimation } from './useAnimation';
 
 export function useDisposableObject<C extends new (...params: any[]) => R, R extends Disposable>(
     constructor: C,
-    params: ConstructorParameters<C> | undefined,
+    props: ParamsProps<C, R>,
     ref: ForwardedRef<R>,
 ): R | null {
     const [object, setObject] = useState<R | null>(null);
 
+    useAnimation(props.animate, object);
+
     useLayoutEffect(() => {
-        const newObject = new constructor(...(params || []));
+        const newObject = new constructor(...(props.params || []));
         setObject(newObject);
 
         return () => {

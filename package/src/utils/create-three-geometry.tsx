@@ -1,6 +1,5 @@
 import React, { ForwardedRef, useEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
-import { useAnimation } from '../hooks/useAnimation';
 import { GeometryProps } from '../types';
 import * as THREE from 'three';
 import { useDisposableObject } from '../hooks/useDisposableObject';
@@ -13,9 +12,7 @@ export function createThreeGeometry<
     return React.forwardRef<R, GeometryProps<C, R>>(
         (props: GeometryProps<C, R>, ref: ForwardedRef<R>) => {
             const parent = useParentContext();
-            const object = useDisposableObject(constructor, props.params, ref);
-
-            useAnimation(props.animate, object);
+            const object = useDisposableObject(constructor, props, ref);
 
             useEffect(() => {
                 if (!object) {

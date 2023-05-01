@@ -11,7 +11,7 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
 ): R | null {
     const canvasContext = useCanvasContext();
 
-    const pass = useDisposableObject(constructor, props.params, ref);
+    const pass = useDisposableObject(constructor, props, ref);
 
     useLayoutEffect(() => {
         if (!pass || !canvasContext?.size) {

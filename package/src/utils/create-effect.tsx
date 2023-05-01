@@ -12,7 +12,7 @@ export function createEffect<C extends new (...params: any[]) => R, R extends PO
         (props: ParamsProps<C, R>, ref: ForwardedRef<R>) => {
             const effectPassContext = useEffectPassContext();
 
-            const effect = useDisposableObject(constructor, props.params, ref);
+            const effect = useDisposableObject(constructor, props, ref);
 
             useLayoutEffect(() => {
                 if (!effect || !effectPassContext?.effectPass) {

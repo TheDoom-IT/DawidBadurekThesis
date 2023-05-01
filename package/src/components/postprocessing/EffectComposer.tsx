@@ -9,7 +9,7 @@ export type EffectComposerProps = ParamsProps<typeof POST.EffectComposer, POST.E
 export const EffectComposer = React.forwardRef<POST.EffectComposer, EffectComposerProps>(
     function EffectComposer(props: EffectComposerProps, ref: ForwardedRef<POST.EffectComposer>) {
         const canvasContext = useCanvasContext();
-        const composer = useDisposableObject(POST.EffectComposer, props.params, ref);
+        const composer = useDisposableObject(POST.EffectComposer, props, ref);
 
         const contextAttributes = canvasContext?.renderer?.getContext()?.getContextAttributes();
         const composerRenderer = composer?.getRenderer();

@@ -1,6 +1,5 @@
 import React, { ForwardedRef, useEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
-import { useAnimation } from '../hooks/useAnimation';
 import { MaterialProps } from '../types';
 import { useDisposableObject } from '../hooks/useDisposableObject';
 import * as THREE from 'three';
@@ -12,9 +11,8 @@ export function createThreeMaterial<
     //eslint-disable-next-line react/display-name
     return React.forwardRef<R, MaterialProps<C, R>>(
         (props: MaterialProps<C, R>, ref: ForwardedRef<R>) => {
-            const object = useDisposableObject(constructor, props.params, ref);
+            const object = useDisposableObject(constructor, props, ref);
 
-            useAnimation(props.animate, object);
             const parent = useParentContext();
 
             useEffect(() => {
