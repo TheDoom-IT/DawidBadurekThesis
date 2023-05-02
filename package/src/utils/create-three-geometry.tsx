@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useEffect } from 'react';
+import React, { ForwardedRef, useLayoutEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
 import { GeometryProps } from '../types';
 import * as THREE from 'three';
@@ -14,7 +14,7 @@ export function createThreeGeometry<
             const parent = useParentContext();
             const object = useDisposableObject(constructor, props, ref);
 
-            useEffect(() => {
+            useLayoutEffect(() => {
                 if (!object) {
                     return;
                 }

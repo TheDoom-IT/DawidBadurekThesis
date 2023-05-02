@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useEffect } from 'react';
+import React, { ForwardedRef, useLayoutEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
 import { MaterialProps } from '../types';
 import { useDisposableObject } from '../hooks/useDisposableObject';
@@ -15,7 +15,7 @@ export function createThreeMaterial<
 
             const parent = useParentContext();
 
-            useEffect(() => {
+            useLayoutEffect(() => {
                 if (!object) {
                     return;
                 }
