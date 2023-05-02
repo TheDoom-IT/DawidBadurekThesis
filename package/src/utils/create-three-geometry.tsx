@@ -20,11 +20,11 @@ export function createThreeGeometry<
                 }
 
                 if (parent && 'geometry' in parent) {
+                    const previousGeometry = parent.geometry;
                     parent.geometry = object;
 
                     return () => {
-                        // TODO: how to remove geometry from a parent
-                        parent.geometry = null;
+                        parent.geometry = previousGeometry;
                     };
                 }
             }, [parent, object]);

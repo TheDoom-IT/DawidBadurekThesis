@@ -33,11 +33,11 @@ export function useObject3D<C extends new (...params: any[]) => R, R extends THR
     }, [JSON.stringify(props.position), JSON.stringify(props.rotation)]);
 
     useLayoutEffect(() => {
-        const tempObject = object.current;
-        parent?.add(tempObject);
+        const currObject = object.current;
+        parent?.add(currObject);
 
         return () => {
-            parent?.remove(tempObject);
+            parent?.remove(currObject);
         };
     }, [parent]);
 

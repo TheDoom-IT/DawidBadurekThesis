@@ -21,11 +21,11 @@ export function createThreeMaterial<
                 }
 
                 if (parent && 'material' in parent) {
+                    const previousMaterial = parent.material;
                     parent.material = object;
 
                     return () => {
-                        // TODO: how to remove material from a parent
-                        // parent.material = null;
+                        parent.material = previousMaterial;
                     };
                 }
             }, [parent, object]);
