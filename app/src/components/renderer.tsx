@@ -43,6 +43,7 @@ export const Renderer = ({
             }
 
             scene.background = new THREE.Color(color);
+            scene.scale.set(0.5, 0.5, 0.5);
         },
         [color],
     );

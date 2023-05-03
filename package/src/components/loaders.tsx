@@ -1,42 +1,37 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { ForwardedRef, useContext, useLayoutEffect, useState } from 'react';
 import { ParentContext } from '../contexts/parent-context';
 import { OBJLoader as THREEOBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import { Object3DProps } from '../types';
 import { handleForwardRef } from '../utils';
 
-// TODO: add loaders
-// interface OBJLoaderProps {
-//     url: string;
-// }
+export type LoaderProps = Object3DProps<typeof THREE.Group, THREE.Group> & { url: string };
+type OnLoadType = Awaited<ReturnType<typeof THREEOBJLoader.prototype.loadAsync>>;
 
-export type OBJLoaderProps = Object3DProps<typeof THREE.Group, THREE.Group> & { url: string };
-
-export const OBJLoader = (props: OBJLoaderProps) => {
-    const [object, setObject] = useState<THREE.Group | null>(null);
+export const OBJLoader = React.forwardRef(function OBJLoader(
+    props: LoaderProps,
+    ref: ForwardedRef<OnLoadType>,
+) {
+    const [object, setObject] = useState<OnLoadType | null>(null);
 
     const parent = useContext(ParentContext);
 
-    useEffect(() => {
-        // const loader = new THREEOBJLoader();
-        const loader = new GLTFLoader();
+    useLayoutEffect(() => {
+        const loader = new THREEOBJLoader();
 
         loader.load(
             props.url,
-            (group: GLTF) => {
-                setObject(group.scene);
-                // TODO: should it be return???
-                handleForwardRef(props.innerRef, group.scene);
+            (group) => {
+                setObject(group);
             },
             undefined,
             (error: ErrorEvent) => {
                 console.log(error);
             },
         );
-    }, []);
+    }, [props.url]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!object) {
             return;
         }
@@ -48,5 +43,13 @@ export const OBJLoader = (props: OBJLoaderProps) => {
         };
     }, [object, parent]);
 
-    return <ParentContext.Provider value={object}>{/* {props.children} */}</ParentContext.Provider>;
-};
+    useLayoutEffect(() => {
+        if (!object) {
+            return;
+        }
+
+        return handleForwardRef(ref, object);
+    }, [object, ref]);
+
+    return <ParentContext.Provider value={object}>{props.children}</ParentContext.Provider>;
+});
