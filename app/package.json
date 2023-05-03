@@ -9,12 +9,13 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "echo 'Tests finished...'",
-    "lint": "eslint \"**/src/**/*.{ts,tsx}\"",
-    "lint:fix": "eslint --fix \"**/src/**/*.{ts,tsx}\"",
+    "lint": "eslint --ext .ts,.tsx src/ --max-warnings 0",
+    "lint:fix": "eslint --fix --ext .ts,.tsx src/",
     "link": "cd ../package && npm link && cd ../app && npm link react-three-component"
   },
   "dependencies": {
     "d3": "^7.8.2",
+    "postprocessing": "^6.30.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
@@ -34,6 +35,7 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "typescript": "^4.6.4",
     "vite": "^3.2.3"
   }

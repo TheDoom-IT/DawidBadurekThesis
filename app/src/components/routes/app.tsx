@@ -9,12 +9,11 @@ import { SelectedSourceObject } from '../../types/selected-source';
 import { DataWindows } from '../data-windows';
 
 export const App = () => {
-    const divId = useRef('AppDivId');
     const divRef = useRef<HTMLDivElement>(null);
     const [color, setColor] = useState('#ffffff');
     const [tracks, setTracks] = useState<Tracks | null>(null);
     const [selectedSources, setSelectedSources] = useState<SelectedSourceObject>({});
-    const [clipRotationAsCamera, setClipRotationAsCamera] = useState(false);
+    const [clipRotationAsCamera, setClipRotationAsCamera] = useState(true);
     const [showMCalo, setShowMCalo] = useState(true);
 
     useEffect(() => {
@@ -53,15 +52,15 @@ export const App = () => {
 
     return (
         <>
-            <div id={divId.current} className="App" ref={divRef}>
+            <div className="App" ref={divRef}>
                 {tracks === null && <LoadFileMenu setTracks={setTracks} />}
                 {tracks !== null && (
                     <>
                         <Renderer
-                            divId={divId.current}
                             tracks={tracks}
                             color={color}
                             selectedSources={selectedSources}
+                            clipRotationAsCamera={clipRotationAsCamera}
                             showMCalo={showMCalo}
                         />
                         <div className="home-link-wrapper">

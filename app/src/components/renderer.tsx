@@ -10,32 +10,52 @@ import * as THREE from 'three';
 import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
 import { SelectedSourceObject } from '../types/selected-source';
-import { useState } from 'react';
-import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 import { Plane } from './plane';
+import { MachineModel } from './machine-model';
 import { CaloElement } from './calo-element';
-import { useMemo } from 'react';
+import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
+import { useCallback, useMemo, useState } from 'react';
 import { AnimationData } from '../types/animation-data';
 import { ANIMATION_LENGTH_MS, ANIMATION_STEP_LENGTH, LINE_SEGMENTS } from '../constants/animation';
+import { Postprocessing } from './postprocessing';
 
 interface RendererProps {
-    divId: string;
     tracks: Tracks;
     color: string;
     selectedSources: SelectedSourceObject;
+    clipRotationAsCamera: boolean;
     showMCalo: boolean;
 }
 
-export const Renderer = ({ divId, tracks, color, selectedSources, showMCalo }: RendererProps) => {
+export const Renderer = ({
+    tracks,
+    color,
+    selectedSources,
+    clipRotationAsCamera,
+    showMCalo,
+}: RendererProps) => {
     const [controls, setControls] = useState<Controls | null>(null);
 
-    const setScene = (scene: THREE.Scene | null) => {
-        if (!scene) {
+    const initScene = useCallback(
+        (scene: THREE.Scene | null) => {
+            if (!scene) {
+                return;
+            }
+
+            scene.background = new THREE.Color(color);
+        },
+        [color],
+    );
+
+    const initRenderer = useCallback((renderer: THREE.WebGLRenderer | null) => {
+        if (!renderer) {
             return;
         }
 
-        scene.background = new THREE.Color(color);
-    };
+        renderer.localClippingEnabled = true;
+    }, []);
+
+    const setOrbitControls = useCallback((ref: Controls | null) => setControls(ref), []);
 
     const selectedTracks = useMemo(() => {
         return tracks.mTracks
@@ -74,12 +94,22 @@ export const Renderer = ({ divId, tracks, color, selectedSources, showMCalo }: R
     }, [tracks]);
 
     return (
-        <Canvas divId={divId}>
+        <Canvas
+            params={[
+                {
+                    powerPreference: 'high-performance',
+                    antialias: false,
+                    stencil: false,
+                    depth: false,
+                },
+            ]}
+            ref={initRenderer}>
             <PerspectiveCamera position={[0, 30, 500]} />
-            <MainScene innerRef={setScene}>
+            <MainScene ref={initScene}>
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 20, 10]} />
-                <OrbitControls innerRef={(ref) => setControls(ref)} />
+                <OrbitControls ref={setOrbitControls} />
+                <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 <Plane />
                 {selectedTracks.map((track) => (
                     <TrackFragment
@@ -91,6 +121,7 @@ export const Renderer = ({ divId, tracks, color, selectedSources, showMCalo }: R
                 {showMCalo &&
                     tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
+            <Postprocessing />
         </Canvas>
     );
 };

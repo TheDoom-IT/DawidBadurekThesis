@@ -7,3 +7,4 @@ export * from './main-scene';
 export * from './controls';
 export * from './Canvas';
 export * from './loaders';
+export * from './postprocessing';

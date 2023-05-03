@@ -27,10 +27,10 @@ export const AppTest = () => {
 
     return (
         <div className="my-box" id={divId}>
-            <Canvas divId={divId}>
+            <Canvas>
                 <PerspectiveCamera position={[0, 0, 5]} />
                 <OrbitControls />
-                <MainScene innerRef={initializeMainScene}>
+                <MainScene ref={initializeMainScene}>
                     <DirectionalLight params={[0xffffff, 1]} position={[-5, 0, 0]} />
                     <DirectionalLight params={[0xffffff, 0.8]} position={[5, 0, 3]} />
                     <Mesh position={[-1, 0, 0]} animate={meshAnimation}>

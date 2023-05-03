@@ -15,7 +15,7 @@ export const CaloElement = ({ calo }: CaloElementProps) => {
 
     const position = useMemo(() => {
         return rotation.clone().multiplyScalar(200 + calo.energy / 2);
-    }, [rotation]);
+    }, [rotation, calo.energy]);
 
     const caloRadius = 2;
 

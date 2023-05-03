@@ -38,7 +38,7 @@ npm run dev
 ```
 #### Local development with the package:
 
-By default app uses package published to the NPM registry. It is also possible to develop the package and simultaneously use it in the app. To do that run the following command before starting the app(`npm run dev`):
+By default, app uses package published to the NPM registry. It is also possible to develop the package and simultaneously use it in the app. To do that run the following command before starting the app(`npm run dev`):
 ```
 npm run link
 ```
@@ -51,4 +51,9 @@ Now the app should use the package from the registry.
 #### Build:
 ```
 npm run build
+```
+
+#### Publish:
+```
+npm publish
 ```

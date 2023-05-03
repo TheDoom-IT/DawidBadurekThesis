@@ -17,11 +17,7 @@ jest.mock('three', () => {
 
 function renderInsideCanvas(element: React.ReactElement) {
     return render(element, {
-        wrapper: ({ children }) => (
-            <div id="id">
-                <Canvas divId="id">{children}</Canvas>
-            </div>
-        ),
+        wrapper: ({ children }) => <Canvas>{children}</Canvas>,
     });
 }
 
@@ -37,26 +33,11 @@ describe('Canvas', () => {
         jest.clearAllMocks();
     });
 
-    describe('when Canvas element is unable to find div element', () => {
-        it('should throw an exception', () => {
-            const id = 'unknown id';
-            const test = () => {
-                render(<Canvas divId={id}></Canvas>);
-            };
-
-            expect(test).toThrow(`Failed to find a div with id "${id}"!`);
-        });
-    });
-
     describe('when Canvas element can find div element', () => {
         it('should add canvas to the div element', () => {
-            const renderResult = render(
-                <div id="id">
-                    <Canvas divId="id"></Canvas>
-                </div>,
-            );
+            const renderResult = render(<Canvas></Canvas>);
 
-            const div = renderResult.container.querySelector('#id');
+            const div = renderResult.container.querySelector('div');
             const canvas = renderResult.container.querySelector('canvas');
 
             expect(div).not.toEqual(null);
@@ -70,7 +51,7 @@ describe('Canvas', () => {
         it('should remove canvas from the DOM', () => {
             const renderResult = render(
                 <div id="id">
-                    <Canvas divId="id"></Canvas>
+                    <Canvas></Canvas>
                 </div>,
             );
 
@@ -89,7 +70,7 @@ describe('Canvas', () => {
             const test = () =>
                 render(
                     <div id="id">
-                        <Canvas divId="id">{/* <Scene /> */}</Canvas>
+                        <Canvas>{/* <Scene /> */}</Canvas>
                     </div>,
                 );
 

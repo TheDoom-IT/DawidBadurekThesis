@@ -19,7 +19,7 @@ export const DivChange = () => {
                     width: '100%',
                 }}>
                 <div id={divId1} className="my-box">
-                    <Canvas divId={isLeft ? divId1 : divId2}></Canvas>
+                    <Canvas></Canvas>
                 </div>
                 <div id={divId2} className="my-box"></div>
             </div>

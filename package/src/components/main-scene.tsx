@@ -1,14 +1,17 @@
-import React, { FC, useLayoutEffect } from 'react';
+import React, { ForwardedRef, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 import { useCanvasContext } from '../contexts/canvas-context';
 import { ParentContext } from '../contexts/parent-context';
-import { useThreeObject } from '../hooks/useThreeObject';
-import { BasicProps } from '../types/props';
+import { useObject3D } from '../hooks/useObject3D';
+import { BasicProps } from '../types';
 
 export type MainSceneProps = BasicProps<THREE.Scene>;
 
-export const MainScene: FC<MainSceneProps> = (props: MainSceneProps) => {
-    const object = useThreeObject(THREE.Scene, props);
+export const MainScene = React.forwardRef<THREE.Scene, MainSceneProps>(function MainScene(
+    props: MainSceneProps,
+    ref: ForwardedRef<THREE.Scene>,
+) {
+    const object = useObject3D(THREE.Scene, props, ref);
     const canvasContext = useCanvasContext();
 
     useLayoutEffect(() => {
@@ -23,6 +26,7 @@ export const MainScene: FC<MainSceneProps> = (props: MainSceneProps) => {
         }
 
         canvasContext.setScene(object);
-    }, [object, canvasContext?.setScene, canvasContext?.mainScene]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [canvasContext?.mainScene, canvasContext?.setScene, object]);
     return <ParentContext.Provider value={object}>{props.children}</ParentContext.Provider>;
-};
+});

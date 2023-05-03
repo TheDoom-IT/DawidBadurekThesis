@@ -23,7 +23,7 @@ export const RecreateCanvas = () => {
         <>
             <button onClick={() => setKey(key + 1)}> Recreate Canvas</button>
             <div id={divId} style={divStyle}>
-                <Canvas divId={divId} key={key}>
+                <Canvas key={key}>
                     <PerspectiveCamera position={[0, 0, 5]} />
                     <MainScene>
                         <AmbientLight />

@@ -12,7 +12,7 @@ export const Static = () => {
             <div
                 id={divId}
                 style={{ width: '100%', height: '100%', minHeight: 100, backgroundColor: 'blue' }}>
-                <Canvas divId={divId}></Canvas>
+                <Canvas></Canvas>
             </div>
         </>
     );
