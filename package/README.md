@@ -32,7 +32,7 @@ export const ThreeComponent = () => {
     },[]);
 
     return (
-        <Canvas divId={divId}>
+        <Canvas>
             <PerspectiveCamera position={[0, 0, 5]}/>
             <OrbitControls/>
             <MainScene ref={initializeMainScene}>
@@ -72,11 +72,37 @@ THREE object or as in the example to set additional properties of the object;
 - params - constructor parameters of the THREE object represented by the component;
 - animate - uses to animate THREE objects.
 
-All of the props expect `params` can be modified between rerenders. Components
+All the props expect `params` can be modified between rerenders. Components
 detects changes and applies new values. Therefore, it is usefull to wrap animate function in
 `useMemo`, so the same function reference is passed every rerender.
 It may increase the performance.
 
+## Post processing
+`react-three-component` supports post processing via `postprocessing` package.
+To use post processing add a `EffectComposer` component as a `Canvas` children.
+
+### Usage
+Exemplary `Canvas` with two passes - a `RenderPass` and an `EffectPass`. The `EffectPass`
+applies two effects - a `FXAAEffect` and a `BloomEffect`:
+```tsx
+<Canvas>
+    <EffectComposer>
+        <RenderPass />
+        <EffectPass>
+            <FXAAEffect />
+            <BloomEffect />
+        </EffectPass>
+    </EffectComposer>
+</Canvas>
+```
+Supported passes:
+- EffectPass
+- RenderPass
+
+Supported effects:
+- BloomEffect
+- FXAAEffect
+- NoiseEffect
 
 ## Objects
 `react-three-component` supports the following objects:
@@ -114,3 +140,6 @@ They have special props to simplify creation of scenes:
 ## Ligths
 - AmbientLight
 - DirectionalLight
+
+## Loaders
+- OBJLoader
