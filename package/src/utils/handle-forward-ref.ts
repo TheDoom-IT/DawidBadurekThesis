@@ -1,16 +1,19 @@
 import React from 'react';
 
 export function handleForwardRef<T>(
-    forwardRef: React.ForwardedRef<T> | undefined,
+    forwardRef: React.ForwardedRef<T>,
     value: T,
 ): void | (() => void) {
-    if (forwardRef === undefined) {
+    if (!forwardRef) {
         return;
     }
 
     if (typeof forwardRef === 'function') {
         forwardRef(value);
-    } else if (forwardRef) {
+        return () => {
+            forwardRef(null);
+        };
+    } else {
         forwardRef.current = value;
         return () => {
             forwardRef.current = null;

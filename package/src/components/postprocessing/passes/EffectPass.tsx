@@ -1,6 +1,6 @@
 import { ParamsProps } from '../../../types';
 import * as POST from 'postprocessing';
-import React, { FC, useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import React, { ForwardedRef, useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { EffectPassContext, EffectPassContextType } from '../../../contexts/effect-pass-context';
 import { usePass } from '../../../hooks/postprocessing/usePass';
 
@@ -16,13 +16,16 @@ class CustomEffectPass extends POST.EffectPass {
 }
 
 export type EffectPassProps = ParamsProps<typeof POST.EffectPass, POST.EffectPass>;
-export const EffectPass: FC<EffectPassProps> = (props) => {
-    const pass = usePass(CustomEffectPass, props) as CustomEffectPass | null;
+export const EffectPass = React.forwardRef<POST.EffectPass, EffectPassProps>(function EffectPass(
+    props: EffectPassProps,
+    ref: ForwardedRef<POST.EffectPass>,
+) {
+    const pass = usePass(CustomEffectPass, props, ref) as CustomEffectPass | null;
     const [effects, setEffects] = useState<POST.Effect[]>([]);
 
     const addEffect = useCallback((effect: POST.Effect) => {
         setEffects((prev) => {
-            const index = effects.findIndex((el) => el === effect);
+            const index = prev.findIndex((el) => el === effect);
             if (index === -1) {
                 return [...prev, effect];
             }
@@ -56,4 +59,4 @@ export const EffectPass: FC<EffectPassProps> = (props) => {
             {props.children}
         </EffectPassContext.Provider>
     );
-};
+});

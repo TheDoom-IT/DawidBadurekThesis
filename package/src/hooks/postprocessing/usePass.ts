@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { ForwardedRef, useLayoutEffect } from 'react';
 import * as POST from 'postprocessing';
 import { useDisposableObject } from '../useDisposableObject';
 import { ParamsProps } from '../../types';
@@ -7,10 +7,11 @@ import { useCanvasContext } from '../../contexts/canvas-context';
 export function usePass<C extends new (...params: any[]) => R, R extends POST.Pass>(
     constructor: C,
     props: ParamsProps<C, R>,
+    ref: ForwardedRef<R>,
 ): R | null {
     const canvasContext = useCanvasContext();
 
-    const pass = useDisposableObject(constructor, props.params, props.innerRef);
+    const pass = useDisposableObject(constructor, props, ref);
 
     useLayoutEffect(() => {
         if (!pass || !canvasContext?.size) {
@@ -18,7 +19,7 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         }
 
         pass.setSize(canvasContext.size.width, canvasContext.size.height);
-    }, [pass, canvasContext?.size?.width, canvasContext?.size?.height]);
+    }, [pass, canvasContext?.size, canvasContext?.size?.width, canvasContext?.size?.height]);
 
     useLayoutEffect(() => {
         if (!canvasContext?.mainScene || !pass) {
@@ -36,12 +37,10 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         pass.mainCamera = canvasContext.camera;
     }, [canvasContext?.camera, pass]);
 
+    const renderer = canvasContext?.effectComposer?.getRenderer();
     useLayoutEffect(() => {
-        if (
-            !pass ||
-            !canvasContext?.effectComposer ||
-            !canvasContext.effectComposer?.getRenderer()
-        ) {
+        // Pass cannot be added when renderer is not created yet
+        if (!pass || !canvasContext?.effectComposer || !renderer) {
             return;
         }
 
@@ -50,7 +49,7 @@ export function usePass<C extends new (...params: any[]) => R, R extends POST.Pa
         return () => {
             canvasContext.effectComposer?.removePass(pass);
         };
-    }, [pass, canvasContext?.effectComposer, canvasContext?.effectComposer?.getRenderer()]);
+    }, [pass, canvasContext?.effectComposer, renderer]);
 
     return pass;
 }

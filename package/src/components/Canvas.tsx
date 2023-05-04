@@ -1,32 +1,56 @@
-import React, { useRef, useLayoutEffect, useState, useMemo, useCallback } from 'react';
+import React, {
+    useRef,
+    useLayoutEffect,
+    useState,
+    useMemo,
+    useCallback,
+    ForwardedRef,
+} from 'react';
 import * as THREE from 'three';
 import * as POST from 'postprocessing';
 import { handleForwardRef } from '../utils';
-import { ExtendedProps } from '../types';
+import { ParamsProps } from '../types';
 import { CanvasContext, CanvasContextType } from '../contexts/canvas-context';
 import { useAnimation } from '../hooks/useAnimation';
 
-export type CanvasProps = ExtendedProps<
-    { divId: string },
-    typeof THREE.WebGLRenderer,
-    THREE.WebGLRenderer
->;
-export const Canvas = (props: CanvasProps) => {
+export type CanvasProps = ParamsProps<typeof THREE.WebGLRenderer, THREE.WebGLRenderer>;
+
+export const Canvas = React.forwardRef<THREE.WebGLRenderer, CanvasProps>(function Canvas(
+    props: CanvasProps,
+    ref: ForwardedRef<THREE.WebGLRenderer>,
+) {
     const [renderer, setRenderer] = useState<THREE.WebGLRenderer | null>(null);
     const [scene, setScene] = useState<THREE.Scene | null>(null);
     const [camera, setCamera] = useState<THREE.Camera | null>(null);
     const [effectComposer, setEffectComposer] = useState<POST.EffectComposer | null>(null);
     const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+    const divRef = useRef<HTMLDivElement>(null);
 
     useAnimation(props.animate, renderer);
     const animationFrameId = useRef<number | null>(null);
+    const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+
+    const updateCameraAspect = useCallback((camera: THREE.Camera | null, aspect?: number) => {
+        if (!camera || !(camera instanceof THREE.PerspectiveCamera) || !divRef.current) {
+            return;
+        }
+
+        if (aspect !== undefined) {
+            camera.aspect = aspect;
+        } else {
+            const { height, width } = divRef.current.getBoundingClientRect();
+            camera.aspect = width / height;
+        }
+
+        camera.updateProjectionMatrix();
+    }, []);
 
     const setNewCamera = useCallback(
         (camera: THREE.Camera) => {
             setCamera(camera);
             updateCameraAspect(camera);
         },
-        [setCamera],
+        [updateCameraAspect],
     );
 
     const canvasContext = useMemo<CanvasContextType>(() => {
@@ -40,40 +64,14 @@ export const Canvas = (props: CanvasProps) => {
             effectComposer: effectComposer,
             size,
         };
-    }, [renderer, scene, camera, setScene, setNewCamera, effectComposer, setEffectComposer, size]);
-
-    const findDiv = () => {
-        const div = document.getElementById(props.divId);
-        if (!div) {
-            throw new Error(`Failed to find a div with id "${props.divId}"!`);
-        }
-        return div;
-    };
-
-    const updateCameraAspect = (camera: THREE.Camera | null, aspect?: number) => {
-        if (!camera || !(camera instanceof THREE.PerspectiveCamera)) {
-            return;
-        }
-
-        if (aspect !== undefined) {
-            camera.aspect = aspect;
-        } else {
-            const div = findDiv();
-            const { height, width } = div.getBoundingClientRect();
-            camera.aspect = width / height;
-        }
-
-        camera.updateProjectionMatrix();
-    };
+    }, [renderer, scene, camera, setNewCamera, effectComposer, size]);
 
     // make canvas adaptive to the div size
     const resizeCanvasIfNeeded = useCallback(() => {
-        if (!renderer) {
+        if (!renderer || !divRef.current) {
             return;
         }
-        const div = findDiv();
-
-        const { height, width } = div.getBoundingClientRect();
+        const { height, width } = divRef.current.getBoundingClientRect();
         const { height: canvasHeight, width: canvasWidth } = renderer.domElement;
 
         if (Math.floor(height) !== canvasHeight || Math.floor(width) !== canvasWidth) {
@@ -81,7 +79,7 @@ export const Canvas = (props: CanvasProps) => {
             setSize({ width, height });
             updateCameraAspect(camera, width / height);
         }
-    }, [renderer, camera]);
+    }, [updateCameraAspect, renderer, camera]);
 
     const render = useCallback(() => {
         resizeCanvasIfNeeded();
@@ -97,34 +95,28 @@ export const Canvas = (props: CanvasProps) => {
         animationFrameId.current = requestAnimationFrame(render);
     }, [effectComposer, scene, camera, renderer, resizeCanvasIfNeeded]);
 
-    // append canvas to the DOM
+    useLayoutEffect(() => {
+        if (!canvas) {
+            return;
+        }
+
+        const newRenderer = new THREE.WebGLRenderer({ ...(props.params?.[0] ?? []), canvas });
+        setRenderer(newRenderer);
+
+        return () => {
+            newRenderer.dispose();
+            newRenderer.forceContextLoss();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [canvas]);
+
     useLayoutEffect(() => {
         if (!renderer) {
             return;
         }
-        const div = findDiv();
-        div.appendChild(renderer.domElement);
 
-        return () => {
-            div.removeChild(renderer.domElement);
-        };
-    }, [props.divId, renderer]);
-
-    useLayoutEffect(() => {
-        const newRenderer = new THREE.WebGLRenderer();
-        setRenderer(newRenderer);
-
-        const cleanRef = handleForwardRef(props.innerRef, newRenderer);
-
-        return () => {
-            if (cleanRef) {
-                cleanRef();
-            }
-            newRenderer.dispose();
-            // TODO: React.ScrictMode causes canvas to show lack of context for a single frame
-            newRenderer.forceContextLoss();
-        };
-    }, []);
+        return handleForwardRef(ref, renderer);
+    }, [ref, renderer]);
 
     // start render loop
     useLayoutEffect(() => {
@@ -138,5 +130,13 @@ export const Canvas = (props: CanvasProps) => {
         };
     }, [render]);
 
-    return <CanvasContext.Provider value={canvasContext}>{props.children}</CanvasContext.Provider>;
-};
+    return (
+        <div style={{ width: '100%', height: '100%' }} ref={divRef}>
+            <canvas ref={setCanvas} style={{ display: 'block' }}>
+                <CanvasContext.Provider value={canvasContext}>
+                    {props.children}
+                </CanvasContext.Provider>
+            </canvas>
+        </div>
+    );
+});

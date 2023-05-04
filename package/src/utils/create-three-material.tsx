@@ -1,6 +1,5 @@
-import React, { FC, useEffect } from 'react';
+import React, { ForwardedRef, useLayoutEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
-import { useAnimation } from '../hooks/useAnimation';
 import { MaterialProps } from '../types';
 import { useDisposableObject } from '../hooks/useDisposableObject';
 import * as THREE from 'three';
@@ -8,29 +7,30 @@ import * as THREE from 'three';
 export function createThreeMaterial<
     C extends new (...params: any[]) => R,
     R extends THREE.Material,
->(constructor: C): FC<MaterialProps<C, R>> {
+>(constructor: C) {
     //eslint-disable-next-line react/display-name
-    return (props: MaterialProps<C, R>) => {
-        const object = useDisposableObject(constructor, props.params, props.innerRef);
+    return React.forwardRef<R, MaterialProps<C, R>>(
+        (props: MaterialProps<C, R>, ref: ForwardedRef<R>) => {
+            const object = useDisposableObject(constructor, props, ref);
 
-        useAnimation(props.animate, object);
-        const parent = useParentContext();
+            const parent = useParentContext();
 
-        useEffect(() => {
-            if (!object) {
-                return;
-            }
+            useLayoutEffect(() => {
+                if (!object) {
+                    return;
+                }
 
-            if (parent && 'material' in parent) {
-                parent.material = object;
+                if (parent && 'material' in parent) {
+                    const previousMaterial = parent.material;
+                    parent.material = object;
 
-                return () => {
-                    // TODO: how to remove material from a parent
-                    // parent.material = null;
-                };
-            }
-        }, [parent, object]);
+                    return () => {
+                        parent.material = previousMaterial;
+                    };
+                }
+            }, [parent, object]);
 
-        return <>{props.children}</>;
-    };
+            return <>{props.children}</>;
+        },
+    );
 }
