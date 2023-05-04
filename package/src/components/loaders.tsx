@@ -1,11 +1,10 @@
 import React, { ForwardedRef, useContext, useLayoutEffect, useState } from 'react';
 import { ParentContext } from '../contexts/parent-context';
 import { OBJLoader as THREEOBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import * as THREE from 'three';
-import { Object3DProps } from '../types';
+import { ParamsProps } from '../types';
 import { handleForwardRef } from '../utils';
 
-export type LoaderProps = Object3DProps<typeof THREE.Group, THREE.Group> & { url: string };
+export type LoaderProps = ParamsProps<typeof THREEOBJLoader, THREEOBJLoader> & { url: string };
 type OnLoadType = Awaited<ReturnType<typeof THREEOBJLoader.prototype.loadAsync>>;
 
 export const OBJLoader = React.forwardRef(function OBJLoader(
@@ -17,7 +16,7 @@ export const OBJLoader = React.forwardRef(function OBJLoader(
     const parent = useContext(ParentContext);
 
     useLayoutEffect(() => {
-        const loader = new THREEOBJLoader();
+        const loader = new THREEOBJLoader(...(props.params ?? []));
 
         loader.load(
             props.url,
@@ -29,6 +28,7 @@ export const OBJLoader = React.forwardRef(function OBJLoader(
                 console.log(error);
             },
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.url]);
 
     useLayoutEffect(() => {
