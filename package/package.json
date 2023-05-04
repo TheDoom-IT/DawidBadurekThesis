@@ -1,6 +1,6 @@
 {
   "name": "react-three-component",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "React component using three.js library to display 3d graphics",
   "author": "TheDoom-IT",
   "main": "dist/cjs/index.js",
