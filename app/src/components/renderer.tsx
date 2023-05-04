@@ -10,7 +10,6 @@ import * as THREE from 'three';
 import { Tracks } from '../schemas/tracks-schema';
 import { TrackFragment } from './track-fragment';
 import { SelectedSourceObject } from '../types/selected-source';
-import { Plane } from './plane';
 import { MachineModel } from './machine-model';
 import { CaloElement } from './calo-element';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
@@ -43,6 +42,7 @@ export const Renderer = ({
             }
 
             scene.background = new THREE.Color(color);
+            scene.scale.set(0.5, 0.5, 0.5);
         },
         [color],
     );
@@ -110,7 +110,6 @@ export const Renderer = ({
                 <DirectionalLight position={[0, 20, 10]} />
                 <OrbitControls ref={setOrbitControls} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
-                <Plane />
                 {selectedTracks.map((track) => (
                     <TrackFragment
                         key={track.index}

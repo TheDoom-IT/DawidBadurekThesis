@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { Mesh, MeshStandardMaterial, TorusGeometry } from 'react-three-component';
+import { OBJLoader } from 'react-three-component';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -35,46 +35,62 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
         };
     }, [controls, clipRotationAsCamera, clippingPlanes, onControlsChange]);
 
-    const initMaterial = useCallback((material: THREE.MeshStandardMaterial | null) => {
-        if (!material) {
-            return;
-        }
+    const updateShader = useCallback((shader: THREE.Shader) => {
+        shader.vertexShader = 'varying vec3 vPosition;\n' + shader.vertexShader;
+        const vertexEndIndex = shader.vertexShader.lastIndexOf('}');
+        shader.vertexShader =
+            shader.vertexShader.slice(0, vertexEndIndex) +
+            'vPosition = mvPosition.xyz;\n' +
+            shader.vertexShader.slice(vertexEndIndex);
 
-        material.onBeforeCompile = (shader) => {
-            shader.vertexShader = 'varying vec3 vPosition;\n' + shader.vertexShader;
-            shader.vertexShader = shader.vertexShader.replace(
-                '<fog_vertex>',
-                '<fog_vertex>\nvPosition = mvPosition.xyz;',
-            );
-
-            shader.fragmentShader = 'varying vec3 vPosition;\n' + shader.fragmentShader;
-            shader.fragmentShader = shader.fragmentShader.replace(
-                '<dithering_fragment>',
-                '<dithering_fragment>\nvec4 clippingPlane = clippingPlanes[0];\n' +
-                    '    float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;\n' +
-                    '    if(abs(distance) < 10.0) {\n' +
-                    '        gl_FragColor = vec4(8.0, 0.8, 1, 1.0);\n' +
-                    '    }',
-            );
-        };
+        shader.fragmentShader = 'varying vec3 vPosition;\n' + shader.fragmentShader;
+        const index = shader.fragmentShader.lastIndexOf('}');
+        shader.fragmentShader =
+            shader.fragmentShader.slice(0, index) +
+            'vec4 clippingPlane = clippingPlanes[0];\n' +
+            '    float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;\n' +
+            '    if(abs(distance) < 1.0) {\n' +
+            '        gl_FragColor = vec4(8.0, 0.8, 1, 1.0);\n' +
+            '    }\n' +
+            shader.fragmentShader.slice(index);
     }, []);
 
-    return (
-        <Mesh>
-            <TorusGeometry params={[250, 50, 16, 100]} />
-            <MeshStandardMaterial
-                ref={initMaterial}
-                params={[
-                    {
+    const initModel = useCallback(
+        (group: THREE.Group | null) => {
+            if (!group) {
+                return;
+            }
+
+            //invisible (fully transparent) tracks are visible if renderOrder is 0
+            group.renderOrder = -1;
+            group.rotation.y = Math.PI;
+            group.scale.set(0.6, 0.6, 0.6);
+
+            group.traverse((el) => {
+                if ('material' in el && el.material instanceof THREE.Material) {
+                    el.material.setValues({
                         side: THREE.DoubleSide,
 
-                        color: 'green',
+                        transparent: true,
+                        opacity: 0.5,
 
-                        clippingPlanes: clippingPlanes,
                         toneMapped: false,
-                    },
-                ]}
-            />
-        </Mesh>
+                    });
+
+                    if ('color' in el.material && el.material.color instanceof THREE.Color) {
+                        el.material.color.set(0xffffff * Math.random());
+                        el.material = el.material.clone() as THREE.Material;
+                        (el.material as THREE.Material).onBeforeCompile = updateShader;
+                        (el.material as THREE.Material).setValues({
+                            clippingPlanes: clippingPlanes,
+                        });
+                    }
+                }
+            });
+        },
+        [clippingPlanes, updateShader],
     );
+
+    // Model exported from https://root.cern.ch/js/latest/demo/tgeo_build.htm
+    return <OBJLoader url={'model.obj'} ref={initModel} />;
 };

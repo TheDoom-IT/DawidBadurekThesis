@@ -9,12 +9,13 @@ interface CaloElementProps {
 
 export const CaloElement = ({ calo }: CaloElementProps) => {
     const rotation = useMemo(() => {
+        // or calo.eta, calo.phi, 0 ???
         const euler = new THREE.Euler(0, calo.phi, calo.eta, 'XYZ');
         return new THREE.Vector3(0, -1, 0).applyEuler(euler);
     }, [calo]);
 
     const position = useMemo(() => {
-        return rotation.clone().multiplyScalar(200 + calo.energy / 2);
+        return rotation.clone().multiplyScalar(300 + calo.energy / 2);
     }, [rotation, calo.energy]);
 
     const caloRadius = 2;
