@@ -154,15 +154,34 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
         ref.frustumCulled = false;
     }, []);
 
+    const initPointsMaterial = useCallback((ref: THREE.PointsMaterial | null) => {
+        if (!ref) {
+            return;
+        }
+
+        ref.onBeforeCompile = (shader) => {
+            const endIndex = shader.fragmentShader.lastIndexOf('}');
+            shader.fragmentShader =
+                shader.fragmentShader.slice(0, endIndex) +
+                'if(vColor.w == 0.0) {discard;};' + //discard fully transparent pixels
+                shader.fragmentShader.slice(endIndex);
+        };
+    }, []);
+
     return (
         <>
             <LineSegments ref={setFrustumCulled}>
                 <BufferGeometry animate={lineAnimation} ref={setLine} />
-                <LineBasicMaterial params={[{ vertexColors: true, transparent: true }]} />
+                <LineBasicMaterial
+                    params={[{ vertexColors: true, transparent: true, linewidth: 2 }]}
+                />
             </LineSegments>
             <Points ref={setFrustumCulled}>
                 <BufferGeometry animate={pointsAnimation} ref={setPoints} />
-                <PointsMaterial params={[{ vertexColors: true, transparent: true }]} />
+                <PointsMaterial
+                    ref={initPointsMaterial}
+                    params={[{ vertexColors: true, transparent: true, size: 2 }]}
+                />
             </Points>
         </>
     );

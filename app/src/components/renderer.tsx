@@ -104,7 +104,7 @@ export const Renderer = ({
                 },
             ]}
             ref={initRenderer}>
-            <PerspectiveCamera position={[0, 30, 500]} />
+            <PerspectiveCamera position={[0, 0, 400]} />
             <MainScene ref={initScene}>
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 20, 10]} />
