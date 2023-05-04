@@ -5,8 +5,7 @@ import { ParamsProps } from '../types';
 import { handleForwardRef } from '../utils';
 
 export type LoaderProps = ParamsProps<typeof THREEOBJLoader, THREEOBJLoader> & { url: string };
-type OnLoadType = Awaited<ReturnType<typeof THREEOBJLoader.prototype.loadAsync>>;
-
+type OnLoadType = Parameters<Parameters<typeof THREEOBJLoader.prototype.load>[1]>[0];
 export const OBJLoader = React.forwardRef(function OBJLoader(
     props: LoaderProps,
     ref: ForwardedRef<OnLoadType>,
