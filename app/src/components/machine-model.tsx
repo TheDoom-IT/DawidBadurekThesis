@@ -91,5 +91,6 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
         [clippingPlanes, updateShader],
     );
 
+    // Model exported from https://root.cern.ch/js/latest/demo/tgeo_build.htm
     return <OBJLoader url={'model.obj'} ref={initModel} />;
 };
