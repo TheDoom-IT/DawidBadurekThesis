@@ -4,6 +4,7 @@ import { readFile } from '../utils/read-file';
 import tracks1 from '../static/tracks1647477806262.json';
 import tracks2 from '../static/tracks1647635306347.json';
 import '../styles/app/load-file-menu.css';
+import { FileLoadingFailedException } from '../exceptions/file-loading-failed-exception';
 
 const trackFiles = [tracks1, tracks2];
 
@@ -32,7 +33,7 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
         try {
             return JSON.parse(fileString);
         } catch {
-            throw new Error('Failed to parse a JSON file.');
+            throw new FileLoadingFailedException('Failed to parse a JSON file.');
         }
     };
 
@@ -41,7 +42,7 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
             return tracksSchema.parse(fileAsJson);
         } catch (e) {
             console.error(e);
-            throw new Error(
+            throw new FileLoadingFailedException(
                 `Cannot read a file. It has an unsupported format (check the console for more information).`,
             );
         }
@@ -63,14 +64,14 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
         try {
             const fileResult = await readFile(file);
             if (fileResult === null) {
-                throw new Error('Failed to load a file.');
+                throw new FileLoadingFailedException('Failed to load a file.');
             }
 
             const fileAsJson = parseJson(fileResult.toString());
             const tracks = validateInputFile(fileAsJson);
             setTracks(tracks);
         } catch (e) {
-            if (e instanceof Error) {
+            if (e instanceof FileLoadingFailedException) {
                 setError(e.message);
             } else {
                 setError('Unexpected error occured.');
