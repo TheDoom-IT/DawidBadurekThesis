@@ -86,10 +86,10 @@ export const Renderer = ({
         const maxFinishTime = Math.max(...animationsFinishTime, ANIMATION_LENGTH_MS);
 
         return {
-            minTime: trackMinTime,
-            trackTimeLength: trackTimeLength,
-            extendedAnimationLength: maxFinishTime,
-            stepLength: ANIMATION_STEP_LENGTH,
+            minTimeTrack: trackMinTime,
+            animationLengthTrack: trackTimeLength,
+            extendedAnimationLengthMs: maxFinishTime,
+            stepLengthMs: ANIMATION_STEP_LENGTH,
         };
     }, [file]);
 

@@ -19,7 +19,7 @@ export interface TrackFragmentProps {
 export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
     const trackStartTime = useMemo(() => {
         return (
-            ((track.time - animationData.minTime) / animationData.trackTimeLength) *
+            ((track.time - animationData.minTimeTrack) / animationData.animationLengthTrack) *
             ANIMATION_LENGTH_MS
         );
     }, [track, animationData]);
@@ -79,9 +79,9 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             color.needsUpdate = true;
             position.needsUpdate = true;
 
-            const time = timestamp % animationData.extendedAnimationLength;
+            const time = timestamp % animationData.extendedAnimationLengthMs;
 
-            const index = Math.floor((time - trackStartTime) / animationData.stepLength);
+            const index = Math.floor((time - trackStartTime) / animationData.stepLengthMs);
 
             if (time < trackStartTime || index >= track.count) {
                 color.setW(0, 0); // transparent
@@ -93,8 +93,8 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             updatePosition(0, index, position);
         },
         [
-            animationData.extendedAnimationLength,
-            animationData.stepLength,
+            animationData.extendedAnimationLengthMs,
+            animationData.stepLengthMs,
             track.count,
             trackStartTime,
             updatePosition,
@@ -106,9 +106,9 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             const position = ref.getAttribute('position');
             position.needsUpdate = true;
 
-            const time = timestamp % animationData.extendedAnimationLength;
+            const time = timestamp % animationData.extendedAnimationLengthMs;
 
-            const index = Math.floor((time - trackStartTime) / animationData.stepLength);
+            const index = Math.floor((time - trackStartTime) / animationData.stepLengthMs);
 
             if (time < trackStartTime || index >= track.count + LINE_SEGMENTS) {
                 for (let x = 0; x < LINE_SEGMENTS * 2; ++x) {
@@ -138,8 +138,8 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             }
         },
         [
-            animationData.extendedAnimationLength,
-            animationData.stepLength,
+            animationData.extendedAnimationLengthMs,
+            animationData.stepLengthMs,
             track.count,
             trackStartTime,
             updatePosition,
