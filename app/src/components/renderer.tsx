@@ -7,7 +7,7 @@ import {
     PerspectiveCamera,
 } from 'react-three-component';
 import * as THREE from 'three';
-import { Tracks } from '../schemas/tracks-schema';
+import { File } from '../schemas/file-schema';
 import { TrackFragment } from './track-fragment';
 import { SelectedSourceObject } from '../types/selected-source';
 import { MachineModel } from './machine-model';
@@ -19,7 +19,7 @@ import { ANIMATION_LENGTH_MS, ANIMATION_STEP_LENGTH, LINE_SEGMENTS } from '../co
 import { Postprocessing } from './postprocessing';
 
 interface RendererProps {
-    tracks: Tracks;
+    file: File;
     color: string;
     selectedSources: SelectedSourceObject;
     clipRotationAsCamera: boolean;
@@ -27,7 +27,7 @@ interface RendererProps {
 }
 
 export const Renderer = ({
-    tracks,
+    file,
     color,
     selectedSources,
     clipRotationAsCamera,
@@ -58,21 +58,21 @@ export const Renderer = ({
     const setOrbitControls = useCallback((ref: Controls | null) => setControls(ref), []);
 
     const selectedTracks = useMemo(() => {
-        return tracks.mTracks
+        return file.mTracks
             .map((track, index) => ({
                 track,
                 index,
             }))
             .filter((track) => selectedSources[track.track.source]?.selected === true);
-    }, [selectedSources, tracks]);
+    }, [selectedSources, file]);
 
     const animationData: AnimationData = useMemo(() => {
-        const timeFields = tracks.mTracks.map((track) => track.time);
+        const timeFields = file.mTracks.map((track) => track.time);
         const trackMinTime = Math.min(...timeFields);
         const trackMaxTime = Math.max(...timeFields);
         const trackTimeLength = Math.max(trackMaxTime - trackMinTime, 1);
 
-        const animationsFinishTime = tracks.mTracks.map((track) => {
+        const animationsFinishTime = file.mTracks.map((track) => {
             const trackTimeInMs =
                 ((track.time - trackMinTime) / trackTimeLength) * ANIMATION_LENGTH_MS;
 
@@ -91,7 +91,7 @@ export const Renderer = ({
             extendedAnimationLength: maxFinishTime,
             stepLength: ANIMATION_STEP_LENGTH,
         };
-    }, [tracks]);
+    }, [file]);
 
     return (
         <Canvas
@@ -118,7 +118,7 @@ export const Renderer = ({
                     />
                 ))}
                 {showMCalo &&
-                    tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
+                    file.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
             <Postprocessing />
         </Canvas>

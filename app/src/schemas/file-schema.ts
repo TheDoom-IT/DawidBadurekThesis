@@ -24,13 +24,16 @@ function validatemTracksLength(obj: z.infer<typeof mTrackSchema>) {
     );
 }
 
-export const tracksSchema = z.object({
+export const fileSchema = z.object({
     mTracks: z.array(
-        mTrackSchema.refine(validatemTracksLength, 'PolyX, PolyY, PolyZ should have same length'),
+        mTrackSchema.refine(
+            validatemTracksLength,
+            'PolyX, PolyY, PolyZ should have the same length',
+        ),
     ),
     mCalo: z.array(mCaloSchema).optional(),
 });
 
-export type Tracks = z.infer<typeof tracksSchema>;
+export type File = z.infer<typeof fileSchema>;
 export type Track = z.infer<typeof mTrackSchema>;
 export type Calo = z.infer<typeof mCaloSchema>;

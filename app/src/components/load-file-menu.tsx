@@ -1,26 +1,23 @@
 import React, { useRef, useState } from 'react';
-import { Tracks, tracksSchema } from '../schemas/tracks-schema';
+import { File, fileSchema } from '../schemas/file-schema';
 import { readFile } from '../utils/read-file';
-import tracks1 from '../static/tracks1647477806262.json';
-import tracks2 from '../static/tracks1647635306347.json';
+import exemplaryDataFile from '../static/exemplary-data.json';
 import '../styles/app/load-file-menu.css';
 import { FileLoadingFailedException } from '../exceptions/file-loading-failed-exception';
 
-const trackFiles = [tracks1, tracks2];
-
 export interface LoadFileMenuProps {
-    setTracks: (tracks: Tracks) => void;
+    setFile: (file: File) => void;
 }
 
-export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
+export const LoadFileMenu = ({ setFile }: LoadFileMenuProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [buttonEnabled, setButtonEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const loadExemplaryFile = () => {
-        const tracks = tracksSchema.parse(trackFiles[1]);
-        setTracks(tracks);
+        const file = fileSchema.parse(exemplaryDataFile);
+        setFile(file);
     };
 
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,9 +34,9 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
         }
     };
 
-    const validateInputFile = (fileAsJson: any): Tracks => {
+    const validateInputFile = (fileAsJson: any): File => {
         try {
-            return tracksSchema.parse(fileAsJson);
+            return fileSchema.parse(fileAsJson);
         } catch (e) {
             console.error(e);
             throw new FileLoadingFailedException(
@@ -68,8 +65,8 @@ export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
             }
 
             const fileAsJson = parseJson(fileResult.toString());
-            const tracks = validateInputFile(fileAsJson);
-            setTracks(tracks);
+            const validatedFile = validateInputFile(fileAsJson);
+            setFile(validatedFile);
         } catch (e) {
             if (e instanceof FileLoadingFailedException) {
                 setError(e.message);

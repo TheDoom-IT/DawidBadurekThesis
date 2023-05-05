@@ -1,10 +1,10 @@
-import { Tracks } from '../schemas/tracks-schema';
+import { File } from '../schemas/file-schema';
 import { SelectedSourceObject } from '../types/selected-source';
 import { SelectSource } from './select-source';
 import './../styles/app/statistics.css';
 
 interface StatisticsProps {
-    tracks: Tracks;
+    file: File;
     closeFile: () => void;
     selectedSources: SelectedSourceObject;
     setSelectedSources: (sources: SelectedSourceObject) => void;
@@ -15,7 +15,7 @@ interface StatisticsProps {
 }
 
 export const Statistics = ({
-    tracks,
+    file,
     closeFile,
     selectedSources,
     setSelectedSources,
@@ -27,7 +27,7 @@ export const Statistics = ({
     return (
         <div className="statistics box">
             <h3 className="text-center">Statistics</h3>
-            Number of tracks: {tracks.mTracks.length}
+            Number of tracks: {file.mTracks.length}
             <br />
             <div>
                 <label htmlFor={'rotateClipping'}>Rotate</label>

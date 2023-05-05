@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Tracks } from '../schemas/tracks-schema';
+import { File } from '../schemas/file-schema';
 import '../styles/app/data-windows.css';
 import { SelectedSourceObject } from '../types/selected-source';
 import { Graph } from './graph';
 import { Statistics } from './statistics';
 
 interface DataWindowsProps {
-    tracks: Tracks;
+    file: File;
     closeFile: () => void;
     selectedSources: SelectedSourceObject;
     setSelectedSources: (sources: SelectedSourceObject) => void;
@@ -17,7 +17,7 @@ interface DataWindowsProps {
 }
 
 export const DataWindows = ({
-    tracks,
+    file,
     closeFile,
     selectedSources,
     setSelectedSources,
@@ -36,7 +36,7 @@ export const DataWindows = ({
             <div className={`windows-wrapper ${collapsed ? 'hidden' : ''}`}>
                 <Graph selectedSources={selectedSources} />
                 <Statistics
-                    tracks={tracks}
+                    file={file}
                     closeFile={closeFile}
                     selectedSources={selectedSources}
                     setSelectedSources={setSelectedSources}

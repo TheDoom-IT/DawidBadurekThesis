@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '../../routes';
 import '../../styles/app/app.css';
 import { Renderer } from '../renderer';
-import { Tracks } from '../../schemas/tracks-schema';
+import { File } from '../../schemas/file-schema';
 import { LoadFileMenu } from '../load-file-menu';
 import { SelectedSourceObject } from '../../types/selected-source';
 import { DataWindows } from '../data-windows';
@@ -11,19 +11,19 @@ import { DataWindows } from '../data-windows';
 export const App = () => {
     const divRef = useRef<HTMLDivElement>(null);
     const [color, setColor] = useState('#ffffff');
-    const [tracks, setTracks] = useState<Tracks | null>(null);
+    const [file, setFile] = useState<File | null>(null);
     const [selectedSources, setSelectedSources] = useState<SelectedSourceObject>({});
     const [clipRotationAsCamera, setClipRotationAsCamera] = useState(true);
     const [showMCalo, setShowMCalo] = useState(true);
 
     useEffect(() => {
-        if (!tracks) {
+        if (!file) {
             setSelectedSources({});
             return;
         }
         const result: SelectedSourceObject = {};
 
-        tracks.mTracks.forEach((track) => {
+        file.mTracks.forEach((track) => {
             if (result[track.source] === undefined) {
                 const nameRegex = /\[(.*)\/.*\/.*\]/; //match [name/0/00]
                 const sourceName = nameRegex.exec(track.gid)?.[1] ?? `source ${track.source}`;
@@ -34,7 +34,7 @@ export const App = () => {
         });
 
         setSelectedSources(result);
-    }, [tracks]);
+    }, [file]);
 
     useEffect(() => {
         if (!divRef.current) {
@@ -47,17 +47,17 @@ export const App = () => {
     }, [divRef]);
 
     const closeFile = () => {
-        setTracks(null);
+        setFile(null);
     };
 
     return (
         <>
             <div className="App" ref={divRef}>
-                {tracks === null && <LoadFileMenu setTracks={setTracks} />}
-                {tracks !== null && (
+                {file === null && <LoadFileMenu setFile={setFile} />}
+                {file !== null && (
                     <>
                         <Renderer
-                            tracks={tracks}
+                            file={file}
                             color={color}
                             selectedSources={selectedSources}
                             clipRotationAsCamera={clipRotationAsCamera}
@@ -69,7 +69,7 @@ export const App = () => {
                             </Link>
                         </div>
                         <DataWindows
-                            tracks={tracks}
+                            file={file}
                             closeFile={closeFile}
                             selectedSources={selectedSources}
                             setSelectedSources={setSelectedSources}
