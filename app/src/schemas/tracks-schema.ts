@@ -1,11 +1,5 @@
 import { z } from 'zod';
 
-const mCluterSchema = z.object({
-    X: z.number(),
-    Y: z.number(),
-    Z: z.number(),
-});
-
 const mCaloSchema = z.object({
     energy: z.number(),
     eta: z.number(),
@@ -16,12 +10,10 @@ const mTrackSchema = z.object({
     count: z.number(),
     source: z.number(),
     gid: z.string(),
-    jsonStartingXYZ: z.array(z.number()).length(3),
     time: z.number(),
     mPolyX: z.array(z.number()),
     mPolyY: z.array(z.number()),
     mPolyZ: z.array(z.number()),
-    mClusters: z.array(mCluterSchema),
 });
 
 function validatemTracksLength(obj: z.infer<typeof mTrackSchema>) {
@@ -36,7 +28,6 @@ export const tracksSchema = z.object({
     mTracks: z.array(
         mTrackSchema.refine(validatemTracksLength, 'PolyX, PolyY, PolyZ should have same length'),
     ),
-    mClusters: z.array(mCluterSchema),
     mCalo: z.array(mCaloSchema).optional(),
 });
 
