@@ -7,7 +7,7 @@ import {
     PointsMaterial,
 } from 'react-three-component';
 import * as THREE from 'three';
-import { Track } from '../schemas/tracks-schema';
+import { Track } from '../schemas/file-schema';
 import { AnimationData } from '../types/animation-data';
 import { ANIMATION_LENGTH_MS, LINE_SEGMENTS } from '../constants/animation';
 
