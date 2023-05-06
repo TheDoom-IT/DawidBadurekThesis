@@ -29,7 +29,7 @@ export const Statistics = ({
             <h3 className="text-center">Statistics</h3>
             Number of tracks: {file.mTracks.length}
             <br />
-            <div>
+            <div className={'checkbox-line'}>
                 <label htmlFor={'rotateClipping'}>Rotate</label>
                 <input
                     id={'rotateClipping'}
@@ -40,7 +40,7 @@ export const Statistics = ({
                     onChange={() => setClipRotationAsCamera(!clipRotationAsCamera)}
                 />
             </div>
-            <div>
+            <div className={'checkbox-line'}>
                 <label htmlFor={'showMCalo'}>Show mCalo</label>
                 <input
                     id={'showMCalo'}

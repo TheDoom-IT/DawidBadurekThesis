@@ -3,6 +3,12 @@
     justify-content: space-between;
 }
 
+.statistics .checkbox-line {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .statistics {
     max-width: 300px;
     min-width: 200px;
