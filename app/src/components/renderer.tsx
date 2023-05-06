@@ -76,10 +76,11 @@ export const Renderer = ({
             const trackTimeInMs =
                 ((track.time - trackMinTime) / trackTimeLength) * ANIMATION_LENGTH_MS;
 
+            const lineSegments = Math.min(LINE_SEGMENTS, track.count);
             return (
                 trackTimeInMs +
                 ANIMATION_STEP_LENGTH * track.count +
-                ANIMATION_STEP_LENGTH * LINE_SEGMENTS
+                ANIMATION_STEP_LENGTH * lineSegments
             );
         });
 
