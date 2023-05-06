@@ -31,14 +31,14 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
     const updatePosition = useCallback(
         (
             attributeIndex: number,
-            trackIndex: number,
+            positionIndex: number,
             attribute: THREE.BufferAttribute | THREE.InterleavedBufferAttribute,
         ) => {
             attribute.setXYZ(
                 attributeIndex,
-                track.mPolyX[trackIndex],
-                track.mPolyY[trackIndex],
-                track.mPolyZ[trackIndex],
+                track.mPolyX[positionIndex],
+                track.mPolyY[positionIndex],
+                track.mPolyZ[positionIndex],
             );
         },
         [track],
