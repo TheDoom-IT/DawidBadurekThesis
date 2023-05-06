@@ -122,14 +122,13 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             if (index >= track.count) {
                 // make smooth finish
                 for (let x = 0; x < lineSegments; ++x) {
-                    let trackIndex2 = index - (x + 1);
-                    trackIndex2 = trackIndex2 < 0 || trackIndex2 >= track.count ? 0 : trackIndex2;
-                    let trackIndex1 = index - x;
-                    trackIndex1 =
-                        trackIndex1 < 0 || trackIndex1 >= track.count ? trackIndex2 : trackIndex1;
+                    let index2 = index - (x + 1);
+                    index2 = index2 < 0 || index2 >= track.count ? 0 : index2;
+                    let index1 = index - x;
+                    index1 = index1 < 0 || index1 >= track.count ? index2 : index1;
 
-                    updatePosition(x * 2, trackIndex1, position);
-                    updatePosition(x * 2 + 1, trackIndex2, position);
+                    updatePosition(x * 2, index1, position);
+                    updatePosition(x * 2 + 1, index2, position);
                 }
                 return;
             }
