@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import {
     BufferGeometry,
     LineBasicMaterial,
@@ -17,16 +17,11 @@ export interface TrackFragmentProps {
 }
 
 export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
-    const lineSegments = useMemo(() => {
-        return Math.min(LINE_SEGMENTS, track.count);
-    }, [track]);
+    const lineSegments = Math.min(LINE_SEGMENTS, track.count);
 
-    const trackStartTime = useMemo(() => {
-        return (
-            ((track.time - animationData.minTimeTrack) / animationData.animationLengthTrack) *
-            ANIMATION_LENGTH_MS
-        );
-    }, [track, animationData]);
+    const trackStartTime =
+        ((track.time - animationData.minTimeTrack) / animationData.animationLengthTrack) *
+        ANIMATION_LENGTH_MS;
 
     const updatePosition = useCallback(
         (
