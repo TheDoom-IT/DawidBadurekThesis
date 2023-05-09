@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { OBJLoader } from 'react-three-component';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -9,9 +9,7 @@ interface MachineModelProps {
 }
 
 export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelProps) => {
-    const clippingPlanes = useMemo(() => {
-        return [new THREE.Plane(new THREE.Vector3(0, 0, 0), 0)];
-    }, []);
+    const { current: clippingPlanes } = useRef([new THREE.Plane(new THREE.Vector3(0, 0, 0), 0)]);
 
     const onControlsChange = useCallback(() => {
         if (!controls) {
@@ -21,7 +19,7 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
         clippingPlanes[0].normal = controls.object.position.clone().negate().normalize();
 
         const distance = controls.object.position.distanceTo(new THREE.Vector3(0, 0, 0));
-        clippingPlanes[0].constant = distance / 5;
+        clippingPlanes[0].constant = distance / 7;
     }, [controls, clippingPlanes]);
 
     useEffect(() => {
@@ -52,10 +50,10 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
         shader.fragmentShader =
             shader.fragmentShader.slice(0, index) +
             'vec4 clippingPlane = clippingPlanes[0];\n' +
-            '    float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;\n' +
-            '    if(abs(distance) < 1.0) {\n' +
-            '        gl_FragColor = vec4(8.0, 0.8, 1, 1.0);\n' +
-            '    }\n' +
+            'float distance = dot(vPosition, clippingPlane.xyz) + clippingPlane.w;\n' +
+            'if(abs(distance) < 1.0) {\n' +
+            '    gl_FragColor = vec4(7.0, 0.5, 0.5, 1.0);\n' +
+            '}\n' +
             shader.fragmentShader.slice(index);
     }, []);
 
@@ -70,23 +68,21 @@ export const MachineModel = ({ controls, clipRotationAsCamera }: MachineModelPro
 
             group.traverse((el) => {
                 if ('material' in el && el.material instanceof THREE.Material) {
-                    el.material.setValues({
+                    const material = new THREE.MeshStandardMaterial({
                         side: THREE.DoubleSide,
 
                         transparent: true,
                         opacity: 0.5,
 
-                        toneMapped: false,
+                        clippingPlanes: clippingPlanes,
+
+                        color: 0xffffff * Math.random(),
                     });
 
-                    if ('color' in el.material && el.material.color instanceof THREE.Color) {
-                        el.material.color.set(0xffffff * Math.random());
-                        el.material = el.material.clone() as THREE.Material;
-                        (el.material as THREE.Material).onBeforeCompile = updateShader;
-                        (el.material as THREE.Material).setValues({
-                            clippingPlanes: clippingPlanes,
-                        });
-                    }
+                    material.onBeforeCompile = updateShader;
+
+                    el.material.dispose();
+                    el.material = material;
                 }
             });
         },

@@ -7,6 +7,7 @@ import { File } from '../../schemas/file-schema';
 import { LoadFileMenu } from '../load-file-menu';
 import { SelectedSourceObject } from '../../types/selected-source';
 import { DataWindows } from '../data-windows';
+import { NAME_REGEX } from '../../constants/name-regex';
 
 export const App = () => {
     const divRef = useRef<HTMLDivElement>(null);
@@ -25,8 +26,7 @@ export const App = () => {
 
         file.mTracks.forEach((track) => {
             if (result[track.source] === undefined) {
-                const nameRegex = /\[(.*)\/.*\/.*\]/; //match [name/0/00]
-                const sourceName = nameRegex.exec(track.gid)?.[1] ?? `source ${track.source}`;
+                const sourceName = NAME_REGEX.exec(track.gid)?.[1] ?? `source ${track.source}`;
                 result[track.source] = { name: sourceName, selected: true, count: 0 };
             }
 

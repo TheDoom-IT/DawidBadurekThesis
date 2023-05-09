@@ -8,7 +8,6 @@ import {
 } from 'react-three-component';
 import * as THREE from 'three';
 import { File } from '../schemas/file-schema';
-import { TrackFragment } from './track-fragment';
 import { SelectedSourceObject } from '../types/selected-source';
 import { MachineModel } from './machine-model';
 import { CaloElement } from './calo-element';
@@ -17,6 +16,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { AnimationData } from '../types/animation-data';
 import { ANIMATION_LENGTH_MS, ANIMATION_STEP_LENGTH, LINE_SEGMENTS } from '../constants/animation';
 import { Postprocessing } from './postprocessing';
+import { TrackFragment } from './track-fragment';
 
 interface RendererProps {
     file: File;
@@ -54,8 +54,6 @@ export const Renderer = ({
 
         renderer.localClippingEnabled = true;
     }, []);
-
-    const setOrbitControls = useCallback((ref: Controls | null) => setControls(ref), []);
 
     const selectedTracks = useMemo(() => {
         return file.mTracks
@@ -109,7 +107,7 @@ export const Renderer = ({
             <MainScene ref={initScene}>
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 20, 10]} />
-                <OrbitControls ref={setOrbitControls} />
+                <OrbitControls ref={setControls} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 {selectedTracks.map((track) => (
                     <TrackFragment
