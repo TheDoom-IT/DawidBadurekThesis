@@ -14,7 +14,11 @@ import { CaloElement } from './calo-element';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 import { useCallback, useMemo, useState } from 'react';
 import { AnimationData } from '../types/animation-data';
-import { ANIMATION_LENGTH_MS, ANIMATION_STEP_LENGTH, LINE_SEGMENTS } from '../constants/animation';
+import {
+    ANIMATION_LENGTH_MS,
+    ANIMATION_STEP_LENGTH_MS,
+    LINE_SEGMENTS,
+} from '../constants/animation';
 import { Postprocessing } from './postprocessing';
 import { TrackFragment } from './track-fragment';
 
@@ -77,8 +81,8 @@ export const Renderer = ({
             const lineSegments = Math.min(LINE_SEGMENTS, track.count);
             return (
                 trackTimeInMs +
-                ANIMATION_STEP_LENGTH * track.count +
-                ANIMATION_STEP_LENGTH * lineSegments
+                ANIMATION_STEP_LENGTH_MS * track.count +
+                ANIMATION_STEP_LENGTH_MS * lineSegments
             );
         });
 
@@ -88,7 +92,6 @@ export const Renderer = ({
             minTimeTrack: trackMinTime,
             animationLengthTrack: trackTimeLength,
             extendedAnimationLengthMs: maxFinishTime,
-            stepLengthMs: ANIMATION_STEP_LENGTH,
         };
     }, [file]);
 

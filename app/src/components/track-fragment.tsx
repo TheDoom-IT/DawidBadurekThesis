@@ -9,7 +9,11 @@ import {
 import * as THREE from 'three';
 import { Track } from '../schemas/file-schema';
 import { AnimationData } from '../types/animation-data';
-import { ANIMATION_LENGTH_MS, LINE_SEGMENTS } from '../constants/animation';
+import {
+    ANIMATION_LENGTH_MS,
+    ANIMATION_STEP_LENGTH_MS,
+    LINE_SEGMENTS,
+} from '../constants/animation';
 
 export interface TrackFragmentProps {
     track: Track;
@@ -78,7 +82,7 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
 
             const time = timestamp % animationData.extendedAnimationLengthMs;
 
-            const index = Math.floor((time - trackStartTime) / animationData.stepLengthMs);
+            const index = Math.floor((time - trackStartTime) / ANIMATION_STEP_LENGTH_MS);
 
             if (time < trackStartTime || index >= track.count) {
                 color.setW(0, 0); // transparent
@@ -89,13 +93,7 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             color.setW(0, 1);
             updatePosition(0, index, position);
         },
-        [
-            animationData.extendedAnimationLengthMs,
-            animationData.stepLengthMs,
-            track.count,
-            trackStartTime,
-            updatePosition,
-        ],
+        [animationData.extendedAnimationLengthMs, track.count, trackStartTime, updatePosition],
     );
 
     const lineAnimation = useCallback(
@@ -105,7 +103,7 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
 
             const time = timestamp % animationData.extendedAnimationLengthMs;
 
-            const index = Math.floor((time - trackStartTime) / animationData.stepLengthMs);
+            const index = Math.floor((time - trackStartTime) / ANIMATION_STEP_LENGTH_MS);
 
             if (time < trackStartTime || index >= track.count + lineSegments) {
                 for (let x = 0; x < lineSegments * 2; ++x) {
@@ -136,7 +134,6 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
         [
             lineSegments,
             animationData.extendedAnimationLengthMs,
-            animationData.stepLengthMs,
             track.count,
             trackStartTime,
             updatePosition,
