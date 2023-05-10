@@ -3,6 +3,7 @@
   "version": "0.0.7",
   "description": "React component using three.js library to display 3d graphics",
   "author": "TheDoom-IT",
+  "license": "MIT",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
@@ -23,7 +24,6 @@
     "three",
     "react-component"
   ],
-  "license": "MIT",
   "peerDependencies": {
     "postprocessing": "^6.30.2",
     "react": "^18.2.0",
