@@ -5,7 +5,7 @@ import { SelectedSourceObject } from '../types/selected-source';
 import { Graph } from './graph';
 import { Statistics } from './statistics';
 
-interface DataWindowsProps {
+interface SettingsProps {
     file: File;
     closeFile: () => void;
     selectedSources: SelectedSourceObject;
@@ -16,7 +16,7 @@ interface DataWindowsProps {
     setShowMCalo: (value: boolean) => void;
 }
 
-export const DataWindows = ({
+export const Settings = ({
     file,
     closeFile,
     selectedSources,
@@ -25,7 +25,7 @@ export const DataWindows = ({
     setClipRotationAsCamera,
     showMCalo,
     setShowMCalo,
-}: DataWindowsProps) => {
+}: SettingsProps) => {
     const [collapsed, setCollapsed] = useState(false);
 
     return (

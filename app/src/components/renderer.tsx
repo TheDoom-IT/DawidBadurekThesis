@@ -109,7 +109,7 @@ export const Renderer = ({
             <PerspectiveCamera position={[0, 0, 400]} />
             <MainScene ref={initScene}>
                 <AmbientLight params={['white', 0.3]} />
-                <DirectionalLight position={[0, 20, 10]} />
+                <DirectionalLight position={[0, 500, 0]} />
                 <OrbitControls ref={setControls} />
                 <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 {selectedTracks.map((track) => (

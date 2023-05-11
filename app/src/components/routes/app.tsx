@@ -6,7 +6,7 @@ import { Renderer } from '../renderer';
 import { File } from '../../schemas/file-schema';
 import { LoadFileMenu } from '../load-file-menu';
 import { SelectedSourceObject } from '../../types/selected-source';
-import { DataWindows } from '../data-windows';
+import { Settings } from '../settings';
 import { NAME_REGEX } from '../../constants/name-regex';
 
 export const App = () => {
@@ -68,7 +68,7 @@ export const App = () => {
                                 Home
                             </Link>
                         </div>
-                        <DataWindows
+                        <Settings
                             file={file}
                             closeFile={closeFile}
                             selectedSources={selectedSources}
