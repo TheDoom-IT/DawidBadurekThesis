@@ -13,7 +13,13 @@ import { ParamsProps } from '../types';
 import { CanvasContext, CanvasContextType } from '../contexts/canvas-context';
 import { useAnimation } from '../hooks/useAnimation';
 
+// @ts-ignore
+import * as Stats from 'stats.js';
+
 export type CanvasProps = ParamsProps<typeof THREE.WebGLRenderer, THREE.WebGLRenderer>;
+
+const stats = new Stats();
+document.body.appendChild(stats.dom);
 
 export const Canvas = React.forwardRef<THREE.WebGLRenderer, CanvasProps>(function Canvas(
     props: CanvasProps,
@@ -84,6 +90,7 @@ export const Canvas = React.forwardRef<THREE.WebGLRenderer, CanvasProps>(functio
     const render = useCallback(() => {
         resizeCanvasIfNeeded();
 
+        stats.begin();
         if (scene !== null && camera !== null) {
             if (effectComposer !== null) {
                 effectComposer.render();
@@ -91,6 +98,7 @@ export const Canvas = React.forwardRef<THREE.WebGLRenderer, CanvasProps>(functio
                 renderer?.render(scene, camera);
             }
         }
+        stats.end();
 
         animationFrameId.current = requestAnimationFrame(render);
     }, [effectComposer, scene, camera, renderer, resizeCanvasIfNeeded]);
