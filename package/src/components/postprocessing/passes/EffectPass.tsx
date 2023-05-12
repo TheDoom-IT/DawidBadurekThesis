@@ -15,9 +15,8 @@ class CustomEffectPass extends POST.EffectPass {
     }
 }
 
-export type EffectPassProps = ParamsProps<typeof POST.EffectPass, POST.EffectPass>;
-export const EffectPass = React.forwardRef<POST.EffectPass, EffectPassProps>(function EffectPass(
-    props: EffectPassProps,
+export const EffectPass = React.forwardRef(function EffectPass(
+    props: ParamsProps<typeof POST.EffectPass, POST.EffectPass>,
     ref: ForwardedRef<POST.EffectPass>,
 ) {
     const pass = usePass(CustomEffectPass, props, ref) as CustomEffectPass | null;

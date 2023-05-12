@@ -7,6 +7,9 @@ interface CaloElementProps {
     calo: Calo;
 }
 
+const CALO_RADIUS = 300;
+const CYLINDER_RADIUS = 2;
+
 export const CaloElement = ({ calo }: CaloElementProps) => {
     const rotation = useMemo(() => {
         // or calo.eta, calo.phi, 0 ???
@@ -15,17 +18,15 @@ export const CaloElement = ({ calo }: CaloElementProps) => {
     }, [calo]);
 
     const position = useMemo(() => {
-        return rotation.clone().multiplyScalar(300 + calo.energy / 2);
+        return rotation.clone().multiplyScalar(CALO_RADIUS + calo.energy / 2);
     }, [rotation, calo.energy]);
-
-    const caloRadius = 2;
 
     return (
         <Mesh
             position={[position.x, position.y, position.z]}
             rotation={[rotation.x, rotation.y, rotation.z]}>
             <MeshBasicMaterial params={[{ color: 0x9ee682 }]} />
-            <CylinderGeometry params={[caloRadius, caloRadius, calo.energy]} />
+            <CylinderGeometry params={[CYLINDER_RADIUS, CYLINDER_RADIUS, calo.energy]} />
         </Mesh>
     );
 };
