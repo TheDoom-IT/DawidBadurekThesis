@@ -90,7 +90,6 @@ export const Canvas = React.forwardRef<THREE.WebGLRenderer, CanvasProps>(functio
     const render = useCallback(() => {
         resizeCanvasIfNeeded();
 
-        stats.begin();
         if (scene !== null && camera !== null) {
             if (effectComposer !== null) {
                 effectComposer.render();
@@ -98,7 +97,8 @@ export const Canvas = React.forwardRef<THREE.WebGLRenderer, CanvasProps>(functio
                 renderer?.render(scene, camera);
             }
         }
-        stats.end();
+
+        stats.update();
 
         animationFrameId.current = requestAnimationFrame(render);
     }, [effectComposer, scene, camera, renderer, resizeCanvasIfNeeded]);
