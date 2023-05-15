@@ -7,13 +7,13 @@ import {
     PointsMaterial,
 } from 'react-three-component';
 import * as THREE from 'three';
-import { Track } from '../../schemas/file-schema';
-import { AnimationData } from '../../types/animation-data';
+import { Track } from '../schemas/file-schema';
+import { AnimationData } from '../types/animation-data';
 import {
     ANIMATION_LENGTH_MS,
     ANIMATION_STEP_LENGTH_MS,
     LINE_SEGMENTS,
-} from '../../constants/animation';
+} from '../constants/animation';
 
 export interface TrackFragmentProps {
     track: Track;

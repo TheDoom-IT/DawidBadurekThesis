@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import './styles/app/app.css';
-import { Renderer } from './components/renderer/renderer';
-import { File } from './schemas/file-schema';
-import { LoadFileMenu } from './components/load-file-menu';
-import { SelectedSourceObject } from './types/selected-source';
-import { Settings } from './components/settings';
-import { NAME_REGEX } from './constants/name-regex';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../../routes';
+import '../../styles/app/app.css';
+import { Renderer } from '../renderer';
+import { File } from '../../schemas/file-schema';
+import { LoadFileMenu } from '../load-file-menu';
+import { SelectedSourceObject } from '../../types/selected-source';
+import { Settings } from '../settings';
+import { NAME_REGEX } from '../../constants/name-regex';
 
 export const App = () => {
     const divRef = useRef<HTMLDivElement>(null);
@@ -61,6 +63,11 @@ export const App = () => {
                             clipRotationAsCamera={clipRotationAsCamera}
                             showMCalo={showMCalo}
                         />
+                        <div className="home-link-wrapper">
+                            <Link className="home-link" to={ROUTES.HOME}>
+                                Home
+                            </Link>
+                        </div>
                         <Settings
                             file={file}
                             closeFile={closeFile}
