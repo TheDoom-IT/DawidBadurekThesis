@@ -7,18 +7,18 @@ import {
     PerspectiveCamera,
 } from 'react-three-component';
 import * as THREE from 'three';
-import { File } from '../schemas/file-schema';
-import { SelectedSourceObject } from '../types/selected-source';
+import { File } from '../../schemas/file-schema';
+import { SelectedSourceObject } from '../../types/selected-source';
 import { MachineModel } from './machine-model';
 import { CaloElement } from './calo-element';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 import { useCallback, useMemo, useState } from 'react';
-import { AnimationData } from '../types/animation-data';
+import { AnimationData } from '../../types/animation-data';
 import {
     ANIMATION_LENGTH_MS,
     ANIMATION_STEP_LENGTH_MS,
     LINE_SEGMENTS,
-} from '../constants/animation';
+} from '../../constants/animation';
 import { Postprocessing } from './postprocessing';
 import { TrackFragment } from './track-fragment';
 

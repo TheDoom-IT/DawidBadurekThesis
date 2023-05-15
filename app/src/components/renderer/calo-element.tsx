@@ -1,5 +1,5 @@
 import { CylinderGeometry, Mesh, MeshBasicMaterial } from 'react-three-component';
-import { Calo } from '../schemas/file-schema';
+import { Calo } from '../../schemas/file-schema';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 
