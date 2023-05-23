@@ -35,7 +35,7 @@ jobs:
               node-version: 16
           - run: npm ci --only=prod
           - run: npm i typescript
-          - run: BASE_URL=/${{ github.event.repository.name }}/ npm run build
+          - run: npm run build
 
           - name: deploy
             uses: JamesIves/github-pages-deploy-action@v4
