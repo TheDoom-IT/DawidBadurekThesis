@@ -21,6 +21,7 @@ import {
 } from '../../constants/animation';
 import { Postprocessing } from './postprocessing';
 import { TrackFragment } from './track-fragment';
+import { RGBColor } from 'react-color';
 
 interface RendererProps {
     file: File;
@@ -28,6 +29,8 @@ interface RendererProps {
     selectedSources: SelectedSourceObject;
     clipRotationAsCamera: boolean;
     showMCalo: boolean;
+    glowStrength: number;
+    glowColor: RGBColor;
 }
 
 export const Renderer = ({
@@ -36,6 +39,8 @@ export const Renderer = ({
     selectedSources,
     clipRotationAsCamera,
     showMCalo,
+    glowStrength,
+    glowColor,
 }: RendererProps) => {
     const [controls, setControls] = useState<Controls | null>(null);
 
@@ -111,7 +116,12 @@ export const Renderer = ({
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 500, 0]} />
                 <OrbitControls ref={setControls} />
-                <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
+                <MachineModel
+                    controls={controls}
+                    clipRotationAsCamera={clipRotationAsCamera}
+                    glowStrength={glowStrength}
+                    glowColor={glowColor}
+                />
                 {selectedTracks.map((track) => (
                     <TrackFragment
                         key={track.index}

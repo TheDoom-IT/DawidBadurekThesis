@@ -6,6 +6,8 @@ import { LoadFileMenu } from './components/load-file-menu';
 import { SelectedSourceObject } from './types/selected-source';
 import { Settings } from './components/settings';
 import { NAME_REGEX } from './constants/name-regex';
+import { RGBColor } from 'react-color';
+import { colorStringToRGB, GLOW_COLORS } from './constants/glow-colors';
 
 export const App = () => {
     const divRef = useRef<HTMLDivElement>(null);
@@ -14,6 +16,8 @@ export const App = () => {
     const [selectedSources, setSelectedSources] = useState<SelectedSourceObject>({});
     const [clipRotationAsCamera, setClipRotationAsCamera] = useState(true);
     const [showMCalo, setShowMCalo] = useState(true);
+    const [glowStrength, setGlowStrength] = useState(1.0);
+    const [glowColor, setGlowColor] = useState<RGBColor>(colorStringToRGB(GLOW_COLORS[0]));
 
     useEffect(() => {
         if (!file) {
@@ -60,6 +64,8 @@ export const App = () => {
                             selectedSources={selectedSources}
                             clipRotationAsCamera={clipRotationAsCamera}
                             showMCalo={showMCalo}
+                            glowStrength={glowStrength}
+                            glowColor={glowColor}
                         />
                         <Settings
                             file={file}
@@ -70,6 +76,10 @@ export const App = () => {
                             setClipRotationAsCamera={setClipRotationAsCamera}
                             showMCalo={showMCalo}
                             setShowMCalo={setShowMCalo}
+                            glowStrength={glowStrength}
+                            setGlowStrength={setGlowStrength}
+                            glowColor={glowColor}
+                            setGlowColor={setGlowColor}
                         />
                     </>
                 )}

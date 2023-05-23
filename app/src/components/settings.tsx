@@ -4,6 +4,7 @@ import '../styles/app/data-windows.css';
 import { SelectedSourceObject } from '../types/selected-source';
 import { Graph } from './graph';
 import { Statistics } from './statistics';
+import { RGBColor } from 'react-color';
 
 interface SettingsProps {
     file: File;
@@ -14,6 +15,10 @@ interface SettingsProps {
     setClipRotationAsCamera: (value: boolean) => void;
     showMCalo: boolean;
     setShowMCalo: (value: boolean) => void;
+    glowStrength: number;
+    setGlowStrength: (value: number) => void;
+    glowColor: RGBColor;
+    setGlowColor: (value: RGBColor) => void;
 }
 
 export const Settings = ({
@@ -25,6 +30,10 @@ export const Settings = ({
     setClipRotationAsCamera,
     showMCalo,
     setShowMCalo,
+    glowStrength,
+    setGlowStrength,
+    glowColor,
+    setGlowColor,
 }: SettingsProps) => {
     const [collapsed, setCollapsed] = useState(false);
 
@@ -44,6 +53,10 @@ export const Settings = ({
                     setClipRotationAsCamera={setClipRotationAsCamera}
                     showMCalo={showMCalo}
                     setShowMCalo={setShowMCalo}
+                    glowStrength={glowStrength}
+                    setGlowStrength={setGlowStrength}
+                    glowColor={glowColor}
+                    setGlowColor={setGlowColor}
                 />
             </div>
         </div>

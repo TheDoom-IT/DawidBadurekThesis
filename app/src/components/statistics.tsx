@@ -2,6 +2,8 @@ import { File } from '../schemas/file-schema';
 import { SelectedSourceObject } from '../types/selected-source';
 import { SelectSource } from './select-source';
 import './../styles/app/statistics.css';
+import { GlowSettings } from './glow-settings';
+import { RGBColor } from 'react-color';
 
 interface StatisticsProps {
     file: File;
@@ -12,6 +14,10 @@ interface StatisticsProps {
     setClipRotationAsCamera: (value: boolean) => void;
     showMCalo: boolean;
     setShowMCalo: (value: boolean) => void;
+    glowStrength: number;
+    setGlowStrength: (value: number) => void;
+    glowColor: RGBColor;
+    setGlowColor: (value: RGBColor) => void;
 }
 
 export const Statistics = ({
@@ -23,6 +29,10 @@ export const Statistics = ({
     setClipRotationAsCamera,
     showMCalo,
     setShowMCalo,
+    glowStrength,
+    setGlowStrength,
+    glowColor,
+    setGlowColor,
 }: StatisticsProps) => {
     return (
         <div className="statistics box">
@@ -51,6 +61,12 @@ export const Statistics = ({
                     onChange={() => setShowMCalo(!showMCalo)}
                 />
             </div>
+            <GlowSettings
+                glowStrength={glowStrength}
+                setGlowStrength={setGlowStrength}
+                glowColor={glowColor}
+                setGlowColor={setGlowColor}
+            />
             <div className="hline"></div>
             <SelectSource
                 selectedSources={selectedSources}
