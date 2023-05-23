@@ -12,11 +12,10 @@ interface StatisticsProps {
     setSelectedSources: (sources: SelectedSourceObject) => void;
     clipRotationAsCamera: boolean;
     setClipRotationAsCamera: (value: boolean) => void;
-    showMCalo: boolean;
-    setShowMCalo: (value: boolean) => void;
+    showCalorimeter: boolean;
+    setShowCalorimeter: (value: boolean) => void;
     glowStrength: number;
     setGlowStrength: (value: number) => void;
-    glowColor: RGBColor;
     setGlowColor: (value: RGBColor) => void;
 }
 
@@ -27,11 +26,10 @@ export const Statistics = ({
     setSelectedSources,
     clipRotationAsCamera,
     setClipRotationAsCamera,
-    showMCalo,
-    setShowMCalo,
+    showCalorimeter,
+    setShowCalorimeter,
     glowStrength,
     setGlowStrength,
-    glowColor,
     setGlowColor,
 }: StatisticsProps) => {
     return (
@@ -51,20 +49,19 @@ export const Statistics = ({
                 />
             </div>
             <div className={'checkbox-line'}>
-                <label htmlFor={'showMCalo'}>Show mCalo</label>
+                <label htmlFor={'showMCalo'}>Show calorimeter</label>
                 <input
                     id={'showMCalo'}
                     className="checkbox-input"
                     type="checkbox"
                     name={'showMCalo'}
-                    checked={showMCalo}
-                    onChange={() => setShowMCalo(!showMCalo)}
+                    checked={showCalorimeter}
+                    onChange={() => setShowCalorimeter(!showCalorimeter)}
                 />
             </div>
             <GlowSettings
                 glowStrength={glowStrength}
                 setGlowStrength={setGlowStrength}
-                glowColor={glowColor}
                 setGlowColor={setGlowColor}
             />
             <div className="hline"></div>

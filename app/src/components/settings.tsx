@@ -13,11 +13,10 @@ interface SettingsProps {
     setSelectedSources: (sources: SelectedSourceObject) => void;
     clipRotationAsCamera: boolean;
     setClipRotationAsCamera: (value: boolean) => void;
-    showMCalo: boolean;
-    setShowMCalo: (value: boolean) => void;
+    showCalorimeter: boolean;
+    setShowCalorimeter: (value: boolean) => void;
     glowStrength: number;
     setGlowStrength: (value: number) => void;
-    glowColor: RGBColor;
     setGlowColor: (value: RGBColor) => void;
 }
 
@@ -28,11 +27,10 @@ export const Settings = ({
     setSelectedSources,
     clipRotationAsCamera,
     setClipRotationAsCamera,
-    showMCalo,
-    setShowMCalo,
+    showCalorimeter,
+    setShowCalorimeter,
     glowStrength,
     setGlowStrength,
-    glowColor,
     setGlowColor,
 }: SettingsProps) => {
     const [collapsed, setCollapsed] = useState(false);
@@ -51,11 +49,10 @@ export const Settings = ({
                     setSelectedSources={setSelectedSources}
                     clipRotationAsCamera={clipRotationAsCamera}
                     setClipRotationAsCamera={setClipRotationAsCamera}
-                    showMCalo={showMCalo}
-                    setShowMCalo={setShowMCalo}
+                    showCalorimeter={showCalorimeter}
+                    setShowCalorimeter={setShowCalorimeter}
                     glowStrength={glowStrength}
                     setGlowStrength={setGlowStrength}
-                    glowColor={glowColor}
                     setGlowColor={setGlowColor}
                 />
             </div>

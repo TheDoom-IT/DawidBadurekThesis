@@ -1,18 +1,16 @@
 import { useRef } from 'react';
 import { ColorResult, GithubPicker, RGBColor } from 'react-color';
-import { GLOW_COLORS } from '../constants/glow-colors';
+import { pushLuminance, GLOW_COLORS } from '../constants/glow-colors';
 
 interface GlowSettingsProps {
     glowStrength: number;
     setGlowStrength: (value: number) => void;
-    glowColor: RGBColor;
     setGlowColor: (value: RGBColor) => void;
 }
 
 export const GlowSettings = ({
     glowStrength,
     setGlowStrength,
-    glowColor,
     setGlowColor,
 }: GlowSettingsProps) => {
     const timeout = useRef<ReturnType<typeof setTimeout>>();
@@ -28,12 +26,7 @@ export const GlowSettings = ({
     };
 
     const onColorChange = (color: ColorResult) => {
-        setGlowColor({
-            r: color.rgb.r * 2,
-            g: color.rgb.g * 2,
-            b: color.rgb.b * 2,
-            a: color.rgb.a,
-        });
+        setGlowColor(pushLuminance(color.rgb));
     };
 
     return (
@@ -47,9 +40,9 @@ export const GlowSettings = ({
             Glow color:
             <GithubPicker
                 triangle={'hide'}
-                color={glowColor}
                 onChangeComplete={onColorChange}
                 colors={GLOW_COLORS}
+                width={'100px'}
                 styles={{
                     default: { card: { background: 'rgb(204, 202, 202)' } },
                 }}

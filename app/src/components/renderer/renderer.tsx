@@ -28,7 +28,7 @@ interface RendererProps {
     color: string;
     selectedSources: SelectedSourceObject;
     clipRotationAsCamera: boolean;
-    showMCalo: boolean;
+    showCalorimeter: boolean;
     glowStrength: number;
     glowColor: RGBColor;
 }
@@ -38,7 +38,7 @@ export const Renderer = ({
     color,
     selectedSources,
     clipRotationAsCamera,
-    showMCalo,
+    showCalorimeter,
     glowStrength,
     glowColor,
 }: RendererProps) => {
@@ -129,7 +129,7 @@ export const Renderer = ({
                         animationData={animationData}
                     />
                 ))}
-                {showMCalo &&
+                {showCalorimeter &&
                     file.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
             <Postprocessing />
