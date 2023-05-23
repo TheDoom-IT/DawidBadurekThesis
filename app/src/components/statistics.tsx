@@ -1,35 +1,43 @@
-import { Tracks } from '../schemas/tracks-schema';
+import { File } from '../schemas/file-schema';
 import { SelectedSourceObject } from '../types/selected-source';
 import { SelectSource } from './select-source';
 import './../styles/app/statistics.css';
+import { GlowSettings } from './glow-settings';
+import { RGBColor } from 'react-color';
 
 interface StatisticsProps {
-    tracks: Tracks;
+    file: File;
     closeFile: () => void;
     selectedSources: SelectedSourceObject;
     setSelectedSources: (sources: SelectedSourceObject) => void;
     clipRotationAsCamera: boolean;
     setClipRotationAsCamera: (value: boolean) => void;
-    showMCalo: boolean;
-    setShowMCalo: (value: boolean) => void;
+    showCalorimeter: boolean;
+    setShowCalorimeter: (value: boolean) => void;
+    glowStrength: number;
+    setGlowStrength: (value: number) => void;
+    setGlowColor: (value: RGBColor) => void;
 }
 
 export const Statistics = ({
-    tracks,
+    file,
     closeFile,
     selectedSources,
     setSelectedSources,
     clipRotationAsCamera,
     setClipRotationAsCamera,
-    showMCalo,
-    setShowMCalo,
+    showCalorimeter,
+    setShowCalorimeter,
+    glowStrength,
+    setGlowStrength,
+    setGlowColor,
 }: StatisticsProps) => {
     return (
         <div className="statistics box">
             <h3 className="text-center">Statistics</h3>
-            Number of tracks: {tracks.mTracks.length}
+            Number of tracks: {file.mTracks.length}
             <br />
-            <div>
+            <div className={'checkbox-line'}>
                 <label htmlFor={'rotateClipping'}>Rotate</label>
                 <input
                     id={'rotateClipping'}
@@ -40,17 +48,22 @@ export const Statistics = ({
                     onChange={() => setClipRotationAsCamera(!clipRotationAsCamera)}
                 />
             </div>
-            <div>
-                <label htmlFor={'showMCalo'}>Show mCalo</label>
+            <div className={'checkbox-line'}>
+                <label htmlFor={'showMCalo'}>Show calorimeter</label>
                 <input
                     id={'showMCalo'}
                     className="checkbox-input"
                     type="checkbox"
                     name={'showMCalo'}
-                    checked={showMCalo}
-                    onChange={() => setShowMCalo(!showMCalo)}
+                    checked={showCalorimeter}
+                    onChange={() => setShowCalorimeter(!showCalorimeter)}
                 />
             </div>
+            <GlowSettings
+                glowStrength={glowStrength}
+                setGlowStrength={setGlowStrength}
+                setGlowColor={setGlowColor}
+            />
             <div className="hline"></div>
             <SelectSource
                 selectedSources={selectedSources}

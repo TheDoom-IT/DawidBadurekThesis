@@ -1,31 +1,38 @@
 import { useState } from 'react';
-import { Tracks } from '../schemas/tracks-schema';
+import { File } from '../schemas/file-schema';
 import '../styles/app/data-windows.css';
 import { SelectedSourceObject } from '../types/selected-source';
 import { Graph } from './graph';
 import { Statistics } from './statistics';
+import { RGBColor } from 'react-color';
 
-interface DataWindowsProps {
-    tracks: Tracks;
+interface SettingsProps {
+    file: File;
     closeFile: () => void;
     selectedSources: SelectedSourceObject;
     setSelectedSources: (sources: SelectedSourceObject) => void;
     clipRotationAsCamera: boolean;
     setClipRotationAsCamera: (value: boolean) => void;
-    showMCalo: boolean;
-    setShowMCalo: (value: boolean) => void;
+    showCalorimeter: boolean;
+    setShowCalorimeter: (value: boolean) => void;
+    glowStrength: number;
+    setGlowStrength: (value: number) => void;
+    setGlowColor: (value: RGBColor) => void;
 }
 
-export const DataWindows = ({
-    tracks,
+export const Settings = ({
+    file,
     closeFile,
     selectedSources,
     setSelectedSources,
     clipRotationAsCamera,
     setClipRotationAsCamera,
-    showMCalo,
-    setShowMCalo,
-}: DataWindowsProps) => {
+    showCalorimeter,
+    setShowCalorimeter,
+    glowStrength,
+    setGlowStrength,
+    setGlowColor,
+}: SettingsProps) => {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
@@ -36,14 +43,17 @@ export const DataWindows = ({
             <div className={`windows-wrapper ${collapsed ? 'hidden' : ''}`}>
                 <Graph selectedSources={selectedSources} />
                 <Statistics
-                    tracks={tracks}
+                    file={file}
                     closeFile={closeFile}
                     selectedSources={selectedSources}
                     setSelectedSources={setSelectedSources}
                     clipRotationAsCamera={clipRotationAsCamera}
                     setClipRotationAsCamera={setClipRotationAsCamera}
-                    showMCalo={showMCalo}
-                    setShowMCalo={setShowMCalo}
+                    showCalorimeter={showCalorimeter}
+                    setShowCalorimeter={setShowCalorimeter}
+                    glowStrength={glowStrength}
+                    setGlowStrength={setGlowStrength}
+                    setGlowColor={setGlowColor}
                 />
             </div>
         </div>
