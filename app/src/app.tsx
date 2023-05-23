@@ -6,6 +6,8 @@ import { LoadFileMenu } from './components/load-file-menu';
 import { SelectedSourceObject } from './types/selected-source';
 import { Settings } from './components/settings';
 import { NAME_REGEX } from './constants/name-regex';
+import { RGBColor } from 'react-color';
+import { colorStringToRGB, pushLuminance, GLOW_COLORS } from './constants/glow-colors';
 
 export const App = () => {
     const divRef = useRef<HTMLDivElement>(null);
@@ -13,7 +15,11 @@ export const App = () => {
     const [file, setFile] = useState<File | null>(null);
     const [selectedSources, setSelectedSources] = useState<SelectedSourceObject>({});
     const [clipRotationAsCamera, setClipRotationAsCamera] = useState(true);
-    const [showMCalo, setShowMCalo] = useState(true);
+    const [showCalorimeter, setShowCalorimeter] = useState(true);
+    const [glowStrength, setGlowStrength] = useState(1.0);
+    const [glowColor, setGlowColor] = useState<RGBColor>(
+        pushLuminance(colorStringToRGB(GLOW_COLORS[0])),
+    );
 
     useEffect(() => {
         if (!file) {
@@ -59,7 +65,9 @@ export const App = () => {
                             color={color}
                             selectedSources={selectedSources}
                             clipRotationAsCamera={clipRotationAsCamera}
-                            showMCalo={showMCalo}
+                            showCalorimeter={showCalorimeter}
+                            glowStrength={glowStrength}
+                            glowColor={glowColor}
                         />
                         <Settings
                             file={file}
@@ -68,8 +76,11 @@ export const App = () => {
                             setSelectedSources={setSelectedSources}
                             clipRotationAsCamera={clipRotationAsCamera}
                             setClipRotationAsCamera={setClipRotationAsCamera}
-                            showMCalo={showMCalo}
-                            setShowMCalo={setShowMCalo}
+                            showCalorimeter={showCalorimeter}
+                            setShowCalorimeter={setShowCalorimeter}
+                            glowStrength={glowStrength}
+                            setGlowStrength={setGlowStrength}
+                            setGlowColor={setGlowColor}
                         />
                     </>
                 )}

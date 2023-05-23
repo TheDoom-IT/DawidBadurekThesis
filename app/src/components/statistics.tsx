@@ -2,6 +2,8 @@ import { File } from '../schemas/file-schema';
 import { SelectedSourceObject } from '../types/selected-source';
 import { SelectSource } from './select-source';
 import './../styles/app/statistics.css';
+import { GlowSettings } from './glow-settings';
+import { RGBColor } from 'react-color';
 
 interface StatisticsProps {
     file: File;
@@ -10,8 +12,11 @@ interface StatisticsProps {
     setSelectedSources: (sources: SelectedSourceObject) => void;
     clipRotationAsCamera: boolean;
     setClipRotationAsCamera: (value: boolean) => void;
-    showMCalo: boolean;
-    setShowMCalo: (value: boolean) => void;
+    showCalorimeter: boolean;
+    setShowCalorimeter: (value: boolean) => void;
+    glowStrength: number;
+    setGlowStrength: (value: number) => void;
+    setGlowColor: (value: RGBColor) => void;
 }
 
 export const Statistics = ({
@@ -21,8 +26,11 @@ export const Statistics = ({
     setSelectedSources,
     clipRotationAsCamera,
     setClipRotationAsCamera,
-    showMCalo,
-    setShowMCalo,
+    showCalorimeter,
+    setShowCalorimeter,
+    glowStrength,
+    setGlowStrength,
+    setGlowColor,
 }: StatisticsProps) => {
     return (
         <div className="statistics box">
@@ -41,16 +49,21 @@ export const Statistics = ({
                 />
             </div>
             <div className={'checkbox-line'}>
-                <label htmlFor={'showMCalo'}>Show mCalo</label>
+                <label htmlFor={'showMCalo'}>Show calorimeter</label>
                 <input
                     id={'showMCalo'}
                     className="checkbox-input"
                     type="checkbox"
                     name={'showMCalo'}
-                    checked={showMCalo}
-                    onChange={() => setShowMCalo(!showMCalo)}
+                    checked={showCalorimeter}
+                    onChange={() => setShowCalorimeter(!showCalorimeter)}
                 />
             </div>
+            <GlowSettings
+                glowStrength={glowStrength}
+                setGlowStrength={setGlowStrength}
+                setGlowColor={setGlowColor}
+            />
             <div className="hline"></div>
             <SelectSource
                 selectedSources={selectedSources}

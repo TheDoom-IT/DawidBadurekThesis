@@ -21,13 +21,16 @@ import {
 } from '../../constants/animation';
 import { Postprocessing } from './postprocessing';
 import { TrackFragment } from './track-fragment';
+import { RGBColor } from 'react-color';
 
 interface RendererProps {
     file: File;
     color: string;
     selectedSources: SelectedSourceObject;
     clipRotationAsCamera: boolean;
-    showMCalo: boolean;
+    showCalorimeter: boolean;
+    glowStrength: number;
+    glowColor: RGBColor;
 }
 
 export const Renderer = ({
@@ -35,7 +38,9 @@ export const Renderer = ({
     color,
     selectedSources,
     clipRotationAsCamera,
-    showMCalo,
+    showCalorimeter,
+    glowStrength,
+    glowColor,
 }: RendererProps) => {
     const [controls, setControls] = useState<Controls | null>(null);
 
@@ -111,7 +116,12 @@ export const Renderer = ({
                 <AmbientLight params={['white', 0.3]} />
                 <DirectionalLight position={[0, 500, 0]} />
                 <OrbitControls ref={setControls} />
-                <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
+                <MachineModel
+                    controls={controls}
+                    clipRotationAsCamera={clipRotationAsCamera}
+                    glowStrength={glowStrength}
+                    glowColor={glowColor}
+                />
                 {selectedTracks.map((track) => (
                     <TrackFragment
                         key={track.index}
@@ -119,7 +129,7 @@ export const Renderer = ({
                         animationData={animationData}
                     />
                 ))}
-                {showMCalo &&
+                {showCalorimeter &&
                     file.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
             <Postprocessing />

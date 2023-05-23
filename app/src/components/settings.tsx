@@ -4,6 +4,7 @@ import '../styles/app/data-windows.css';
 import { SelectedSourceObject } from '../types/selected-source';
 import { Graph } from './graph';
 import { Statistics } from './statistics';
+import { RGBColor } from 'react-color';
 
 interface SettingsProps {
     file: File;
@@ -12,8 +13,11 @@ interface SettingsProps {
     setSelectedSources: (sources: SelectedSourceObject) => void;
     clipRotationAsCamera: boolean;
     setClipRotationAsCamera: (value: boolean) => void;
-    showMCalo: boolean;
-    setShowMCalo: (value: boolean) => void;
+    showCalorimeter: boolean;
+    setShowCalorimeter: (value: boolean) => void;
+    glowStrength: number;
+    setGlowStrength: (value: number) => void;
+    setGlowColor: (value: RGBColor) => void;
 }
 
 export const Settings = ({
@@ -23,8 +27,11 @@ export const Settings = ({
     setSelectedSources,
     clipRotationAsCamera,
     setClipRotationAsCamera,
-    showMCalo,
-    setShowMCalo,
+    showCalorimeter,
+    setShowCalorimeter,
+    glowStrength,
+    setGlowStrength,
+    setGlowColor,
 }: SettingsProps) => {
     const [collapsed, setCollapsed] = useState(false);
 
@@ -42,8 +49,11 @@ export const Settings = ({
                     setSelectedSources={setSelectedSources}
                     clipRotationAsCamera={clipRotationAsCamera}
                     setClipRotationAsCamera={setClipRotationAsCamera}
-                    showMCalo={showMCalo}
-                    setShowMCalo={setShowMCalo}
+                    showCalorimeter={showCalorimeter}
+                    setShowCalorimeter={setShowCalorimeter}
+                    glowStrength={glowStrength}
+                    setGlowStrength={setGlowStrength}
+                    setGlowColor={setGlowColor}
                 />
             </div>
         </div>
