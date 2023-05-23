@@ -4,46 +4,43 @@ import React, { ForwardedRef, useLayoutEffect } from 'react';
 import { useCanvasContext } from '../../contexts/canvas-context';
 import { useDisposableObject } from '../../hooks/useDisposableObject';
 
-export const EffectComposer = React.forwardRef(function EffectComposer(
-    props: ParamsProps<typeof POST.EffectComposer, POST.EffectComposer>,
-    ref: ForwardedRef<POST.EffectComposer>,
-) {
-    const canvasContext = useCanvasContext();
-    const composer = useDisposableObject(POST.EffectComposer, props, ref);
+export type EffectComposerProps = ParamsProps<typeof POST.EffectComposer, POST.EffectComposer>;
 
-    const contextAttributes = canvasContext?.renderer?.getContext()?.getContextAttributes();
-    const composerRenderer = composer?.getRenderer();
+export const EffectComposer = React.forwardRef<POST.EffectComposer, EffectComposerProps>(
+    function EffectComposer(props: EffectComposerProps, ref: ForwardedRef<POST.EffectComposer>) {
+        const canvasContext = useCanvasContext();
+        const composer = useDisposableObject(POST.EffectComposer, props, ref);
 
-    useLayoutEffect(() => {
-        if (!canvasContext?.renderer || !composer || !contextAttributes) {
-            return;
-        }
+        const contextAttributes = canvasContext?.renderer?.getContext()?.getContextAttributes();
+        const composerRenderer = composer?.getRenderer();
 
-        composer.setRenderer(canvasContext.renderer);
-    }, [composer, canvasContext?.renderer, contextAttributes]);
+        useLayoutEffect(() => {
+            if (!canvasContext?.renderer || !composer || !contextAttributes) {
+                return;
+            }
 
-    useLayoutEffect(() => {
-        if (!composer || !canvasContext?.size || !composerRenderer) {
-            return;
-        }
+            composer.setRenderer(canvasContext.renderer);
+        }, [composer, canvasContext?.renderer, contextAttributes]);
 
-        composer.setSize(canvasContext.size.width, canvasContext.size.height, false);
-    }, [
-        composer,
-        canvasContext?.size,
-        canvasContext?.size?.width,
-        canvasContext?.size?.height,
-        composerRenderer,
-    ]);
+        useLayoutEffect(() => {
+            if (!composer || !canvasContext?.size || !composerRenderer) {
+                return;
+            }
 
-    useLayoutEffect(() => {
-        canvasContext?.setEffectComposer(composer);
+            composer.setSize(canvasContext.size.width, canvasContext.size.height, false);
+        }, [
+            composer,
+            canvasContext?.size,
+            canvasContext?.size?.width,
+            canvasContext?.size?.height,
+            composerRenderer,
+        ]);
 
-        return () => {
-            canvasContext?.setEffectComposer(null);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [composer, canvasContext?.setEffectComposer]);
+        useLayoutEffect(() => {
+            canvasContext?.setEffectComposer(composer);
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [composer, canvasContext?.setEffectComposer]);
 
-    return <>{props.children}</>;
-});
+        return <>{props.children}</>;
+    },
+);

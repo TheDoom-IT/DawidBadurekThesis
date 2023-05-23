@@ -1,23 +1,25 @@
 import React, { useRef, useState } from 'react';
-import { File, fileSchema } from '../schemas/file-schema';
+import { Tracks, tracksSchema } from '../schemas/tracks-schema';
 import { readFile } from '../utils/read-file';
-import exemplaryDataFile from '../static/exemplary-data.json';
+import tracks1 from '../static/tracks1647477806262.json';
+import tracks2 from '../static/tracks1647635306347.json';
 import '../styles/app/load-file-menu.css';
-import { FileLoadingFailedException } from '../exceptions/file-loading-failed-exception';
+
+const trackFiles = [tracks1, tracks2];
 
 export interface LoadFileMenuProps {
-    setFile: (file: File) => void;
+    setTracks: (tracks: Tracks) => void;
 }
 
-export const LoadFileMenu = ({ setFile }: LoadFileMenuProps) => {
+export const LoadFileMenu = ({ setTracks }: LoadFileMenuProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [buttonEnabled, setButtonEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const loadExemplaryFile = () => {
-        const file = fileSchema.parse(exemplaryDataFile);
-        setFile(file);
+        const tracks = tracksSchema.parse(trackFiles[1]);
+        setTracks(tracks);
     };
 
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,16 +32,16 @@ export const LoadFileMenu = ({ setFile }: LoadFileMenuProps) => {
         try {
             return JSON.parse(fileString);
         } catch {
-            throw new FileLoadingFailedException('Failed to parse a JSON file.');
+            throw new Error('Failed to parse a JSON file.');
         }
     };
 
-    const validateInputFile = (fileAsJson: any): File => {
+    const validateInputFile = (fileAsJson: any): Tracks => {
         try {
-            return fileSchema.parse(fileAsJson);
+            return tracksSchema.parse(fileAsJson);
         } catch (e) {
             console.error(e);
-            throw new FileLoadingFailedException(
+            throw new Error(
                 `Cannot read a file. It has an unsupported format (check the console for more information).`,
             );
         }
@@ -61,14 +63,14 @@ export const LoadFileMenu = ({ setFile }: LoadFileMenuProps) => {
         try {
             const fileResult = await readFile(file);
             if (fileResult === null) {
-                throw new FileLoadingFailedException('Failed to load a file.');
+                throw new Error('Failed to load a file.');
             }
 
             const fileAsJson = parseJson(fileResult.toString());
-            const validatedFile = validateInputFile(fileAsJson);
-            setFile(validatedFile);
+            const tracks = validateInputFile(fileAsJson);
+            setTracks(tracks);
         } catch (e) {
-            if (e instanceof FileLoadingFailedException) {
+            if (e instanceof Error) {
                 setError(e.message);
             } else {
                 setError('Unexpected error occured.');
