@@ -34,7 +34,13 @@ export const GlowSettings = ({
             Glow strength: {glowStrength}
             <br />
             1
-            <input type={'range'} defaultValue={1} min={1} max={20} onChange={onStrengthChange} />
+            <input
+                type={'range'}
+                defaultValue={glowStrength}
+                min={1}
+                max={20}
+                onChange={onStrengthChange}
+            />
             20
             <br />
             Glow color:

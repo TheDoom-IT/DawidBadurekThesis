@@ -3,6 +3,7 @@ import { OBJLoader } from 'react-three-component';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { RGBColor } from 'react-color';
+import { machineSettings } from '../../constants/machine-settings';
 
 interface MachineModelProps {
     controls: OrbitControls | null;
@@ -46,7 +47,44 @@ export const MachineModel = ({
         };
     }, [controls, clipRotationAsCamera, clippingPlanes, onControlsChange]);
 
-    const color = new THREE.Vector3(7.0, 0.5, 0.5);
+    const getColorAndOpacity = (elementFullName: string): { opacity: number; color: string } => {
+        const elementName = elementFullName.split('_')[0];
+        switch (elementName) {
+            case 'PHOS':
+                return machineSettings.PHOS;
+            case 'RICH':
+                return machineSettings.RICH;
+            case 'ITSD':
+                return machineSettings.ITSD;
+            case 'TDGN':
+                return machineSettings.TDGN;
+            case 'B077':
+                return machineSettings.B077;
+        }
+
+        if (elementName.match(/^I\dCC$/)) {
+            return machineSettings.IdCC;
+        } else if (elementName.match(/^I\dCU$/)) {
+            return machineSettings.IdCU;
+        } else if (elementName.startsWith('IPA')) {
+            return machineSettings.IPA;
+        } else if (elementName.startsWith('ICU')) {
+            return machineSettings.ICUd;
+        } else if (elementName.startsWith('ICC')) {
+            return machineSettings.ICCd;
+        } else if (elementName.startsWith('IHK')) {
+            return machineSettings.IHK;
+        } else if (elementName.startsWith('ISR')) {
+            return machineSettings.ISR;
+        } else if (elementName.startsWith('EPM')) {
+            return machineSettings.EPM;
+        }
+
+        return {
+            opacity: 0.5,
+            color: '#000000',
+        };
+    };
 
     const updateShader = useCallback(
         (shader: THREE.Shader) => {
@@ -83,21 +121,20 @@ export const MachineModel = ({
         group.rotation.y = Math.PI;
         group.scale.set(0.6, 0.6, 0.6);
 
-        const names = new Set<string>();
         group.traverse((el) => {
             if ('material' in el && el.material instanceof THREE.Material) {
+                const colorAndOpacity = getColorAndOpacity(el.name);
                 const material = new THREE.MeshStandardMaterial({
                     side: THREE.DoubleSide,
 
                     transparent: true,
-                    opacity: 0.5,
+                    opacity: colorAndOpacity.opacity,
 
                     clippingPlanes: clippingPlanes,
 
-                    color: 0xffffff * Math.random(),
+                    color: colorAndOpacity.color,
                 });
 
-                names.add(el.name.split('_')[0]);
                 el.material.dispose();
                 el.material = material;
             }
@@ -116,7 +153,7 @@ export const MachineModel = ({
                 el.material.onBeforeCompile = updateShader;
             }
         });
-    }, [glowStrength, group, updateShader]);
+    }, [glowColor, glowStrength, group, updateShader]);
 
     // Model exported from https://root.cern.ch/js/latest/demo/tgeo_build.htm
     return <OBJLoader url={'model.obj'} ref={setGroup} />;
