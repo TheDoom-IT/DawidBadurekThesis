@@ -1,6 +1,6 @@
 import React, { ForwardedRef, useLayoutEffect } from 'react';
 import { useParentContext } from '../contexts/parent-context';
-import { ParamsProps } from '../types';
+import { GeometryProps } from '../types';
 import * as THREE from 'three';
 import { useDisposableObject } from '../hooks/useDisposableObject';
 
@@ -9,8 +9,8 @@ export function createThreeGeometry<
     R extends THREE.BufferGeometry,
 >(constructor: C) {
     //eslint-disable-next-line react/display-name
-    return React.forwardRef<R, ParamsProps<C, R>>(
-        (props: ParamsProps<C, R>, ref: ForwardedRef<R>) => {
+    return React.forwardRef<R, GeometryProps<C, R>>(
+        (props: GeometryProps<C, R>, ref: ForwardedRef<R>) => {
             const parent = useParentContext();
             const object = useDisposableObject(constructor, props, ref);
 

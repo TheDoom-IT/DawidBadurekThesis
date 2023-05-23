@@ -1,5 +1,6 @@
 export interface AnimationData {
-    minTimeTrack: number;
-    animationLengthTrack: number;
-    extendedAnimationLengthMs: number;
+    minTime: number;
+    trackTimeLength: number;
+    extendedAnimationLength: number;
+    stepLength: number;
 }

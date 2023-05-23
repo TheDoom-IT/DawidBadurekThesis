@@ -31,7 +31,7 @@ export const SelectSource = ({ selectedSources, setSelectedSources }: SelectSour
             Sources:
             {Object.entries(selectedSources).map(([key, source]) => (
                 <div className={'source-checkbox-wrapper'} key={source.name}>
-                    <div className={'checkbox-line'}>
+                    <span>
                         <input
                             id={source.name}
                             className="checkbox-input"
@@ -41,7 +41,7 @@ export const SelectSource = ({ selectedSources, setSelectedSources }: SelectSour
                             onChange={() => onChange(key)}
                         />
                         <label htmlFor={`source_${source.name}`}>{source.name}</label>
-                    </div>
+                    </span>
                     <span>{source.count} tracks</span>
                 </div>
             ))}

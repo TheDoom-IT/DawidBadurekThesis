@@ -7,40 +7,31 @@ import {
     PerspectiveCamera,
 } from 'react-three-component';
 import * as THREE from 'three';
-import { File } from '../../schemas/file-schema';
-import { SelectedSourceObject } from '../../types/selected-source';
+import { Tracks } from '../schemas/tracks-schema';
+import { TrackFragment } from './track-fragment';
+import { SelectedSourceObject } from '../types/selected-source';
 import { MachineModel } from './machine-model';
 import { CaloElement } from './calo-element';
 import { OrbitControls as Controls } from 'three/examples/jsm/controls/OrbitControls';
 import { useCallback, useMemo, useState } from 'react';
-import { AnimationData } from '../../types/animation-data';
-import {
-    ANIMATION_LENGTH_MS,
-    ANIMATION_STEP_LENGTH_MS,
-    LINE_SEGMENTS,
-} from '../../constants/animation';
+import { AnimationData } from '../types/animation-data';
+import { ANIMATION_LENGTH_MS, ANIMATION_STEP_LENGTH, LINE_SEGMENTS } from '../constants/animation';
 import { Postprocessing } from './postprocessing';
-import { TrackFragment } from './track-fragment';
-import { RGBColor } from 'react-color';
 
 interface RendererProps {
-    file: File;
+    tracks: Tracks;
     color: string;
     selectedSources: SelectedSourceObject;
     clipRotationAsCamera: boolean;
-    showCalorimeter: boolean;
-    glowStrength: number;
-    glowColor: RGBColor;
+    showMCalo: boolean;
 }
 
 export const Renderer = ({
-    file,
+    tracks,
     color,
     selectedSources,
     clipRotationAsCamera,
-    showCalorimeter,
-    glowStrength,
-    glowColor,
+    showMCalo,
 }: RendererProps) => {
     const [controls, setControls] = useState<Controls | null>(null);
 
@@ -64,41 +55,43 @@ export const Renderer = ({
         renderer.localClippingEnabled = true;
     }, []);
 
+    const setOrbitControls = useCallback((ref: Controls | null) => setControls(ref), []);
+
     const selectedTracks = useMemo(() => {
-        return file.mTracks
+        return tracks.mTracks
             .map((track, index) => ({
                 track,
                 index,
             }))
             .filter((track) => selectedSources[track.track.source]?.selected === true);
-    }, [selectedSources, file]);
+    }, [selectedSources, tracks]);
 
     const animationData: AnimationData = useMemo(() => {
-        const timeFields = file.mTracks.map((track) => track.time);
+        const timeFields = tracks.mTracks.map((track) => track.time);
         const trackMinTime = Math.min(...timeFields);
         const trackMaxTime = Math.max(...timeFields);
         const trackTimeLength = Math.max(trackMaxTime - trackMinTime, 1);
 
-        const animationsFinishTime = file.mTracks.map((track) => {
+        const animationsFinishTime = tracks.mTracks.map((track) => {
             const trackTimeInMs =
                 ((track.time - trackMinTime) / trackTimeLength) * ANIMATION_LENGTH_MS;
 
-            const lineSegments = Math.min(LINE_SEGMENTS, track.count);
             return (
                 trackTimeInMs +
-                ANIMATION_STEP_LENGTH_MS * track.count +
-                ANIMATION_STEP_LENGTH_MS * lineSegments
+                ANIMATION_STEP_LENGTH * track.count +
+                ANIMATION_STEP_LENGTH * LINE_SEGMENTS
             );
         });
 
         const maxFinishTime = Math.max(...animationsFinishTime, ANIMATION_LENGTH_MS);
 
         return {
-            minTimeTrack: trackMinTime,
-            animationLengthTrack: trackTimeLength,
-            extendedAnimationLengthMs: maxFinishTime,
+            minTime: trackMinTime,
+            trackTimeLength: trackTimeLength,
+            extendedAnimationLength: maxFinishTime,
+            stepLength: ANIMATION_STEP_LENGTH,
         };
-    }, [file]);
+    }, [tracks]);
 
     return (
         <Canvas
@@ -114,14 +107,9 @@ export const Renderer = ({
             <PerspectiveCamera position={[0, 0, 400]} />
             <MainScene ref={initScene}>
                 <AmbientLight params={['white', 0.3]} />
-                <DirectionalLight position={[0, 500, 0]} />
-                <OrbitControls ref={setControls} />
-                <MachineModel
-                    controls={controls}
-                    clipRotationAsCamera={clipRotationAsCamera}
-                    glowStrength={glowStrength}
-                    glowColor={glowColor}
-                />
+                <DirectionalLight position={[0, 20, 10]} />
+                <OrbitControls ref={setOrbitControls} />
+                <MachineModel controls={controls} clipRotationAsCamera={clipRotationAsCamera} />
                 {selectedTracks.map((track) => (
                     <TrackFragment
                         key={track.index}
@@ -129,8 +117,8 @@ export const Renderer = ({
                         animationData={animationData}
                     />
                 ))}
-                {showCalorimeter &&
-                    file.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
+                {showMCalo &&
+                    tracks.mCalo?.map((calo, index) => <CaloElement key={index} calo={calo} />)}
             </MainScene>
             <Postprocessing />
         </Canvas>

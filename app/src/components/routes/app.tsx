@@ -1,36 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
-import './styles/app/app.css';
-import { Renderer } from './components/renderer/renderer';
-import { File } from './schemas/file-schema';
-import { LoadFileMenu } from './components/load-file-menu';
-import { SelectedSourceObject } from './types/selected-source';
-import { Settings } from './components/settings';
-import { NAME_REGEX } from './constants/name-regex';
-import { RGBColor } from 'react-color';
-import { colorStringToRGB, pushLuminance, GLOW_COLORS } from './constants/glow-colors';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../../routes';
+import '../../styles/app/app.css';
+import { Renderer } from '../renderer';
+import { Tracks } from '../../schemas/tracks-schema';
+import { LoadFileMenu } from '../load-file-menu';
+import { SelectedSourceObject } from '../../types/selected-source';
+import { DataWindows } from '../data-windows';
 
 export const App = () => {
     const divRef = useRef<HTMLDivElement>(null);
     const [color, setColor] = useState('#ffffff');
-    const [file, setFile] = useState<File | null>(null);
+    const [tracks, setTracks] = useState<Tracks | null>(null);
     const [selectedSources, setSelectedSources] = useState<SelectedSourceObject>({});
     const [clipRotationAsCamera, setClipRotationAsCamera] = useState(true);
-    const [showCalorimeter, setShowCalorimeter] = useState(true);
-    const [glowStrength, setGlowStrength] = useState(1.0);
-    const [glowColor, setGlowColor] = useState<RGBColor>(
-        pushLuminance(colorStringToRGB(GLOW_COLORS[0])),
-    );
+    const [showMCalo, setShowMCalo] = useState(true);
 
     useEffect(() => {
-        if (!file) {
+        if (!tracks) {
             setSelectedSources({});
             return;
         }
         const result: SelectedSourceObject = {};
 
-        file.mTracks.forEach((track) => {
+        tracks.mTracks.forEach((track) => {
             if (result[track.source] === undefined) {
-                const sourceName = NAME_REGEX.exec(track.gid)?.[1] ?? `source ${track.source}`;
+                const nameRegex = /\[(.*)\/.*\/.*\]/; //match [name/0/00]
+                const sourceName = nameRegex.exec(track.gid)?.[1] ?? `source ${track.source}`;
                 result[track.source] = { name: sourceName, selected: true, count: 0 };
             }
 
@@ -38,7 +34,7 @@ export const App = () => {
         });
 
         setSelectedSources(result);
-    }, [file]);
+    }, [tracks]);
 
     useEffect(() => {
         if (!divRef.current) {
@@ -51,36 +47,36 @@ export const App = () => {
     }, [divRef]);
 
     const closeFile = () => {
-        setFile(null);
+        setTracks(null);
     };
 
     return (
         <>
             <div className="App" ref={divRef}>
-                {file === null && <LoadFileMenu setFile={setFile} />}
-                {file !== null && (
+                {tracks === null && <LoadFileMenu setTracks={setTracks} />}
+                {tracks !== null && (
                     <>
                         <Renderer
-                            file={file}
+                            tracks={tracks}
                             color={color}
                             selectedSources={selectedSources}
                             clipRotationAsCamera={clipRotationAsCamera}
-                            showCalorimeter={showCalorimeter}
-                            glowStrength={glowStrength}
-                            glowColor={glowColor}
+                            showMCalo={showMCalo}
                         />
-                        <Settings
-                            file={file}
+                        <div className="home-link-wrapper">
+                            <Link className="home-link" to={ROUTES.HOME}>
+                                Home
+                            </Link>
+                        </div>
+                        <DataWindows
+                            tracks={tracks}
                             closeFile={closeFile}
                             selectedSources={selectedSources}
                             setSelectedSources={setSelectedSources}
                             clipRotationAsCamera={clipRotationAsCamera}
                             setClipRotationAsCamera={setClipRotationAsCamera}
-                            showCalorimeter={showCalorimeter}
-                            setShowCalorimeter={setShowCalorimeter}
-                            glowStrength={glowStrength}
-                            setGlowStrength={setGlowStrength}
-                            setGlowColor={setGlowColor}
+                            showMCalo={showMCalo}
+                            setShowMCalo={setShowMCalo}
                         />
                     </>
                 )}

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
     BufferGeometry,
     LineBasicMaterial,
@@ -7,13 +7,9 @@ import {
     PointsMaterial,
 } from 'react-three-component';
 import * as THREE from 'three';
-import { Track } from '../../schemas/file-schema';
-import { AnimationData } from '../../types/animation-data';
-import {
-    ANIMATION_LENGTH_MS,
-    ANIMATION_STEP_LENGTH_MS,
-    LINE_SEGMENTS,
-} from '../../constants/animation';
+import { Track } from '../schemas/tracks-schema';
+import { AnimationData } from '../types/animation-data';
+import { ANIMATION_LENGTH_MS, LINE_SEGMENTS } from '../constants/animation';
 
 export interface TrackFragmentProps {
     track: Track;
@@ -21,29 +17,30 @@ export interface TrackFragmentProps {
 }
 
 export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
-    const lineSegments = Math.min(LINE_SEGMENTS, track.count);
-
-    const trackStartTime =
-        ((track.time - animationData.minTimeTrack) / animationData.animationLengthTrack) *
-        ANIMATION_LENGTH_MS;
+    const trackStartTime = useMemo(() => {
+        return (
+            ((track.time - animationData.minTime) / animationData.trackTimeLength) *
+            ANIMATION_LENGTH_MS
+        );
+    }, [track, animationData]);
 
     const updatePosition = useCallback(
         (
             attributeIndex: number,
-            positionIndex: number,
+            trackIndex: number,
             attribute: THREE.BufferAttribute | THREE.InterleavedBufferAttribute,
         ) => {
             attribute.setXYZ(
                 attributeIndex,
-                track.mPolyX[positionIndex],
-                track.mPolyY[positionIndex],
-                track.mPolyZ[positionIndex],
+                track.mPolyX[trackIndex],
+                track.mPolyY[trackIndex],
+                track.mPolyZ[trackIndex],
             );
         },
         [track],
     );
 
-    const initPointsGeometry = useCallback((buffer: THREE.BufferGeometry | null) => {
+    const setPoints = useCallback((buffer: THREE.BufferGeometry | null) => {
         if (!buffer) {
             return;
         }
@@ -52,25 +49,27 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
         buffer.setAttribute('color', new THREE.Float32BufferAttribute([1, 1, 1, 1], 4));
     }, []);
 
-    const initLineGeometry = useCallback(
+    const setLine = useCallback(
         (buffer: THREE.BufferGeometry | null) => {
             if (!buffer) {
                 return;
             }
 
-            const vertices: number[] = new Array(lineSegments * 2 * 3).fill(0);
+            const count = Math.min(LINE_SEGMENTS, track.count);
+
+            const vertices: number[] = new Array(count * 2 * 3).fill(0);
 
             const colors: number[] = [];
-            for (let x = 0; x < lineSegments; x++) {
-                const color1 = 1 - x / lineSegments;
-                const color2 = 1 - (x + 1) / lineSegments;
+            for (let x = 0; x < count; x++) {
+                const color1 = 1 - x / count;
+                const color2 = 1 - (x + 1) / count;
                 colors.push(color1, color1, color1, color1, color2, color2, color2, color2);
             }
 
             buffer.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
             buffer.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
         },
-        [lineSegments],
+        [track.count],
     );
 
     const pointsAnimation = useCallback(
@@ -80,9 +79,9 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             color.needsUpdate = true;
             position.needsUpdate = true;
 
-            const time = timestamp % animationData.extendedAnimationLengthMs;
+            const time = timestamp % animationData.extendedAnimationLength;
 
-            const index = Math.floor((time - trackStartTime) / ANIMATION_STEP_LENGTH_MS);
+            const index = Math.floor((time - trackStartTime) / animationData.stepLength);
 
             if (time < trackStartTime || index >= track.count) {
                 color.setW(0, 0); // transparent
@@ -93,7 +92,13 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             color.setW(0, 1);
             updatePosition(0, index, position);
         },
-        [animationData.extendedAnimationLengthMs, track.count, trackStartTime, updatePosition],
+        [
+            animationData.extendedAnimationLength,
+            animationData.stepLength,
+            track.count,
+            trackStartTime,
+            updatePosition,
+        ],
     );
 
     const lineAnimation = useCallback(
@@ -101,12 +106,12 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
             const position = ref.getAttribute('position');
             position.needsUpdate = true;
 
-            const time = timestamp % animationData.extendedAnimationLengthMs;
+            const time = timestamp % animationData.extendedAnimationLength;
 
-            const index = Math.floor((time - trackStartTime) / ANIMATION_STEP_LENGTH_MS);
+            const index = Math.floor((time - trackStartTime) / animationData.stepLength);
 
-            if (time < trackStartTime || index >= track.count + lineSegments) {
-                for (let x = 0; x < lineSegments * 2; ++x) {
+            if (time < trackStartTime || index >= track.count + LINE_SEGMENTS) {
+                for (let x = 0; x < LINE_SEGMENTS * 2; ++x) {
                     updatePosition(x, 0, position);
                 }
                 return;
@@ -114,26 +119,27 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
 
             if (index >= track.count) {
                 // make smooth finish
-                for (let x = 0; x < lineSegments; ++x) {
-                    let index2 = index - (x + 1);
-                    index2 = index2 < 0 || index2 >= track.count ? 0 : index2;
-                    let index1 = index - x;
-                    index1 = index1 < 0 || index1 >= track.count ? index2 : index1;
+                for (let x = 0; x < LINE_SEGMENTS; ++x) {
+                    let trackIndex2 = index - (x + 1);
+                    trackIndex2 = trackIndex2 < 0 || trackIndex2 >= track.count ? 0 : trackIndex2;
+                    let trackIndex1 = index - x;
+                    trackIndex1 =
+                        trackIndex1 < 0 || trackIndex1 >= track.count ? trackIndex2 : trackIndex1;
 
-                    updatePosition(x * 2, index1, position);
-                    updatePosition(x * 2 + 1, index2, position);
+                    updatePosition(x * 2, trackIndex1, position);
+                    updatePosition(x * 2 + 1, trackIndex2, position);
                 }
                 return;
             }
 
-            for (let x = 0; x < lineSegments; ++x) {
+            for (let x = 0; x < LINE_SEGMENTS; ++x) {
                 updatePosition(x * 2, index < x ? 0 : index - x, position);
                 updatePosition(x * 2 + 1, index < x + 1 ? 0 : index - (x + 1), position);
             }
         },
         [
-            lineSegments,
-            animationData.extendedAnimationLengthMs,
+            animationData.extendedAnimationLength,
+            animationData.stepLength,
             track.count,
             trackStartTime,
             updatePosition,
@@ -165,13 +171,13 @@ export const TrackFragment = ({ track, animationData }: TrackFragmentProps) => {
     return (
         <>
             <LineSegments ref={setFrustumCulled}>
-                <BufferGeometry animate={lineAnimation} ref={initLineGeometry} />
+                <BufferGeometry animate={lineAnimation} ref={setLine} />
                 <LineBasicMaterial
                     params={[{ vertexColors: true, transparent: true, linewidth: 2 }]}
                 />
             </LineSegments>
             <Points ref={setFrustumCulled}>
-                <BufferGeometry animate={pointsAnimation} ref={initPointsGeometry} />
+                <BufferGeometry animate={pointsAnimation} ref={setPoints} />
                 <PointsMaterial
                     ref={initPointsMaterial}
                     params={[{ vertexColors: true, transparent: true, size: 2 }]}

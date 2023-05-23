@@ -3,8 +3,10 @@ import * as POST from 'postprocessing';
 import React, { ForwardedRef } from 'react';
 import { usePass } from '../../../hooks/postprocessing/usePass';
 
-export const RenderPass = React.forwardRef(function RenderPass(
-    props: ParamsProps<typeof POST.RenderPass, POST.RenderPass>,
+export type RenderPassProps = ParamsProps<typeof POST.RenderPass, POST.RenderPass>;
+
+export const RenderPass = React.forwardRef<POST.RenderPass, RenderPassProps>(function RenderPass(
+    props: RenderPassProps,
     ref: ForwardedRef<POST.RenderPass>,
 ) {
     usePass(POST.RenderPass, props, ref);
