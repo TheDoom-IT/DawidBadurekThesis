@@ -19,7 +19,7 @@
     "react": "^18.2.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
-    "react-three-component": "^1.0.0",
+    "react-three-component": "^1.0.1",
     "three": "^0.144.0",
     "zod": "^3.20.2"
   },
