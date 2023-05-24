@@ -1,5 +1,6 @@
 # react-three-component
-React-three-component is a TypeScript library adding React component.
+React-three-component is a TypeScript library providing React components
+for building 3D scenes in Three.js.
 
 ## Usage
 Exemplary component rendering two rotating meshes:
@@ -65,6 +66,9 @@ The canvas returned by this component is responsive. It always takes a 100% widt
 Main `THREE.Scene` element used by the renderer. Children of this Scene are
 rendered.
 
+## Camera
+Any camera added as a Canvas child will be used for rendering.
+
 ## Props
 The props of every component contains the following arguments:
 - ref - React.ForwardedRef that can be used to get a reference to the 
@@ -73,7 +77,7 @@ THREE object or as in the example to set additional properties of the object;
 - animate - uses to animate THREE objects.
 
 All the props expect `params` can be modified between rerenders. Components
-detects changes and applies new values. Therefore, it is usefull to wrap animate function in
+detects changes and applies new values. Therefore, it is useful to wrap animate function in
 `useMemo`, so the same function reference is passed every rerender.
 It may increase the performance.
 
@@ -117,11 +121,21 @@ They have special props to simplify creation of scenes:
 - position - allow to position an object in the scene
 - rotation - sets rotation of the object
 
+Objects are added to the nearest parent, which is an object. Thanks to that it is
+possible to nest multiple objects:
+
+```tsx
+<Mesh>
+    <Points>
+    </Points>
+</Mesh>
+```
 ## Cameras
 - PerspectiveCamera
-- OrtographicCamera
+- OrthographicCamera
 
 ## Geometries
+Supported geometries:
 - BoxGeometry
 - BufferGeometry
 - PlaneGeometry
@@ -130,14 +144,28 @@ They have special props to simplify creation of scenes:
 - TorusGeometry
 - CapsuleGeometry
 
+Geometries are automatically added to their nearest parent, which is an object (e.g., Mesh, Points):
+```tsx
+<Mesh>
+    <BoxGeometry/>
+<Mesh/>
+```
+
 ## Materials
+Supported materials:
 - MeshBasicMaterial
 - MeshStandardMaterial
 - ShaderMaterial
 - PointsMaterial
 - LineBasicMaterial
 
-## Ligths
+Materials are automatically added to their nearest parent, which is an object (e.g., Mesh, Points):
+```tsx
+<Points>
+    <PointsMaterial/>
+<Points/>
+```
+## Lights
 - AmbientLight
 - DirectionalLight
 
